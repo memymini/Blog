@@ -3,7 +3,7 @@ import { List } from "@/components/list/List";
 export default async function Home() {
   const contentsRes = await fetch("http://localhost:3000/mock/contents.json");
   const contents = await contentsRes.json();
-  console.log("contents:", contents);
+
   return (
     <div className="w-full lg:w-1/2 bg-white">
       <div className="w-full h-40 bg-amber-100">
