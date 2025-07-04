@@ -1,11 +1,15 @@
+import Link from "next/link";
+
 export default function Nav() {
   return (
     <div className="flex flex-col w-12 h-screen justify-start items-center shadow-lg gap-5">
-      <p className="font-extrabold">
-        mini
-        <br />
-        .log
-      </p>
+      <Link href="/">
+        <p className="font-extrabold">
+          mini
+          <br />
+          .log
+        </p>
+      </Link>
       <div className="flex items-center justify-center rounded-3xl bg-amber-400 w-9 h-9">
         <img src="/icons/image.svg" />
       </div>
