@@ -1,4 +1,4 @@
-export const Nav = () => {
+export default function Nav() {
   return (
     <div className="flex flex-col w-12 h-screen justify-start items-center shadow-lg gap-5">
       <p className="font-extrabold">
@@ -15,4 +15,4 @@ export const Nav = () => {
       </div>
     </div>
   );
-};
+}

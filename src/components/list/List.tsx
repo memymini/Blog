@@ -1,7 +1,7 @@
 import { Content } from "@/type/content";
-import { ListItem } from "@/components/list/ListItem";
+import ListItem from "@/components/list/ListItem";
 
-export const List = ({ contents }: { contents: Content[] }) => {
+export default function List({ contents }: { contents: Content[] }) {
   return (
     <div className="flex flex-col">
       {contents &&
@@ -10,4 +10,4 @@ export const List = ({ contents }: { contents: Content[] }) => {
         ))}
     </div>
   );
-};
+}

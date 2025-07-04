@@ -1,10 +1,10 @@
 "use client";
 import { Content } from "@/type/content";
-import { Category } from "@/components/list/Category";
-import { formatToKST } from "@/utils/date";
+import Category from "@/components/list/Category";
+import { formatToKST } from "@/utils/formatDate";
 import { useRouter } from "next/navigation";
 
-export const ListItem = ({ content }: { content: Content }) => {
+export default function ListItem({ content }: { content: Content }) {
   const time = content.modifiedAt ? content.modifiedAt : content.createdAt;
   const router = useRouter();
   const handleClick = () => router.push(`/${content.id}`);
@@ -35,4 +35,4 @@ export const ListItem = ({ content }: { content: Content }) => {
       <hr className="border border-[0.5px] border-gray-300" />
     </div>
   );
-};
+}

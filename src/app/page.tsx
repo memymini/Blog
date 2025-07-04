@@ -1,4 +1,4 @@
-import { List } from "@/components/list/List";
+import List from "@/components/list/List";
 
 export default async function Home() {
   const contentsRes = await fetch("http://localhost:3000/mock/contents.json");
