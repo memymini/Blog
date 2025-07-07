@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@next/mdx": "^15.3.5",
+    "@toast-ui/editor": "^3.2.2",
     "dayjs": "^1.11.13",
     "next": "15.3.4",
     "react": "^19.0.0",
