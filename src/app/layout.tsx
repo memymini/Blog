@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Nav from "@/components/Nav";
+import SideBar from "@/components/SideBar";
 import { MswComponent } from "@/components/MswComponent";
 
 const geistSans = Geist({
@@ -30,7 +30,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-row h-full`}
       >
         <MswComponent />
-        <Nav />
+        <SideBar />
         <div className="flex flex-col items-center w-screen ">{children}</div>
       </body>
     </html>

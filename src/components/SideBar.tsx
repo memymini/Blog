@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Profile from "@/components/ui/Profile";
 
-export default function Nav() {
+export default function SideBar() {
   return (
     <div className="flex flex-col w-12 h-screen justify-start items-center shadow-lg gap-5">
       <Link href="/">
