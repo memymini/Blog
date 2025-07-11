@@ -7,3 +7,8 @@ export interface Content {
   category?: string;
   imageUrl?: string;
 }
+
+export interface User {
+  name: string;
+  profile: string;
+}
