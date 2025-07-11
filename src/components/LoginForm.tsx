@@ -4,9 +4,11 @@ import TextForm from "@/components/ui/TextForm";
 import Button from "@/components/ui/Button";
 import { FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { useUserStore } from "@/stores/useUserStore";
 
 export default function LoginForm() {
   const router = useRouter();
+  const setUser = useUserStore((state) => state.setUser);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -24,7 +26,10 @@ export default function LoginForm() {
     if (response.ok) {
       const data = await response.json();
       const token = data.token;
+      const name = data.user.username;
+      const profile = data.user.profile;
       document.cookie = `token=${token}; path=/; max-age=86400`;
+      setUser({ name, profile });
       router.push("/");
     } else {
     }

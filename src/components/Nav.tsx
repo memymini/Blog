@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Profile from "@/components/ui/Profile";
 
 export default function Nav() {
   return (
@@ -10,9 +11,7 @@ export default function Nav() {
           .log
         </p>
       </Link>
-      <div className="flex items-center justify-center rounded-3xl bg-amber-400 w-9 h-9">
-        <img src="/icons/image.svg" />
-      </div>
+      <Profile />
       <div className="flex flex-col gap-5">
         <img src="/icons/page.svg" alt="page icon" className="size-6" />
         <Link href="/admin/new">

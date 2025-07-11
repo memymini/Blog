@@ -13,6 +13,7 @@ const loginHandler = async ({ request }: { request: Request }) => {
         user: {
           id: "1",
           username: "admin",
+          profile: "/images/profile.jpg",
         },
       },
       {
