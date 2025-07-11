@@ -1,4 +1,4 @@
-import { Content } from "@/type/content";
+import { Content } from "@/types/types";
 import MdViewer from "@/components/MdViewer";
 import { formatToKST } from "@/utils/formatDate";
 import { cookies } from "next/headers";

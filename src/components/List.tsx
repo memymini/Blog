@@ -1,4 +1,4 @@
-import { Content } from "@/type/content";
+import { Content } from "@/types/types";
 import ListItem from "@/components/ui/ListItem";
 
 export default function List({ contents }: { contents: Content[] }) {

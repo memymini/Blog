@@ -1,5 +1,5 @@
 "use client";
-import { Content } from "@/type/content";
+import { Content } from "@/types/content";
 import Category from "@/components/ui/Category";
 import { formatToKST } from "@/utils/formatDate";
 import { useRouter } from "next/navigation";
