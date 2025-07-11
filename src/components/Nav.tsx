@@ -15,7 +15,9 @@ export default function Nav() {
       </div>
       <div className="flex flex-col gap-5">
         <img src="/icons/page.svg" alt="page icon" className="size-6" />
-        <img src="/icons/write.svg" alt="write icon" className="size-6" />
+        <Link href="/admin/new">
+          <img src="/icons/write.svg" alt="write icon" className="size-6" />
+        </Link>
       </div>
     </div>
   );
