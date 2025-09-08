@@ -1,17 +1,26 @@
-import List from "@/components/List";
+// import { motion, useScroll, useTransform } from "framer-motion";
+// import Section from "@/components/Section";
+// import { useI18n } from "./[lang]/provider";
+// import { useRef } from "react";
+// import SocialLinks from "@/components/home/SocialLinks";
+// import ProjectSection from "@/components/projects/ProjectSection";
+// import TechSection from "@/components/home/TechSection";
+// import { tech } from "@/lib/techs";
+// import TypewriterLine from "@/components/home/TypewriterLine";
 
-export default async function Home() {
-  const contentsRes = await fetch("http://localhost:3000/mock/contents.json");
-  const contents = await contentsRes.json();
+// const container = {
+//   hidden: { opacity: 0 },
+//   show: { opacity: 1, transition: { staggerChildren: 0.08 } },
+// };
+// const item = {
+//   hidden: { opacity: 0, y: 6 },
+//   show: {
+//     opacity: 1,
+//     y: 0,
+//     transition: { type: "spring", stiffness: 120, damping: 18 },
+//   },
+// };
 
-  return (
-    <div className="w-full lg:w-1/2 bg-white">
-      <div className="w-full h-40 bg-amber-100">
-        <h1>title</h1>
-      </div>
-      <div className="h-[calc(100vh-160px)] overflow-y-scroll scrollbar-none">
-        <List contents={contents} />
-      </div>
-    </div>
-  );
+export default function HomePage() {
+  return <div></div>;
 }

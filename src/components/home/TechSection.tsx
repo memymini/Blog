@@ -3,6 +3,7 @@
 import { TechSectionProps } from "@/lib/types";
 import Image from "next/image";
 import * as React from "react";
+
 import { Marquee } from "@/components/magicui/marquee";
 
 export default function TechSection({ items }: TechSectionProps) {
