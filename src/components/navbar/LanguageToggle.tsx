@@ -1,5 +1,6 @@
 "use client";
-import { useI18n } from "@/providers/I18nProvider";
+
+import { useI18n } from "@/app/[lang]/provider";
 
 export default function LanguageToggle() {
   const { toggle, t } = useI18n();
