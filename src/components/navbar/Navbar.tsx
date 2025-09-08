@@ -4,11 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 import LanguageToggle from "./LanguageToggle";
-import { useI18n } from "@/providers/I18nProvider";
-
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const { t } = useI18n();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -18,10 +15,10 @@ export default function Navbar() {
   }, []);
 
   const sections = [
-    { href: "#about", label: t("nav_about") },
-    { href: "#projects", label: t("nav_projects") },
-    { href: "#experience", label: t("nav_experience") },
-    { href: "#contact", label: t("nav_contact") },
+    { href: "#about", label: "About" },
+    { href: "#projects", label: "Projects" },
+    { href: "#experience", label: "Experiences" },
+    { href: "#contact", label: "Contact" },
   ];
 
   return (
@@ -33,7 +30,7 @@ export default function Navbar() {
       >
         <Link
           href="/"
-          className="font-semibold tracking-tight accent-underline"
+          className="font-semibold tracking-tight accent-underline font-console text-2xl"
         >
           minhee.dev
         </Link>
@@ -54,7 +51,7 @@ export default function Navbar() {
             href="/resume.pdf"
             className="text-sm opacity-80 hover:opacity-100 accent-underline"
           >
-            {t("resume")}
+            resume
           </a>
           <LanguageToggle />
           <ThemeToggle />

@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { VT323, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import SideBar from "@/components/SideBar";
-import { MswComponent } from "@/components/MswComponent";
+
+// console/retro font
+const vt323 = VT323({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-console",
+  display: "swap",
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,17 +27,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: { lang: string };
 }>) {
   return (
-    <html lang="en">
+    <html lang={params.lang}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-row h-full`}
+        className={`${vt323.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <MswComponent />
-        <SideBar />
-        <div className="flex flex-col items-center w-screen ">{children}</div>
+        <main className="min-h-screen">{children}</main>
       </body>
     </html>
   );
