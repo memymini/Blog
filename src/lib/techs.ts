@@ -2,6 +2,26 @@ import { TechIconProps } from "./types";
 
 export const tech: TechIconProps[] = [
   {
+    name: "Github",
+    src: "/icons/github.svg",
+    level: "advanced",
+  },
+  {
+    name: "Gitlab",
+    src: "/icons/gitlab.svg",
+    level: "advanced",
+  },
+  {
+    name: "Notion",
+    src: "/icons/notion.svg",
+    level: "advanced",
+  },
+  {
+    name: "Figma",
+    src: "/icons/figma.svg",
+    level: "advanced",
+  },
+  {
     name: "Next.js",
     src: "/icons/nextdotjs.svg",
     level: "advanced",
