@@ -26,9 +26,9 @@ export default async function LangLayout({
   params,
 }: {
   children: ReactNode;
-  params: { lang: "en" | "ko" };
+  params: Promise<{ lang: "en" | "ko" }>;
 }) {
-  const { lang } = params;
+  const { lang } = await params;
   const dict = await getDictionary(lang);
   return (
     <I18nProvider locale={lang} dict={dict}>

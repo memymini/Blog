@@ -15,17 +15,22 @@ export type Locale = "en" | "ko";
 
 // project types
 export type Link = { label: string; href: string };
+
 export type ImageAsset = { src: string; alt: string };
+
 export type Challenge = {
   title: string;
   problem: string;
-  solution: string;
-  impact?: string;
+  causes: string[];
+  resolution: string[];
+  result?: string;
+  lessons?: string[];
 };
 
 export type ProjectDetail = {
   period?: string;
   role?: string[];
+  teams?: string;
   stack?: string[];
   links?: Link[];
   summary: string;
@@ -48,3 +53,10 @@ export type Project = {
 };
 
 export type Projects = Project[];
+
+export type Job = {
+  role: string;
+  org: string;
+  period: string;
+  bullets: string[];
+};

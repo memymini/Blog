@@ -18,7 +18,7 @@ export default function Navbar() {
     { href: "#about", label: "About" },
     { href: "#projects", label: "Projects" },
     { href: "#experience", label: "Experiences" },
-    { href: "#contact", label: "Contact" },
+    // { href: "#contact", label: "Contact" },
   ];
 
   return (
@@ -47,12 +47,12 @@ export default function Navbar() {
           ))}
         </ul>
         <div className="flex items-center gap-3 py-3">
-          <a
+          {/* <a
             href="/resume.pdf"
             className="text-sm opacity-80 hover:opacity-100 accent-underline"
           >
             resume
-          </a>
+          </a> */}
           <LanguageToggle />
           <ThemeToggle />
         </div>

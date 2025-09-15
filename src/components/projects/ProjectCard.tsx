@@ -4,7 +4,6 @@ import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
-import { useI18n } from "@/app/[lang]/provider";
 
 type CardProps = {
   slug?: string;
@@ -20,7 +19,6 @@ type CardProps = {
 export default function ProjectCard(p: CardProps) {
   const [hovered, setHovered] = useState(false);
   const internalHref = p.slug ? `/${p.locale}/projects/${p.slug}` : undefined;
-  const { t } = useI18n();
   return (
     <motion.article
       className="relative group glass rounded-2xl overflow-hidden transition-transform will-change-transform"

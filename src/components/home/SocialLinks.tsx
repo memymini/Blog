@@ -1,23 +1,18 @@
 "use client";
 
-import { Instagram, Linkedin, Twitter, Github } from "lucide-react";
+import { Instagram, Linkedin, Github } from "lucide-react";
 
 type Props = { className?: string };
 
 export default function SocialLinks({ className = "" }: Props) {
   const links = [
     {
-      href: "https://twitter.com/your-id",
-      label: "X (Twitter)",
-      Icon: Twitter,
-    },
-    {
-      href: "https://instagram.com/your-id",
+      href: "https://instagram.com/minhee0_o",
       label: "Instagram",
       Icon: Instagram,
     },
     {
-      href: "https://www.linkedin.com/in/your-id",
+      href: "https://www.linkedin.com/in/minhee-jung-000417348",
       label: "LinkedIn",
       Icon: Linkedin,
     },

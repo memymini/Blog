@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 
 export function ThemeToggle() {
+  const [hasMounted, setHasMounted] = useState(false);
+
   // 초기값: localStorage → 없으면 시스템 선호
   const [dark, setDark] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
@@ -11,6 +13,10 @@ export function ThemeToggle() {
     if (ls === "light") return false;
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   // 적용 + 저장
   useEffect(() => {
@@ -30,6 +36,10 @@ export function ThemeToggle() {
     mql.addEventListener("change", handler);
     return () => mql.removeEventListener("change", handler);
   }, []);
+
+  if (!hasMounted) {
+    return <div className="p-2 rounded-xl glass w-[36px] h-[36px]" />;
+  }
 
   return (
     <button

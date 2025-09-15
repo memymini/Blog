@@ -2,13 +2,20 @@
 import { notFound } from "next/navigation";
 import ProjectDetailView from "@/components/projects/ProjectDetailView";
 import { Projects } from "@/lib/types";
-import { getDictionary } from "../../dictionaries";
+import { getDictionary } from "@/app/[lang]/dictionaries";
 
 type Props = {
   params: {
     lang: "en" | "ko";
     slug: string;
   };
+};
+
+type PageProps = {
+  params: Promise<{
+    lang: "en" | "ko";
+    slug: string;
+  }>;
 };
 
 // ISR
@@ -21,14 +28,15 @@ export async function generateStaticParams({ params }: Props) {
   return projects.map((p) => ({ slug: p.slug }));
 }
 
-export default async function ProjectPage({ params }: Props) {
-  const dict = await getDictionary(params.lang);
+export default async function ProjectPage({ params }: PageProps) {
+  const awaitedParams = await params;
+  const dict = await getDictionary(awaitedParams.lang);
   const projects = dict.projects as Projects;
-  const project = projects.find((p) => p.slug === params.slug);
+  const project = projects.find((p) => p.slug === awaitedParams.slug);
 
   if (!project || !project.detail) {
-    return notFound();
+    notFound();
   }
 
-  return <ProjectDetailView project={project} locale={params.lang} />;
+  return <ProjectDetailView project={project} />;
 }

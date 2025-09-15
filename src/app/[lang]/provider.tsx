@@ -1,6 +1,6 @@
 // app/[lang]/provider.tsx
 "use client";
-import { createContext, useContext, useMemo } from "react";
+import { createContext, useContext, useMemo, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 type Locale = "en" | "ko";
@@ -25,24 +25,32 @@ export default function I18nProvider({
   const router = useRouter();
   const pathname = usePathname() || "/";
 
-  const t = <T = string,>(k: string): T =>
-    (dict[k] as T) ?? (k as unknown as T);
+  const t = useCallback(
+    <T = string,>(k: string): T => (dict[k] as T) ?? (k as unknown as T),
+    [dict]
+  );
 
-  const setLocale = (next: Locale) => {
-    if (next === locale) return;
-    // 사용자 선택 기억
-    document.cookie = `NEXT_LOCALE=${next}; Path=/; Max-Age=31536000; SameSite=Lax`;
+  const setLocale = useCallback(
+    (next: Locale) => {
+      if (next === locale) return;
+      // 사용자 선택 기억
+      document.cookie = `NEXT_LOCALE=${next}; Path=/; Max-Age=31536000; SameSite=Lax`;
 
-    // /en 또는 /ko 세그먼트를 제거하고 교체
-    const rest = pathname.replace(/^\/(en|ko)(?=\/|$)/, "");
-    router.replace(`/${next}${rest || "/"}`);
-  };
+      // /en 또는 /ko 세그먼트를 제거하고 교체
+      const rest = pathname.replace(/^\/(en|ko)(?=\/|$)/, "");
+      router.replace(`/${next}${rest || "/"}`);
+    },
+    [locale, pathname, router]
+  );
 
-  const toggle = () => setLocale(locale === "en" ? "ko" : "en");
+  const toggle = useCallback(() => setLocale(locale === "en" ? "ko" : "en"), [
+    locale,
+    setLocale,
+  ]);
 
   const value = useMemo(
     () => ({ locale, t, toggle, setLocale }),
-    [locale, dict]
+    [locale, t, toggle, setLocale]
   );
 
   return <I18nCtx.Provider value={value}>{children}</I18nCtx.Provider>;
