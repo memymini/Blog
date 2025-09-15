@@ -196,12 +196,16 @@
         "role": ["Frontend"],
         "teams": "프론트엔드 4명 / 백엔드 2명 / 디자인 1명",
         "links": [
-          { "label": "GitHub", "href": "https://github.com/your-id/modudo" },
-          { "label": "Live", "href": "https://example.com/modudo" }
+          {
+            "label": "GitHub",
+            "href": "https://github.com/CODEIT-FESI-10-5/frontend.git"
+          },
+          { "label": "Live", "href": "https://modudu.vercel.app" }
         ],
-        "summary": "간단한 구조와 반응형 UI, 상태 분리를 강조한 투두 리스트 웹앱.",
+        "summary": "소규모 스터디를 위한 스터디 관리 서비스입니다. 스터디를 생성하여 스터디원을 초대하거나, 스터디에 참여할 수 있습니다. 공동의 스터디 목표를 설정하여 Todo List를 작성하고 다른 스터디원의 진행률을 확인할 수 있습니다. ",
         "responsibilities": [
           "로그인/회원가입, 사이드바, 마이페이지 구현",
+          "반응형 구현",
           "Zustand로 UI 전역 상태 관리",
           "Tanstack Query로 서버 상태/캐시 관리",
           "Vercel 배포"

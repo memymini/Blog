@@ -108,7 +108,7 @@
       "slug": "veribadge",
       "title": "Veribadge",
       "tagline": "Online Qualification Verification Service",
-      "description": "A service to verify qualifications online and use them by linking with various platforms.",
+      "description": "A service that allows users to verify their qualifications online and use them in conjunction with various platforms.",
       "tech": [
         "Next.js",
         "TypeScript",
@@ -120,7 +120,7 @@
       "detail": {
         "period": "2025.08 — 2025.09",
         "role": ["Frontend"],
-        "teamSize": 4,
+        "teams": "1 Frontend / 3 Backend / 1 Planner",
         "links": [
           {
             "label": "GitHub",
@@ -128,52 +128,52 @@
           },
           { "label": "Live", "href": "https://veribadge.vercel.app" }
         ],
-        "summary": "This is a service that allows users to prove their qualifications on social platforms flooded with AI comments and fake engagement. Users can upload certificates (e.g., medical license, income proof) to generate a badge tag. When the generated tag is used in a comment and the browser extension is installed, the tag is converted into a badge for other users to see.",
+        "summary": "A service that allows users to prove their qualifications on social platforms flooded with AI-generated comments and spam bots. Users upload certificates (e.g., medical license, proof of income) to generate a badge tag. When this tag is used in a comment and the browser extension is installed, the tag is converted into a badge for other users to see.",
         "responsibilities": [
-          "Designed routing and set up the development environment based on Next.js App Router",
-          "Managed server state and caching with TanStack Query",
-          "Set up API mocking and development environment with MSW (Mock Service Worker)",
-          "Handled common loading/error states with custom fetch, query, and mutation hooks",
-          "Implemented key features for each page",
-          "Implemented Kakao social login",
-          "Deployed to Vercel"
+          "Designed routing and set up the development environment based on Next.js App Router.",
+          "Managed server state and caching with TanStack Query.",
+          "Set up API mocking and the development environment using MSW (Mock Service Worker).",
+          "Implemented common loading/error handling through custom fetch, query, and mutation functions.",
+          "Implemented key features for each page.",
+          "Implemented Kakao social login.",
+          "Deployed to Vercel."
         ],
         "architecture": [
           "Next.js App Router structure",
-          "State boundary setup with TanStack Query + custom fetch/query/mutation functions",
-          "Separation of development/test environments based on MSW"
+          "Established state boundaries using TanStack Query + custom fetch/query/mutation functions.",
+          "Separated development/testing environments based on MSW."
         ],
         "challenges": [
           {
-            "title": "Deciding on Kakao Login Token Delivery and Parsing Method",
-            "problem": "After Kakao login, the token delivery path was unclear, causing issues where the token couldn't be read at the SSR/middleware stage or was missed during frontend parsing.",
+            "title": "Deciding on Kakao Login Token Transmission and Parsing Method",
+            "problem": "After Kakao login, the token transmission path was unclear, leading to issues where the token couldn't be read during the SSR/middleware stage or was missed during frontend parsing.",
             "causes": [
-              "Frontend cannot access the token when passed in the Body of a redirect response from the backend",
-              "HttpOnly Cookies cannot be shared due to domain constraints",
-              "Parsing issues occurred when using a URL #fragment in the redirect"
+              "Token sent in the Body during backend-to-frontend redirect was inaccessible on the frontend.",
+              "HttpOnly Cookie could not be shared due to domain constraints.",
+              "Parsing issues occurred when using a # fragment in the URL upon redirect."
             ],
             "resolution": [
-              "The initial plan (backend handles login, then an additional request from the frontend) was shelved due to time/implementation costs",
-              "Safely parsed the fragment on the callback page → stored the token → removed the hash using router.replace"
+              "The initial plan (backend processes login, then frontend makes an additional request) was postponed due to time/implementation costs.",
+              "Safely parsed the fragment on the callback page, stored the token, and then removed the hash using router.replace."
             ],
             "lessons": [
-              "Constraints like redirect body invisibility, cookie Domain/SameSite, CORS, and SSR/CSR differences must be considered upfront in token strategy",
-              "Learned the difference between `?query` (server-visible, SSR-friendly) and `#fragment` (client-visible, requires CSR parsing) in OAuth redirects"
+              "Constraints such as hidden redirect bodies, cookie Domain/SameSite attributes, CORS, and SSR/CSR differences must be pre-emptively considered in the token strategy.",
+              "Learned the difference between `?query` vs. `#fragment` in OAuth redirects."
             ]
           },
           {
             "title": "API Call Path Confusion Issue",
-            "problem": "Page navigation via href worked correctly, but a 404 error occurred on refresh.",
+            "problem": "Page navigation via `href` worked correctly, but a 404 error occurred upon refresh.",
             "causes": [
-              "This occurred due to a mismatch between frontend routing (/page path) and the actual server routing.",
-              "In the local dev environment, http://localhost:3000/page is handled by Next.js, but in the deployment environment (or with an incorrect API address), the server tries to find /page directly, causing a 404."
+              "Occurred due to a mismatch between the client-side route (e.g., /page) and the actual server-side route configuration.",
+              "In the local dev environment, `http://localhost:3000/page` is handled by Next.js, but in the production environment, the server tries to find `/page` directly, resulting in a 404."
             ],
             "resolution": [
-              "The issue was resolved by replacing the API call address from localhost to the actual server address."
+              "The issue was resolved by replacing the API call address from `localhost` to the actual server address."
             ],
             "lessons": [
-              "Even if it works in CSR (client-side routing), a refresh (F5) sends an SSR request to the server, so server routing must be configured accordingly",
-              "API paths (/api/...) and page paths (/page) must be distinguished and called with the correct address."
+              "Even if CSR (client-side routing) works, a page refresh (F5) sends an SSR request to the server, so server-side routing must be configured accordingly.",
+              "API paths (e.g., `/api/...`) and page paths (e.g., `/page`) must be distinguished and called with the correct addresses."
             ]
           }
         ],
@@ -194,8 +194,8 @@
     {
       "slug": "modudo",
       "title": "Modudo",
-      "tagline": "Team-Study Based Todo List Service",
-      "description": "A service for creating study groups, setting study goals, and sharing the corresponding Todo List and progress.",
+      "tagline": "Team Study-Based Todo List Service",
+      "description": "A service for creating study groups, setting study goals, and sharing the corresponding Todo Lists and progress.",
       "tech": [
         "Next.js",
         "TypeScript",
@@ -209,15 +209,19 @@
         "role": ["Frontend"],
         "teams": "4 Frontend / 2 Backend / 1 Designer",
         "links": [
-          { "label": "GitHub", "href": "https://github.com/your-id/modudo" },
-          { "label": "Live", "href": "https://example.com/modudo" }
+          {
+            "label": "GitHub",
+            "href": "https://github.com/CODEIT-FESI-10-5/frontend.git"
+          },
+          { "label": "Live", "href": "https://modudu.vercel.app" }
         ],
-        "summary": "A todo list web app emphasizing a simple structure, responsive UI, and state separation.",
+        "summary": "A study management service for small groups. Users can create a study and invite members, or join an existing study. They can set common study goals, create Todo Lists, and check the progress of other members.",
         "responsibilities": [
-          "Implemented login/signup, sidebar, and my page",
-          "Managed global UI state with Zustand",
-          "Managed server state and caching with Tanstack Query",
-          "Deployed to Vercel"
+          "Implemented Login/Signup, Sidebar, and My Page features.",
+          "Implemented responsive design.",
+          "Managed global UI state with Zustand.",
+          "Managed server state and caching with Tanstack Query.",
+          "Deployed to Vercel."
         ],
         "architecture": [
           "FSD (Feature-Sliced Design: entities/features/widgets/pages)",
@@ -226,12 +230,12 @@
         "challenges": [
           {
             "title": "HttpOnly Cookie Domain Mismatch Issue",
-            "problem": "After fetching a token in middleware, the token would disappear when navigating to another page.",
+            "problem": "Encountered an issue where the token would disappear when navigating to another page after being fetched from middleware.",
             "causes": [
-              "The backend server used a subdomain while the frontend used the main domain. The backend set the cookie domain to its subdomain, causing a domain mismatch."
+              "The backend server used a subdomain while the frontend used the main domain, but the backend set the cookie's domain to the subdomain, causing a mismatch."
             ],
             "resolution": [
-              "Adjusted the cookie's Domain attribute to the main domain, making it accessible to all subdomains."
+              "Adjusted the cookie's `Domain` attribute to the main domain, making it accessible across all subdomains."
             ],
             "lessons": [
               "Deepened understanding of login session persistence and domain/cookie policies."
@@ -241,11 +245,11 @@
             "title": "TanStack Query Data Synchronization Issue",
             "problem": "Changes made on the dashboard were not immediately reflected in the sidebar.",
             "causes": [
-              "The sidebar and dashboard used the same data but called different APIs and lacked cache handling.",
-              "The sidebar was located in the root layout, so it did not re-render on page navigation."
+              "The sidebar and dashboard used the same data but called different APIs and lacked proper cache handling.",
+              "The sidebar was located in the root layout, so it didn't re-render on page navigation."
             ],
             "resolution": [
-              "When data on the dashboard changed, invalidated the sidebar-related query with invalidateQuery to synchronize with the latest data."
+              "When data on the dashboard was changed, the related sidebar query was invalidated using `invalidateQuery` to sync with the latest data."
             ],
             "lessons": [
               "Learned the importance of query invalidation and state synchronization to ensure data consistency."
