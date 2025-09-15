@@ -4,8 +4,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 import LanguageToggle from "./LanguageToggle";
+import { useI18n } from "@/app/[lang]/provider";
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const { t, locale } = useI18n();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -15,9 +18,9 @@ export default function Navbar() {
   }, []);
 
   const sections = [
-    { href: "#about", label: "About" },
-    { href: "#projects", label: "Projects" },
-    { href: "#experience", label: "Experiences" },
+    { href: `/${locale}/#about`, label: t("nav_about") },
+    { href: `/${locale}/#projects`, label: t("nav_projects") },
+    { href: `/${locale}/#experience`, label: t("nav_experience") },
     // { href: "#contact", label: "Contact" },
   ];
 
@@ -37,12 +40,12 @@ export default function Navbar() {
         <ul className="hidden md:flex items-center gap-6 text-sm">
           {sections.map((s) => (
             <li key={s.href}>
-              <a
+              <Link
                 href={s.href}
                 className="opacity-80 hover:opacity-100 accent-underline"
               >
                 {s.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
