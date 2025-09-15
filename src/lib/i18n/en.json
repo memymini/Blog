@@ -4,40 +4,111 @@
   "nav_experience": "Experience",
   "nav_contact": "Contact",
   "resume": "Resume",
-  "hero_title": "Frontend Portfolio",
-  "hero_sub": "I build fast, accessible web apps with delightful micro-interactions. Simple structure, strong details.",
+  "hero_title": "Portfolio",
+  "hero_sub": "A developer who contemplates efficient code and optimized structures, solving problems through communication.",
   "cta_projects": "View Projects",
-  "cta_contact": "Contact",
-  "tech_title": "Tech",
-  "about_title": "About",
-  "about_p1": "I’m a frontend engineer focused on Next.js and TypeScript. I care about clean architecture (FSD), performance, and user-centric details. Recently I’ve been exploring sports data visualization.",
+  "cta_contact": "Contact Me",
+  "tech_title": "Tech Stack",
+  "about_title": "About Me",
+  "about_p1": "I am a developer who meticulously prepares for not only the main features but also for exceptional cases. I am highly interested in optimization through code structure and refactoring, and I also have a solid understanding of server operations. Above all, I value solving problems and growing together through communication.",
   "highlights": "Highlights",
-  "highlight_1": "FSD architecture in production projects",
-  "highlight_2": "Authentication & middleware patterns",
+  "highlight_1": "FSD Architecture in a Live Service",
+  "highlight_2": "Authentication/Middleware Patterns",
   "highlight_3": "CI/CD with GitHub Actions",
   "projects_title": "Projects",
   "experience_title": "Experience",
-  "job1_role": "Frontend Engineer (Intern)",
-  "job1_org": "Hanwha Life IT",
-  "job1_period": "2025.07 — Present",
-  "job1_b1": "Built internal dashboards with Next.js",
-  "job1_b2": "Improved performance and DX",
-  "job2_role": "Student Projects",
-  "job2_org": "Dongguk Univ.",
-  "job2_period": "2023 — 2025",
-  "job2_b1": "Multiple team projects",
-  "job2_b2": "Focus on clean UI and accessibility",
+  "jobs": [
+    {
+      "role": "Goormthon",
+      "org": "Goormthon Univ",
+      "period": "2025.08 — 2025.09",
+      "bullets": [
+        "Developed 'Veribadge', an online qualification verification service"
+      ]
+    },
+    {
+      "role": "Frontend Bootcamp (FESI)",
+      "org": "Codeit",
+      "period": "2025.07 — 2025.08",
+      "bullets": [
+        "Developed a team-study based Todo List web service",
+        "Experienced collaboration with backend developers and designers"
+      ]
+    },
+    {
+      "role": "Capstone Design",
+      "org": "Dongguk University",
+      "period": "2025.03 — 2025.12",
+      "bullets": [
+        "Developed an ITSM (Service Desk) system migration project to MSW"
+      ]
+    },
+    {
+      "role": "Exchange Student",
+      "org": "Fontys University of Applied Sciences",
+      "period": "2024.09 — 2025.01",
+      "bullets": [
+        "Developed a mobile solution to enhance user engagement for Efteling theme park",
+        "Developed a mobile platform for handling discarded toys at home",
+        "Developed a quiz-based app to address cultural polarization issues"
+      ]
+    },
+    {
+      "role": "Campusthon",
+      "org": "Dongguk University",
+      "period": "2024.08",
+      "bullets": [
+        "Developed the frontend for 'O-Gong-Challenge', a daily challenge app for students with empty class slots (Grand Prize)"
+      ]
+    },
+    {
+      "role": "Open Source SW Project",
+      "org": "Dongguk University",
+      "period": "2024.03 — 2024.06",
+      "bullets": [
+        "Developed 'GENTLE (Generate Neutral News)', a service providing politically neutral news articles"
+      ]
+    },
+    {
+      "role": "Toy Project",
+      "org": "LG Science Park",
+      "period": "2023.09 — 2023.10",
+      "bullets": [
+        "Participated in developing 'Byeolse', a blockchain-based last will and testament service"
+      ]
+    },
+    {
+      "role": "SWF (Seoul Web3 Festival)",
+      "org": "Seoul Metropolitan Government",
+      "period": "2023.07 — 2023.08",
+      "bullets": [
+        "Participated in developing 'GibuRun', a blockchain-based donation service"
+      ]
+    }
+  ],
   "contact_title": "Contact",
-  "contact_blurb": "Open to internships and junior roles. Let’s build something people love.",
-  "contact_email": "Email me",
+  "contact_blurb": "I'm open to intern/junior positions. I want to build products that people love, together.",
+  "contact_email": "Send Email",
   "contact_github": "GitHub",
-  "lang_toggle": "한국어",
+  "lang_toggle": "KR",
+  "detail_back_to_projects": "← Back to Projects",
+  "detail_team_size": "Team of {size}",
+  "detail_summary_title": "Summary",
+  "detail_built_title": "Responsibilities",
+  "detail_arch_title": "Architecture",
+  "detail_challenges_title": "Challenges & Solutions",
+  "detail_problem": "Problem",
+  "detail_cause": "Cause",
+  "detail_solution": "Solution",
+  "detail_impact": "Result",
+  "detail_lessons": "Lessons Learned",
+  "detail_screenshots_title": "Screenshots",
   "projects": [
     {
       "slug": "veribadge",
       "title": "Veribadge",
-      "tagline": "온라인 자격 인증 웹",
-      "description": "온라인상에서 자격을 인증하고 여러 플랫폼과 연동해 사용할 수 있는 서비스입니다.",
+      "tagline": "Online Qualification Verification Service",
+      "description": "A service to verify qualifications online and use them by linking with various platforms.",
       "tech": [
         "Next.js",
         "TypeScript",
@@ -49,6 +120,7 @@
       "detail": {
         "period": "2025.08 — 2025.09",
         "role": ["Frontend"],
+        "teamSize": 4,
         "links": [
           {
             "label": "GitHub",
@@ -56,140 +128,133 @@
           },
           { "label": "Live", "href": "https://veribadge.vercel.app" }
         ],
-        "summary": "간단한 구조와 반응형 UI, 상태 분리를 강조한 투두 리스트 웹앱.",
+        "summary": "This is a service that allows users to prove their qualifications on social platforms flooded with AI comments and fake engagement. Users can upload certificates (e.g., medical license, income proof) to generate a badge tag. When the generated tag is used in a comment and the browser extension is installed, the tag is converted into a badge for other users to see.",
         "responsibilities": [
-          "FSD 구조 설계 및 폴더링",
-          "Zustand로 UI 전역 상태 관리",
-          "React Query로 서버 상태/캐시 관리",
-          "접근성(키보드 내비게이션/aria) 개선"
+          "Designed routing and set up the development environment based on Next.js App Router",
+          "Managed server state and caching with TanStack Query",
+          "Set up API mocking and development environment with MSW (Mock Service Worker)",
+          "Handled common loading/error states with custom fetch, query, and mutation hooks",
+          "Implemented key features for each page",
+          "Implemented Kakao social login",
+          "Deployed to Vercel"
         ],
         "architecture": [
-          "FSD (entities/features/widgets/pages)",
-          "React Query + Zustand 상태 경계",
-          "다국어 라우팅 /[lang] 세그먼트"
+          "Next.js App Router structure",
+          "State boundary setup with TanStack Query + custom fetch/query/mutation functions",
+          "Separation of development/test environments based on MSW"
         ],
         "challenges": [
           {
-            "title": "생성 직후 목록 반영 지연",
-            "problem": "생성 후 리스트가 즉시 갱신되지 않아 사용자 혼란 발생.",
-            "solution": "mutation 성공 시 관련 queryKey 무효화 + 낙관적 업데이트 적용.",
-            "impact": "체감 응답성 향상 및 불만 감소."
+            "title": "Deciding on Kakao Login Token Delivery and Parsing Method",
+            "problem": "After Kakao login, the token delivery path was unclear, causing issues where the token couldn't be read at the SSR/middleware stage or was missed during frontend parsing.",
+            "causes": [
+              "Frontend cannot access the token when passed in the Body of a redirect response from the backend",
+              "HttpOnly Cookies cannot be shared due to domain constraints",
+              "Parsing issues occurred when using a URL #fragment in the redirect"
+            ],
+            "resolution": [
+              "The initial plan (backend handles login, then an additional request from the frontend) was shelved due to time/implementation costs",
+              "Safely parsed the fragment on the callback page → stored the token → removed the hash using router.replace"
+            ],
+            "lessons": [
+              "Constraints like redirect body invisibility, cookie Domain/SameSite, CORS, and SSR/CSR differences must be considered upfront in token strategy",
+              "Learned the difference between `?query` (server-visible, SSR-friendly) and `#fragment` (client-visible, requires CSR parsing) in OAuth redirects"
+            ]
+          },
+          {
+            "title": "API Call Path Confusion Issue",
+            "problem": "Page navigation via href worked correctly, but a 404 error occurred on refresh.",
+            "causes": [
+              "This occurred due to a mismatch between frontend routing (/page path) and the actual server routing.",
+              "In the local dev environment, http://localhost:3000/page is handled by Next.js, but in the deployment environment (or with an incorrect API address), the server tries to find /page directly, causing a 404."
+            ],
+            "resolution": [
+              "The issue was resolved by replacing the API call address from localhost to the actual server address."
+            ],
+            "lessons": [
+              "Even if it works in CSR (client-side routing), a refresh (F5) sends an SSR request to the server, so server routing must be configured accordingly",
+              "API paths (/api/...) and page paths (/page) must be distinguished and called with the correct address."
+            ]
           }
         ],
         "images": [
-          { "src": "/images/veribadge.png", "alt": "veribadge 랜딩페이지" }
+          {
+            "src": "/images/veribadge-1.png",
+            "alt": "Veribadge badge management page"
+          },
+          { "src": "/images/veribadge-2.png", "alt": "Veribadge dashboard" },
+          {
+            "src": "/images/veribadge-3.png",
+            "alt": "Veribadge verification center"
+          },
+          { "src": "/images/veribadge-4.png", "alt": "Veribadge file upload" }
         ]
       }
     },
     {
       "slug": "modudo",
       "title": "Modudo",
-      "tagline": "Todo List Web",
-      "description": "Swipe to wish. Reduce toy waste by matching families who want to exchange toys.",
-      "tech": ["Next.js", "TypeScript", "Tailwind", "Zustand", "React Query"],
+      "tagline": "Team-Study Based Todo List Service",
+      "description": "A service for creating study groups, setting study goals, and sharing the corresponding Todo List and progress.",
+      "tech": [
+        "Next.js",
+        "TypeScript",
+        "Tailwind",
+        "Zustand",
+        "Tanstack Query"
+      ],
       "image": "/images/modudo.png",
       "detail": {
-        "period": "2025.03 — 2025.05",
+        "period": "2025.07 — 2025.08",
         "role": ["Frontend"],
+        "teams": "4 Frontend / 2 Backend / 1 Designer",
         "links": [
           { "label": "GitHub", "href": "https://github.com/your-id/modudo" },
           { "label": "Live", "href": "https://example.com/modudo" }
         ],
-        "summary": "간단한 구조와 반응형 UI, 상태 분리를 강조한 투두 리스트 웹앱.",
+        "summary": "A todo list web app emphasizing a simple structure, responsive UI, and state separation.",
         "responsibilities": [
-          "FSD 구조 설계 및 폴더링",
-          "Zustand로 UI 전역 상태 관리",
-          "React Query로 서버 상태/캐시 관리",
-          "접근성(키보드 내비게이션/aria) 개선"
+          "Implemented login/signup, sidebar, and my page",
+          "Managed global UI state with Zustand",
+          "Managed server state and caching with Tanstack Query",
+          "Deployed to Vercel"
         ],
         "architecture": [
-          "FSD (entities/features/widgets/pages)",
-          "React Query + Zustand 상태 경계",
-          "다국어 라우팅 /[lang] 세그먼트"
+          "FSD (Feature-Sliced Design: entities/features/widgets/pages)",
+          "State management with React Query + Zustand"
         ],
         "challenges": [
           {
-            "title": "생성 직후 목록 반영 지연",
-            "problem": "생성 후 리스트가 즉시 갱신되지 않아 사용자 혼란 발생.",
-            "solution": "mutation 성공 시 관련 queryKey 무효화 + 낙관적 업데이트 적용.",
-            "impact": "체감 응답성 향상 및 불만 감소."
+            "title": "HttpOnly Cookie Domain Mismatch Issue",
+            "problem": "After fetching a token in middleware, the token would disappear when navigating to another page.",
+            "causes": [
+              "The backend server used a subdomain while the frontend used the main domain. The backend set the cookie domain to its subdomain, causing a domain mismatch."
+            ],
+            "resolution": [
+              "Adjusted the cookie's Domain attribute to the main domain, making it accessible to all subdomains."
+            ],
+            "lessons": [
+              "Deepened understanding of login session persistence and domain/cookie policies."
+            ]
+          },
+          {
+            "title": "TanStack Query Data Synchronization Issue",
+            "problem": "Changes made on the dashboard were not immediately reflected in the sidebar.",
+            "causes": [
+              "The sidebar and dashboard used the same data but called different APIs and lacked cache handling.",
+              "The sidebar was located in the root layout, so it did not re-render on page navigation."
+            ],
+            "resolution": [
+              "When data on the dashboard changed, invalidated the sidebar-related query with invalidateQuery to synchronize with the latest data."
+            ],
+            "lessons": [
+              "Learned the importance of query invalidation and state synchronization to ensure data consistency."
+            ]
           }
         ],
         "images": [
-          { "src": "/images/modudo.png", "alt": "Modudo 대시보드" },
-          { "src": "/images/modudo.png", "alt": "Modudo 상세 화면" }
-        ]
-      }
-    },
-    {
-      "slug": "study-dashboard",
-      "title": "Study Dashboard",
-      "tagline": "Goal tracking for study groups",
-      "description": "Feature-Sliced dashboard with auth, role, and goal tracking.",
-      "tech": ["Next.js", "TypeScript", "Tailwind", "React Query", "Zustand"],
-      "detail": {
-        "period": "2025.01 — 2025.03",
-        "role": ["Frontend", "Infra"],
-        "links": [
-          { "label": "GitHub", "href": "https://github.com/your-id/study" }
-        ],
-        "summary": "스터디 권한/역할/목표 진행을 한 화면에서 관리하는 대시보드.",
-        "responsibilities": [
-          "목표 보드/필터/검색 컴포넌트",
-          "JWT 인증 및 라우팅 가드",
-          "CI/CD (GitHub Actions) 구성"
-        ],
-        "architecture": [
-          "SSR/CSR 혼합 렌더링",
-          "Query Key 규약과 invalidate 전략"
-        ],
-        "challenges": [
-          {
-            "title": "쿼리 키 충돌로 캐시 오염",
-            "problem": "여러 목록이 동일 키를 사용해 필터 변경이 반영되지 않음.",
-            "solution": "queryKey 유틸(goalQueryKeys.list(studyId, filters)) 도입.",
-            "impact": "캐시 일관성 확보, 디버깅 시간 단축."
-          }
-        ],
-        "images": [{ "src": "/projects/study-1.png", "alt": "Study 대시보드" }]
-      }
-    },
-    {
-      "slug": "wishntoss",
-      "title": "wishntoss",
-      "tagline": "Toy exchange app",
-      "description": "Swipe-based matching to reduce toy waste by exchanging.",
-      "tech": ["Next.js", "TypeScript", "Tailwind", "Zustand", "React Query"],
-      "image": "/images/wishntoss-cover.png",
-      "detail": {
-        "period": "2024.03 — 2024.08",
-        "role": ["Frontend", "Feature owner"],
-        "links": [
-          { "label": "Live", "href": "https://example.com/wishntoss" },
-          { "label": "GitHub", "href": "https://github.com/your-id/wishntoss" }
-        ],
-        "summary": "스와이프 UX로 장난감 교환 상대를 매칭해 낭비를 줄이는 앱.",
-        "responsibilities": [
-          "홈/디테일/프로필/채팅 핵심 플로우",
-          "이미지 업로드/최적화",
-          "접근성 개선"
-        ],
-        "architecture": [
-          "FSD 모듈화",
-          "React Query(서버 상태) / Zustand(UI 상태) 분리",
-          "미들웨어 라우팅 가드"
-        ],
-        "challenges": [
-          {
-            "title": "이미지 업로드 미리보기 지연",
-            "problem": "FileReader 비동기 타이밍 문제로 썸네일 표시가 지연됨.",
-            "solution": "미리보기는 base64 즉시 반영, 서버 업로드는 분리 + 낙관적 업데이트.",
-            "impact": "응답성 향상, 실패 시 롤백으로 안정성 확보."
-          }
-        ],
-        "images": [
-          { "src": "/projects/wishntoss-1.png", "alt": "wishntoss 홈" },
-          { "src": "/projects/wishntoss-2.png", "alt": "wishntoss 상세" }
+          { "src": "/images/modudo-1.png", "alt": "Modudo dashboard" },
+          { "src": "/images/modudo-2.png", "alt": "Modudo my page" }
         ]
       }
     }
