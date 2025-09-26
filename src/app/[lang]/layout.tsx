@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import I18nProvider from "./provider";
 import { getDictionary } from "./dictionaries";
 import Navbar from "@/components/navbar/Navbar";
+import PageTransition from "@/components/PageTransition";
 
 // export default async function LangLayout({
 //   children,
@@ -32,8 +33,7 @@ export default async function LangLayout({
   const dict = await getDictionary(lang);
   return (
     <I18nProvider locale={lang} dict={dict}>
-      <Navbar />
-      {children}
+      <PageTransition>{children}</PageTransition>
     </I18nProvider>
   );
 }

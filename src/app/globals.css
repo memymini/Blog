@@ -1,6 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+
+@theme {
+  --font-anton: var(--font-anton), sans-serif;
+  --font-console: var(--font-console), monospace;
+  --font-geist-sans: var(--font-geist-sans), sans-serif;
+  --font-geist-mono: var(--font-geist-mono), monospace;
+}
 /* ===== Theme tokens ===== */
+
 /* Light (default) */
 :root {
   --bg: #f8fafc;

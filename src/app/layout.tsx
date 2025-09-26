@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
-import { VT323, Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Anton } from "next/font/google";
 import "./globals.css";
 
 // console/retro font
-const vt323 = VT323({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-console",
-  display: "swap",
-});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,6 +12,13 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const anton = Anton({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-anton",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -34,11 +35,12 @@ export default async function RootLayout({
 }>) {
   const { lang } = await params;
   return (
-    <html lang={lang}>
-      <body
-        className={`${vt323.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <main className="min-h-screen">{children}</main>
+    <html
+      lang={lang}
+      className={`${geistSans.variable} ${geistMono.variable} ${anton.variable}`}
+    >
+      <body>
+        <main className="min-h-screen w-screen">{children}</main>
       </body>
     </html>
   );
