@@ -43,7 +43,7 @@ export function ThemeToggle() {
 
   return (
     <button
-      className="p-2 rounded-xl glass hover:bg-white/10"
+      className="rounded-xl glass hover:bg-white/10 w-9 h-9 flex items-center justify-center"
       onClick={() => setDark(!dark)}
       aria-label="Toggle theme"
       title="Toggle theme"

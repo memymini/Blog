@@ -7,7 +7,7 @@ export default function LanguageToggle() {
   return (
     <button
       onClick={toggle}
-      className="px-3 py-1 rounded-xl glass text-sm hover:bg-white/10"
+      className="rounded-xl glass text-sm hover:bg-white/10 w-9 h-9"
       aria-label="Toggle language"
       title="Toggle language"
     >
