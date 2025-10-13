@@ -30,7 +30,7 @@ const nextConfig: NextConfig = {
     return config;
   },
   /* config options here */
-  allowedDevOrigins: ["http://localhost:3000"],
+  allowedDevOrigins: ["http://localhost:3000", "https://*"],
 };
 
 export default nextConfig;
