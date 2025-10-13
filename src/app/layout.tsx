@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Anton } from "next/font/google";
+import { Geist, Geist_Mono, Anton, Black_Han_Sans } from "next/font/google";
 import "./globals.css";
 
 // console/retro font
@@ -21,6 +21,13 @@ const anton = Anton({
   display: "swap",
 });
 
+const blackHanSans = Black_Han_Sans({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-black-han-sans",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "minhee.dev",
   description: "frontend developer protfolio",
@@ -37,7 +44,7 @@ export default async function RootLayout({
   return (
     <html
       lang={lang}
-      className={`${geistSans.variable} ${geistMono.variable} ${anton.variable}`}
+      className={`${geistSans.variable} ${blackHanSans.variable} ${geistMono.variable} ${anton.variable}`}
     >
       <body>
         <main className="min-h-screen w-screen">{children}</main>

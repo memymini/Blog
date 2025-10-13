@@ -6,9 +6,9 @@
   --font-console: var(--font-console), monospace;
   --font-geist-sans: var(--font-geist-sans), sans-serif;
   --font-geist-mono: var(--font-geist-mono), monospace;
+  --font-black-han-sans: var(--font-black-han-sans), sans-serif;
 }
 /* ===== Theme tokens ===== */
-
 /* Light (default) */
 :root {
   --bg: #f8fafc;
