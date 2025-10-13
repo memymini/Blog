@@ -1,103 +1,45 @@
-"use client";
-import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
 import Image from "next/image";
-
-type CardProps = {
-  slug?: string;
-  title: string;
-  tagline: string;
-  description: string;
-  tech: string[];
-  href?: string;
-  image?: string;
-  locale: "en" | "ko";
-};
-
-export default function ProjectCard(p: CardProps) {
-  const [hovered, setHovered] = useState(false);
-  const internalHref = p.slug ? `/${p.locale}/projects/${p.slug}` : undefined;
+import Link from "next/link";
+export function ProjectCard({
+  href,
+  image,
+  alt,
+  project,
+}: {
+  href: string;
+  image: string;
+  alt: string;
+  project: { title: string; tagline: string; tech: string[] };
+}) {
   return (
-    <motion.article
-      className="relative group glass rounded-2xl overflow-hidden transition-transform will-change-transform"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      animate={
-        hovered
-          ? { rotateX: -1.2, rotateY: 1.2, scale: 1.01 }
-          : { rotateX: 0, rotateY: 0, scale: 1 }
-      }
-      transition={{ type: "spring", stiffness: 200, damping: 18 }}
-      style={{ transformStyle: "preserve-3d" }}
+    <Link
+      href={href}
+      className="relative h-full rounded-xl flex items-center justify-center flex-col w-full min-w-full sm:min-w-100 max-h-150 p-10 overflow-hidden"
     >
-      {/* 1) 스트레치 링크: 카드 전체를 클릭 가능하게 만드는 '단 하나의' 앵커 */}
-      {internalHref ? (
-        <Link
-          href={internalHref}
-          className="absolute inset-0 z-10"
-          aria-label={`${p.title} details`}
-        />
-      ) : p.href ? (
-        <a
-          href={p.href}
-          target="_blank"
-          rel="noreferrer"
-          className="absolute inset-0 z-10"
-          aria-label={`${p.title} external`}
-        />
-      ) : null}
-
-      {/* 2) 외부 링크 버튼 (내부 상세가 있는 경우에만 별도 아이콘 버튼 노출) */}
-      {p.slug && p.href && (
-        <a
-          href={p.href}
-          target="_blank"
-          rel="noreferrer"
-          className="absolute z-20 top-3 right-3 p-2 rounded-xl border border-[var(--glass-border)]
-                     bg-[color-mix(in_srgb,var(--fg)_5%,transparent)] hover:bg-[color-mix(in_srgb,var(--fg)_8%,transparent)]"
-          onClick={(e) => e.stopPropagation()} // 내부 링크 캡쳐 방지
-          aria-label="Open external link"
-        >
-          <ArrowUpRight size={18} className="opacity-90" />
-        </a>
-      )}
-
-      {/* 카드 본문 */}
-      <div className="relative h-48 w-full bg-white/5">
-        {p.image ? (
-          <Image src={p.image} alt={p.title} fill className="object-cover" />
-        ) : (
-          <div className="h-full w-full grid place-items-center opacity-60">
-            No image
+      <Image
+        src={image}
+        alt={alt}
+        fill
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+      <div className="absolute inset-0 bg-black/70 hover:bg-black/80 p-10">
+        <div className="relative z-10 text-white flex flex-col h-full justify-between items-start">
+          <div>
+            <h2 className="text-5xl lg:text-6xl font-bold">{project.title}</h2>
+            <p className="text-2xl font-medium">{project.tagline}</p>
           </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-      </div>
-
-      <div className="p-5 flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold">{p.title}</h3>
-          {/* 화살표 아이콘은 이제 단순 표시 (외부 링크 버튼은 위에 따로 있음) */}
-          <ArrowUpRight
-            className="opacity-60 group-hover:opacity-100"
-            size={18}
-          />
+          <div className="mt-3 flex flex-wrap gap-2">
+            {project.tech.map((tech) => (
+              <span
+                key={tech}
+                className="text-xs px-2 py-1 rounded-full bg-white/20 border border-[var(--glass-border)]"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
         </div>
-        <p className="text-sm opacity-80">{p.tagline}</p>
-        <p className="text-sm opacity-70">{p.description}</p>
-        <ul className="flex flex-wrap gap-2 mt-2">
-          {p.tech.map((t) => (
-            <li
-              key={t}
-              className="text-xs px-2 py-1 rounded-full bg-white/5 border border-[var(--glass-border)]"
-            >
-              {t}
-            </li>
-          ))}
-        </ul>
       </div>
-    </motion.article>
+    </Link>
   );
 }
