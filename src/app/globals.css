@@ -7,6 +7,10 @@
   --font-geist-sans: var(--font-geist-sans), sans-serif;
   --font-geist-mono: var(--font-geist-mono), monospace;
   --font-black-han-sans: var(--font-black-han-sans), sans-serif;
+  --font-do-hyeon: var(--font-do-hyeon), sans-serif;
+}
+html[lang="en"] {
+  font-family: var(--font-anton), sans-serif;
 }
 /* ===== Theme tokens ===== */
 /* Light (default) */
@@ -96,7 +100,7 @@
 /* Dark */
 .dark {
   --bg: #0b0c10;
-  --fg: #e8ecf1;
+  --fg: rgba(232, 236, 241, 0.88);
 
   --brand: #6b8afd;
   --accent: #63bfa7;
