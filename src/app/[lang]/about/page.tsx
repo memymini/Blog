@@ -1,74 +1,68 @@
+import { cn } from "@/lib/utils";
 import Image from "next/image";
-export default function AboutPage() {
+import { getDictionary } from "../dictionaries";
+export default async function AboutPage({
+  params,
+}: {
+  params: { lang: string };
+}) {
+  const { lang } = await params;
+  const dict = await getDictionary(lang);
+  const { about } = dict;
   return (
     <div className="flex h-screen w-full flex-col lg:p-16 p-10 lg:gap-8 gap-4 overflow-y-auto">
-      <h1 className="font-anton max-w-9xl lg:text-9xl text-[10vw] text-center xl:text-start">
-        ABOUT
+      <h2 className="font-bold text-2xl md:text-3xl 2xl:text-4xl text-center xl:text-start">
+        {dict.role}
+      </h2>
+      <h1
+        className={cn(
+          "max-w-9xl lg:text-9xl text-[10vw] text-center xl:text-start",
+          lang == "en" ? "font-anton" : "font-do-hyeon"
+        )}
+      >
+        {dict.name}
       </h1>
-      <div className="flex gap-8 2xl:gap-16 flex-col xl:flex-row items-center">
-        <div className="relative w-full max-w-150 h-auto aspect-[4/5]">
+      <div className="flex gap-8 2xl:gap-16 flex-col xl:flex-row xl:items-start items-center px-10 xl:px-0">
+        <div className="relative w-full max-w-132 h-auto aspect-[4/5] rounded-lg">
           <Image
             src="/images/me.jpeg"
             alt="profile"
             fill
-            className="object-cover"
+            className="object-cover rounded-lg"
           />
         </div>
         <div className="flex flex-col gap-8 xl:flex-1">
-          <section id="about-header" className="flex flex-col">
-            <h2 className="font-bold text-2xl md:text-3xl 2xl:text-4xl text-center xl:text-start">
-              Web Developer
-            </h2>
-            <h2 className="font-bold text-4xl md:text-5xl 2xl:text-6xl text-center xl:text-start">
-              MINHEE JUNG
-            </h2>
-          </section>
           <section id="intro">
-            <h2 className="font-bold text-2xl xl:text-2xl mb-2 ">
-              불가능을 가능하게 만드는, 도전을 즐기는 개발자입니다!
+            <h2 className="font-black text-2xl md:text-3xl text-center xl:text-start 2xl:text-4xl mb-2 ">
+              {about.intro.title}
             </h2>
-            <ul className="flex flex-col gap-3 text-md 2xl:text-md">
-              <li>
-                • 상황에 맞게 <strong>AI를 활용</strong>하여 문제를 효율적으로
-                해결합니다.
-              </li>
-              <li>
-                • <strong>예외처리와 테스트</strong>에 진심입니다.
-              </li>
-              <li>
-                • 협업을 할 때에 <strong>구조와 컨벤션을 지키는 것</strong>을
-                중요하게 생각합니다.
-              </li>
-              <li>
-                • 새로운 환경에서도 <strong>빠르게 적응</strong>합니다.
-              </li>
-            </ul>
+            <div className="flex flex-col gap-4 text-md 2xl:text-md max-w-200 text-justify">
+              {about.intro.paragraphs.map((paragraph, idx) => (
+                <p key={idx} dangerouslySetInnerHTML={{ __html: paragraph }} />
+              ))}
+            </div>
           </section>
 
           <div className="grid xl:grid-cols-2 gap-8">
             <section id="education">
               <h2 className="font-bold text-2xl md:text-3xl 2xl:text-4xl mb-2 ">
-                Education
+                {about.education.title}
               </h2>
               <ul className="flex flex-col gap-3">
-                <li className="flex flex-col">
-                  <span className="font-semibold text-xl">동국대학교</span>
-                  <div className="text-gray-600 text-md md:text-md">
-                    컴퓨터공학전공 · 2022.03 - 2026.02 (졸업예정)
-                  </div>
-                </li>
-                <li className="flex flex-col">
-                  <span className="font-semibold text-xl">코드잇</span>
-                  <div className="text-gray-600 text-md md:text-md">
-                    프론트엔드 부트캠프 단기심화 수료 · 2025.07 - 2025.08
-                  </div>
-                </li>
+                {about.education.items.map((item) => (
+                  <li className="flex flex-col" key={item.institution}>
+                    <span className="font-semibold text-xl">
+                      {item.institution}
+                    </span>
+                    <div className="text-md md:text-md">{item.description}</div>
+                  </li>
+                ))}
               </ul>
             </section>
 
             <section id="tech stack">
               <h2 className="font-bold text-2xl md:text-3xl 2xl:text-4xl mb-2">
-                Tech Stack
+                {about.tech_title}
               </h2>
               <div className="flex flex-wrap gap-4 mt-4 ">
                 <Image
@@ -91,7 +85,7 @@ export default function AboutPage() {
                   height={30}
                 />
                 <Image
-                  src="/icons/nextdotjs.svg"
+                  src="/icons/nextjs.svg"
                   alt="Next.js"
                   width={30}
                   height={30}
@@ -119,7 +113,7 @@ export default function AboutPage() {
 
             <section id="collaboration tools">
               <h2 className="font-bold text-2xl md:text-3xl 2xl:text-4xl mb-2">
-                Collaboration Tools
+                {about.collaboration_title}
               </h2>
               <div className="flex flex-wrap gap-4 mt-4">
                 <Image
@@ -129,7 +123,7 @@ export default function AboutPage() {
                   height={30}
                 />
                 <Image
-                  src="/icons/github.svg"
+                  src="/icons/github.png"
                   alt="Github"
                   width={30}
                   height={30}
@@ -151,7 +145,7 @@ export default function AboutPage() {
 
             <section id="ai tools">
               <h2 className="font-bold text-2xl md:text-3xl 2xl:text-4xl mb-2">
-                AI Tools
+                {about.ai_title}
               </h2>
               <div className="flex flex-wrap gap-4 mt-4">
                 <Image
@@ -184,10 +178,10 @@ export default function AboutPage() {
 
           <section id="tmi">
             <h2 className="font-bold text-2xl md:text-3xl 2xl:text-4xl mb-2 ">
-              Things what I like...
+              {about.likes.title}
             </h2>
-            <p className="text-lg 2xl:text-lg font-semibold">
-              고양이🐱, 요리🍳, 운동💪, 여행✈️, 자전거🚲
+            <p className="text-lg 2xl:text-lg">
+              {about.likes.items.join(", ")}
             </p>
           </section>
         </div>
