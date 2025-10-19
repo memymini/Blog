@@ -37,6 +37,7 @@ export type ProjectDetail = {
   responsibilities: string[];
   architecture?: string[];
   challenges: Challenge[];
+  demo: string;
   images?: ImageAsset[];
 };
 
