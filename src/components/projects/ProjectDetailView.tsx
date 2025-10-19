@@ -1,17 +1,18 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 import { Project, ProjectDetail } from "@/lib/types";
 import { useI18n } from "@/app/[lang]/provider";
 import { ChevronDown } from "lucide-react";
+import Image from "next/image";
+import ReactMarkdown from "react-markdown";
 
 export default function ProjectDetailView({ project }: { project: Project }) {
   const { t } = useI18n();
   const d: ProjectDetail = project.detail;
   return (
-    <div className="mx-auto max-w-5xl px-4 py-28">
+    <div className="flex min-h-screen h-full w-full flex-col lg:p-20 p-10">
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: 8 }}
@@ -25,7 +26,7 @@ export default function ProjectDetailView({ project }: { project: Project }) {
         >
           {t("detail_back_to_projects")}
         </Link>
-        <h1 className="mt-3 text-3xl md:text-4xl font-semibold tracking-tight">
+        <h1 className="font-black max-w-9xl lg:text-9xl text-[10vw] text-start">
           {project.title}
         </h1>
         <div className="mt-3 flex flex-wrap items-center gap-3 text-sm opacity-80">
@@ -74,141 +75,138 @@ export default function ProjectDetailView({ project }: { project: Project }) {
           </div>
         ) : null}
       </motion.header>
-
-      {/* Summary */}
-      <motion.section
+      <motion.div
         initial={{ opacity: 0, y: 8 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.5 }}
-        className="glass rounded-2xl p-6 mb-8"
+        className="w-full mb-8 flex flex-col 2xl:flex-row gap-6"
       >
-        <h2 className="text-xl font-semibold mb-2">
-          {t("detail_summary_title")}
-        </h2>
-        <p className="opacity-85">{d.summary}</p>
-      </motion.section>
-
-      {/* Responsibilities / Architecture */}
-      <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <motion.section
-          initial={{ opacity: 0, y: 8 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.5 }}
-          className="glass rounded-2xl p-6"
-        >
-          <h3 className="font-semibold mb-2">{t("detail_built_title")}</h3>
-          <ul className="list-disc list-inside opacity-85 space-y-1">
-            {d.responsibilities.map((x, idx) => (
-              <li key={idx}>{x}</li>
-            ))}
-          </ul>
-        </motion.section>
-
-        {d.architecture?.length ? (
-          <motion.section
-            initial={{ opacity: 0, y: 8 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.5 }}
-            className="glass rounded-2xl p-6"
-          >
-            <h3 className="font-semibold mb-2">{t("detail_arch_title")}</h3>
-            <ul className="list-disc list-inside opacity-85 space-y-1">
-              {d.architecture.map((x, idx) => (
-                <li key={idx}>{x}</li>
+        <div className="aspect-video rounded-2xl overflow-hidden border border-[var(--glass-border)] w-full">
+          <iframe
+            src={d.demo}
+            title="YouTube video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full"
+          ></iframe>
+        </div>
+        <div className="flex flex-col">
+          <section id="summary" className="flex flex-col mb-8 gap-4">
+            <span className="font-bold text-2xl">
+              📝 {t("detail_summary_title")}
+            </span>
+            <div className="glass p-5 text-md">
+              <p>{d.summary}</p>
+            </div>
+          </section>
+          <section id="built" className="flex flex-col gap-4 h-full">
+            <span className="font-bold text-2xl">
+              🧱 {t("detail_built_title")}
+            </span>
+            <ul className="glass p-5 flex flex-col gap-2 h-full text-md list-disc list-inside">
+              {d.responsibilities.map((r, i) => (
+                <li key={i}>
+                  <ReactMarkdown
+                    components={{
+                      p: ({ children }) => <>{children}</>, // p 제거
+                    }}
+                  >
+                    {r}
+                  </ReactMarkdown>
+                </li>
               ))}
             </ul>
-          </motion.section>
-        ) : null}
-      </div>
-
-      {/* Challenges & Solutions */}
-      <motion.section
-        initial={{ opacity: 0, y: 8 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.5 }}
-        className="flex flex-col mb-8 gap-4"
-      >
-        <h3 className="text-xl font-semibold mb-3">
-          {t("detail_challenges_title")}
+          </section>
+        </div>
+      </motion.div>
+      <section className="flex flex-col mb-8 gap-4">
+        <h3 className="text-2xl font-semibold mb-3">
+          🧩 {t("detail_challenges_title")}
         </h3>
         {d.challenges.map((c) => (
           <div key={c.title} className="space-y-4">
             <details className="group glass rounded-2xl p-5">
               <summary className="flex justify-between items-center cursor-pointer font-medium list-none">
-                <span className="font-bold text-md">{c.title}</span>
+                <span className="font-bold text-lg">{c.title}</span>
                 <ChevronDown className="transition-transform duration-300 group-open:rotate-180" />
               </summary>
-              <div className="mt-3 text-sm space-y-4">
+              <div className="mt-3 text-md space-y-4 max-w-250 leading-loose">
                 <div>
-                  <p className="font-semibold">{t("detail_problem")}</p>
-                  <p className="opacity-85">{c.problem}</p>
+                  <p className="font-black">1️⃣ {t("detail_problem")}</p>
+                  <div className="opacity-85">
+                    <ReactMarkdown>{c.problem}</ReactMarkdown>
+                  </div>
                 </div>
                 <div>
-                  <p className="font-semibold">{t("detail_cause")}</p>
-                  <ul className="list-disc list-inside opacity-85">
+                  <p className="font-black">2️⃣ {t("detail_cause")}</p>
+                  <ul className="list-inside list-disc opacity-85">
                     {c.causes.map((cause, idx) => (
-                      <li key={idx}>{cause}</li>
+                      <li key={idx}>
+                        <ReactMarkdown
+                          components={{
+                            p: ({ children }) => <>{children}</>, // p 제거
+                          }}
+                        >
+                          {cause}
+                        </ReactMarkdown>
+                      </li>
                     ))}
                   </ul>
                 </div>
                 <div>
-                  <p className="font-semibold">{t("detail_solution")}</p>
-                  <ul className="list-disc list-inside opacity-85">
+                  <p className="font-black">3️⃣ {t("detail_solution")}</p>
+                  <ul className="list-inside opacity-85 list-disc">
                     {c.resolution.map((res) => (
-                      <li key={res}>{res}</li>
+                      <li key={res}>
+                        {typeof res === "string" && res.startsWith("/") ? (
+                          <div className="w-full">
+                            <Image
+                              src={res}
+                              alt="solution image"
+                              width={500}
+                              height={400}
+                              unoptimized
+                              className="w-full max-w-150 h-auto rounded-lg border border-[var(--glass-border)] object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <ReactMarkdown
+                            components={{
+                              p: ({ children }) => <>{children}</>, // p 제거
+                            }}
+                          >
+                            {res}
+                          </ReactMarkdown>
+                        )}
+                      </li>
                     ))}
                   </ul>
                 </div>
                 {c.lessons && c.lessons.length > 0 && (
                   <div>
-                    <p className="font-semibold">{t("detail_lessons")}</p>
-                    <ul className="list-disc list-inside opacity-85">
+                    <p className="font-black">4️⃣ {t("detail_lessons")}</p>
+                    <ul className="list-inside list-disc opacity-85">
                       {c.lessons.map((lesson, idx) => (
-                        <li key={idx}>{lesson}</li>
+                        <li key={idx}>
+                          <ReactMarkdown
+                            components={{
+                              p: ({ children }) => <>{children}</>, // p 제거
+                            }}
+                          >
+                            {lesson}
+                          </ReactMarkdown>
+                        </li>
                       ))}
                     </ul>
                   </div>
                 )}
               </div>
+              <div></div>
             </details>
           </div>
         ))}
-      </motion.section>
-
-      {/* Gallery */}
-      {d.images?.length ? (
-        <motion.section
-          initial={{ opacity: 0, y: 8 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.5 }}
-          className="mb-8"
-        >
-          <h3 className="text-xl font-semibold mb-3">
-            {t("detail_screenshots_title")}
-          </h3>
-          <div className="grid sm:grid-cols-2 gap-4">
-            {d.images.map((img, idx) => (
-              <div
-                key={idx}
-                className="overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-white/5"
-              >
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  width={1200}
-                  height={800}
-                  className="w-full h-auto object-cover"
-                />
-              </div>
-            ))}
-          </div>
-        </motion.section>
-      ) : null}
+      </section>
     </div>
   );
 }

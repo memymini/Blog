@@ -18,10 +18,8 @@ type PageProps = {
   }>;
 };
 
-// ISR
-export const revalidate = 3600; // 1시간
+export const revalidate = 3600;
 
-// SSG: 가능한 모든 slug에 대해 페이지 미리 생성
 export async function generateStaticParams({ params }: Props) {
   const dict = await getDictionary(params.lang);
   const projects = dict.projects as Projects;
