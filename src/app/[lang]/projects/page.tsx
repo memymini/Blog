@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 export default async function ProjectsPage({
   params,
 }: {
-  params: { lang: string };
+  params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
   const dict = await getDictionary(lang);
@@ -22,10 +22,10 @@ export default async function ProjectsPage({
         {dict.nav_projects}
       </h1>
       <div className="flex w-full h-full gap-8 overflow-x-auto">
-        {projects.map((project, index) => (
+        {projects.map((project) => (
           <ProjectCard
             key={project.title}
-            href={`/${params.lang}/projects/${project.slug}`}
+            href={`/${lang}/projects/${project.slug}`}
             image={project.image}
             alt={project.title}
             project={project}

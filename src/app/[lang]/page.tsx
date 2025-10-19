@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useI18n } from "./provider";
 import { Github, Linkedin, Mail } from "lucide-react";
 import toast from "react-hot-toast";
-import { cn } from "@/lib/utils";
 
 export default function Page() {
   const { t, locale } = useI18n();

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 export default async function ExperiencsPage({
   params,
 }: {
-  params: { lang: string };
+  params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
   const dict = await getDictionary(lang);

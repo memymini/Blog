@@ -4,7 +4,7 @@ import { getDictionary } from "../dictionaries";
 export default async function AboutPage({
   params,
 }: {
-  params: { lang: string };
+  params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
   const dict = await getDictionary(lang);
