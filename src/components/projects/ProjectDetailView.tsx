@@ -166,7 +166,8 @@ export default function ProjectDetailView({ project }: { project: Project }) {
                               alt="solution image"
                               width={500}
                               height={400}
-                              unoptimized
+                              placeholder="blur"
+                              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkqAcAAIUAgUW0RjgAAAAASUVORK5CYII="
                               className="w-full max-w-150 h-auto rounded-lg border border-[var(--glass-border)] object-cover"
                             />
                           </div>
