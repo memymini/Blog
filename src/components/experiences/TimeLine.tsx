@@ -30,10 +30,10 @@ export function TimelineItem({
         whileInView={{ scale: 1 }}
         transition={{ duration: 0.4, delay }}
       ></motion.div>
-      <h2 className="text-xl font-semibold">
+      <h2 className="text-lg sm:text-xl font-semibold">
         {year} – {title}, {org}
       </h2>
-      <p className="text-md text-gray-600 dark:text-gray-200 mt-1">
+      <p className="text-sm sm:text-md text-muted-foreground mt-1">
         {description}
       </p>
     </motion.div>
