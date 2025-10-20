@@ -2,7 +2,6 @@
 import type { ReactNode } from "react";
 import I18nProvider from "./provider";
 import { getDictionary } from "./dictionaries";
-import PageTransition from "@/components/PageTransition";
 import { Toaster } from "react-hot-toast";
 import { ProgressBarProvider } from "./ProgressBarProvider";
 
