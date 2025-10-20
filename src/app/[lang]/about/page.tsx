@@ -22,7 +22,7 @@ export default async function AboutPage({
       >
         {dict.name}
       </h1>
-      <div className="flex gap-8 2xl:gap-16 flex-col xl:flex-row xl:items-start items-center px-10 xl:px-0">
+      <div className="flex gap-8 2xl:gap-16 flex-col xl:flex-row xl:items-start items-center">
         <div className="relative w-full max-w-132 h-auto aspect-[4/5] rounded-lg">
           <Image
             src="/images/me.jpeg"
