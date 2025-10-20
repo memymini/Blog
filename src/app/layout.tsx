@@ -7,6 +7,7 @@ import {
   Do_Hyeon,
 } from "next/font/google";
 import "./globals.css";
+import PageTransition from "@/components/PageTransition";
 
 // console/retro font
 
@@ -59,7 +60,10 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${blackHanSans.variable} ${doHyeon.variable} ${geistMono.variable} ${anton.variable}`}
     >
       <body>
-        <main className="min-h-screen w-screen">{children}</main>
+        <main className="min-h-screen w-screen">
+          {" "}
+          <PageTransition>{children} </PageTransition>
+        </main>
       </body>
     </html>
   );

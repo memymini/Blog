@@ -4,6 +4,7 @@ import I18nProvider from "./provider";
 import { getDictionary } from "./dictionaries";
 import PageTransition from "@/components/PageTransition";
 import { Toaster } from "react-hot-toast";
+import { ProgressBarProvider } from "./ProgressBarProvider";
 
 export default async function LangLayout({
   children,
@@ -16,7 +17,8 @@ export default async function LangLayout({
   const dict = await getDictionary(lang);
   return (
     <I18nProvider locale={lang} dict={dict}>
-      <PageTransition>{children}</PageTransition>
+      <ProgressBarProvider />
+      {children}
       <Toaster />
     </I18nProvider>
   );
