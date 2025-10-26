@@ -59,7 +59,7 @@ export default function Page() {
               </li>
               <li>
                 <Link
-                  href="/projects"
+                  href={`/${locale}/projects`}
                   className="opacity-80 hover:opacity-100 accet-underline inline-block transition-transform hover:scale-110 hover:font-black"
                 >
                   {t("nav_projects")}
@@ -67,7 +67,7 @@ export default function Page() {
               </li>
               <li>
                 <Link
-                  href="/experiences"
+                  href={`/${locale}/experiences`}
                   className="opacity-80 hover:opacity-100 accet-underline inline-block transition-transform hover:scale-110 hover:font-black"
                 >
                   {t("nav_experience")}
