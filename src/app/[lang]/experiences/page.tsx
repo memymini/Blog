@@ -1,9 +1,8 @@
-"use cli";
 import { TimelineItem } from "@/components/experiences/TimeLine";
 import { getDictionary } from "../dictionaries";
 import { cn } from "@/lib/utils";
 
-export default async function ExperiencsPage({
+export default async function ExperiencePage({
   params,
 }: {
   params: Promise<{ lang: string }>;

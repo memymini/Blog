@@ -6,12 +6,11 @@ import type { ReactNode } from "react";
 
 export default function PageTransition({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const key = pathname.replace(/^\/(en|ko)/, "");
 
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        key={key}
+        key={pathname}
         initial={{ opacity: 0, x: 30 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
