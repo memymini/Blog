@@ -1,13 +1,23 @@
 "use client";
 
-import { AppProgressBar as ProgressBar } from "next-nprogress-bar";
+import NextTopLoader from "nextjs-toploader";
 
 export function ProgressBarProvider() {
   return (
-    <ProgressBar
+    <NextTopLoader
       color="#516ff0"
-      height="3px"
-      options={{ showSpinner: false }}
+      initialPosition={0.08}
+      crawlSpeed={200}
+      height={3}
+      crawl={true}
+      showSpinner={false}
+      easing="ease"
+      speed={200}
+      shadow={false}
+      template='<div class="bar" role="bar"><div class="peg"></div></div> 
+  <div class="spinner" role="spinner"><div class="spinner-icon"></div></div>'
+      zIndex={1600}
+      showAtBottom={false}
     />
   );
 }
