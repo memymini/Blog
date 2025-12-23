@@ -1,100 +1,77 @@
-"use client";
-import LanguageToggle from "@/components/navbar/LanguageToggle";
-import { ThemeToggle } from "@/components/navbar/ThemeToggle";
+import { ArrowRight, Github, Linkedin } from "lucide-react";
+import { GlassCard } from "@/components/ui/GlassCard";
 import Link from "next/link";
-import { useI18n } from "./provider";
-import { Github, Linkedin, Mail } from "lucide-react";
-import toast from "react-hot-toast";
 
-export default function Page() {
-  const { t, locale } = useI18n();
-
-  const handleCopyEmail = () => {
-    navigator.clipboard.writeText("minhi0614@gmail.com").then(() => {
-      toast.success(t("email_copied"));
-    });
-  };
-
+export default function HomePage() {
   return (
-    <main className="flex h-screen w-full items-center justify-between flex-col lg:p-20 p-10">
-      <div className="flex justify-between w-full font-bold text-lg sm:text-2xl items-start flex-col h-full">
-        <div className="flex gap-4">
-          <button
-            aria-label="minhi0614@gmail.com"
-            title="minhi0614@gmail.com"
-            onClick={handleCopyEmail}
-            className="flex flex-col items-center justify-center glass w-9 h-9 hover:bg-white/10"
+    <div className="flex min-h-[80vh] flex-col items-center justify-center py-10">
+      <GlassCard className="mx-auto w-full max-w-3xl overflow-hidden p-0">
+        <div className="flex flex-col md:flex-row">
+          {/* Image Section */}
+          <div
+            className="h-64 w-full bg-cover bg-center md:h-auto md:w-2/5"
+            style={{
+              backgroundImage: "url(/images/me.jpeg)",
+            }}
           >
-            <Mail className="size-5" />
-          </button>
-          <Link
-            aria-label="Github"
-            title="GitHub"
-            href="https://github.com/memymini"
-            className="flex flex-col items-center justify-center glass w-9 h-9 hover:bg-white/10"
-          >
-            <Github className="size-5" />
-          </Link>
-          <Link
-            aria-label="LinkedIn"
-            title="LinkedIn"
-            href="https://www.linkedin.com/in/minhee-jung-000417348"
-            className="flex flex-col items-center justify-center glass w-9 h-9 hover:bg-white/10"
-          >
-            <Linkedin className="size-5" />
-          </Link>
-          <ThemeToggle />
-          <LanguageToggle />
-        </div>
-        <div className="flex flex-col items-start">
-          <nav className="flex items-center text-start h-full mb-12">
-            <ul className="flex flex-col md:space-y-2 lg:space-y-4 lg:text-2xl font-bold md:text-xl text-lg">
-              <li>
-                <Link
-                  href={`/${locale}/about`}
-                  className="opacity-80 hover:opacity-100 accet-underline inline-block transition-transform hover:scale-110 hover:font-black"
-                >
-                  {t("nav_about")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={`/${locale}/projects`}
-                  className="opacity-80 hover:opacity-100 accet-underline inline-block transition-transform hover:scale-110 hover:font-black"
-                >
-                  {t("nav_projects")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={`/${locale}/experiences`}
-                  className="opacity-80 hover:opacity-100 accet-underline inline-block transition-transform hover:scale-110 hover:font-black"
-                >
-                  {t("nav_experience")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/이력서_정민희.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download
-                  className="opacity-80 hover:opacity-100 accet-underline inline-block transition-transform hover:scale-110 hover:font-black"
-                >
-                  {t("resume")}
-                </Link>
-              </li>
-            </ul>
-          </nav>
+            <div className="h-full w-full bg-black/20 backdrop-blur-[1px]" />
+          </div>
 
-          <h1 className="text-[5vw] font-black leading-tight font-anton text-start">
-            {t("role")}
-          </h1>
-          <h1 className="text-[15vw] font-black leading-none font-anton">
-            {t("title")}
-          </h1>
+          {/* Content Section */}
+          <div className="flex flex-col justify-center p-8 md:w-3/5 md:p-12">
+            <div className="mb-2 inline-flex w-fit items-center rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+              Available for hire
+            </div>
+
+            <h1 className="mb-4 text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+              Hi, I&apos;m{" "}
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-purple-400">
+                Minnie.
+              </span>
+            </h1>
+
+            <p className="mb-8 text-lg leading-relaxed text-gray-600 dark:text-gray-300">
+              I design and build modern web experiences with a focus on motion,
+              aesthetics, and performance.
+            </p>
+
+            <div className="flex flex-wrap gap-4">
+              <Link
+                href="/projects"
+                className="group inline-flex items-center gap-2 rounded-full bg-gray-900 px-6 py-3 font-medium text-white shadow-lg transition-transform hover:scale-105 hover:bg-black dark:bg-white dark:text-black dark:hover:bg-gray-100"
+              >
+                View Work
+                <ArrowRight
+                  size={18}
+                  className="transition-transform group-hover:translate-x-1"
+                />
+              </Link>
+
+              <Link
+                href="/blog"
+                className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-transparent px-6 py-3 font-medium text-gray-900 transition-colors hover:bg-gray-50 dark:border-white/20 dark:text-white dark:hover:bg-white/10"
+              >
+                Read Blog
+              </Link>
+            </div>
+
+            <div className="mt-8 flex items-center gap-6 pt-8 border-t border-gray-200/50 dark:border-white/10">
+              <a
+                href="https://github.com/memymini"
+                className="text-gray-400 transition-colors hover:text-gray-900 dark:hover:text-white"
+              >
+                <Github size={20} />
+              </a>
+              <a
+                href="www.linkedin.com/in/minhee0614"
+                className="text-gray-400 transition-colors hover:text-blue-600 dark:hover:text-blue-500"
+              >
+                <Linkedin size={20} />
+              </a>
+            </div>
+          </div>
         </div>
-      </div>
-    </main>
+      </GlassCard>
+    </div>
   );
 }

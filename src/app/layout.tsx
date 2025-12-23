@@ -1,15 +1,6 @@
 import type { Metadata } from "next";
-import {
-  Geist,
-  Geist_Mono,
-  Anton,
-  Black_Han_Sans,
-  Do_Hyeon,
-} from "next/font/google";
+import { Geist, Geist_Mono, Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
-import PageTransition from "@/components/PageTransition";
-
-// console/retro font
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,29 +12,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const anton = Anton({
+const notoSansKr = Noto_Sans_KR({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-anton",
+  variable: "--font-noto-sans-kr",
   display: "swap",
 });
 
-const blackHanSans = Black_Han_Sans({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-black-han-sans",
-  display: "swap",
-});
-
-const doHyeon = Do_Hyeon({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-do-hyeon",
-  display: "swap",
-});
 export const metadata: Metadata = {
   title: "minhee.dev",
-  description: "frontend developer protfolio",
+  description: "Web Developer Protfolio",
 };
 
 export default async function RootLayout({
@@ -53,18 +31,15 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: Promise<{ lang: string }>;
 }>) {
-  const { lang } = await params;
+  const resolvedParams = await params;
+  const lang = resolvedParams?.lang ?? "ko";
+
   return (
     <html
       lang={lang}
-      className={`${geistSans.variable} ${blackHanSans.variable} ${doHyeon.variable} ${geistMono.variable} ${anton.variable}`}
+      className={`${notoSansKr.variable} ${geistSans.variable} ${geistMono.variable}`}
     >
-      <body>
-        <main className="min-h-screen w-screen">
-          {" "}
-          <PageTransition>{children} </PageTransition>
-        </main>
-      </body>
+      <body className="relative">{children}</body>
     </html>
   );
 }
