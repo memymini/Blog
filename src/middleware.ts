@@ -1,15 +1,13 @@
-import { NextResponse, NextRequest } from "next/server";
+import NextAuth from "next-auth";
+import { authConfig } from "./auth.config";
+import { NextResponse, type NextRequest } from "next/server";
 import { match } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 
-const headers = { "accept-language": "en-US,en;q=0.5" };
-const languages = new Negotiator({ headers }).languages();
+//const languages = new Negotiator({ headers }).languages();
 const locales = ["en", "ko"];
-const defaultLocale = "ko";
+const defaultLocale = "en";
 
-match(languages, locales, defaultLocale);
-
-// Get the preferred locale, similar to the above or using a library
 function getLocale(request: NextRequest) {
   const cookieLocale =
     request.cookies.get("NEXT_LOCALE")?.value ??
@@ -17,38 +15,49 @@ function getLocale(request: NextRequest) {
   if (cookieLocale && (locales as readonly string[]).includes(cookieLocale)) {
     return cookieLocale as (typeof locales)[number];
   }
-  // 2) Accept-Language negotiation
-  // NextRequest headers are iterable; convert to plain object for Negotiator
   const headers = Object.fromEntries(request.headers);
   const languages = new Negotiator({ headers }).languages();
-
-  // 3) Match against supported locales, fallback to default
   return match(languages, locales, defaultLocale);
 }
 
-export function middleware(request: NextRequest) {
+// 1. Initialize NextAuth
+const { auth } = NextAuth(authConfig);
+
+// 2. Export combined middleware
+export default auth((req) => {
+  // 3. Run I18n Middleware logic
+  const { pathname } = req.nextUrl;
+
+  // Skip I18n for internal paths or API
+  if (
+    pathname.includes(".") || // static files
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/admin") // Admin paths are handled by Auth Guard, no language prefix needed usually? Or do we want /en/admin?
+  ) {
+    if (pathname.startsWith("/admin")) {
+      // Just allow through, Auth guard already ran in `auth` callback wrapper
+      return NextResponse.next();
+    }
+    return NextResponse.next();
+  }
+
   // Check if there is any supported locale in the pathname
-  const { pathname } = request.nextUrl;
-  if (/\.[a-z0-9]+$/i.test(pathname)) return NextResponse.next();
   const pathnameHasLocale = locales.some(
     (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   );
 
-  if (pathnameHasLocale) return;
+  if (pathnameHasLocale) return NextResponse.next();
 
   // Redirect if there is no locale
-  const locale = getLocale(request);
-  request.nextUrl.pathname = `/${locale}${pathname}`;
-  // e.g. incoming request is /products
-  // The new URL is now /en-US/products
-  return NextResponse.redirect(request.nextUrl);
-}
+  const locale = getLocale(req);
+  req.nextUrl.pathname = `/${locale}${pathname}`;
+  return NextResponse.redirect(req.nextUrl);
+});
 
 export const config = {
+  // Merge matchers: Match all except static files and images
   matcher: [
-    // Skip all internal paths (_next)
-    "/((?!_next).*)",
-    // Optional: only run on root (/) URL
-    // '/'
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
