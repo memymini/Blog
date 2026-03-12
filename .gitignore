@@ -36,3 +36,9 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# Claude / AI Tools
+CLAUDE.md
+GUIDELINES.md
+PROGRESS.md
+main_page.png
