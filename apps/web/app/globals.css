@@ -1,15 +1,113 @@
+@import "tailwindcss";
+
+/*
+ * @theme — Tailwind v4 CSS-based config (equivalent to theme.extend in v3).
+ *
+ * Naming conventions drive auto-generated utility classes:
+ *   --font-size-{name}   →  text-{name}
+ *   --color-{name}       →  text-{name} / bg-{name} / border-{name}
+ *   --line-height-{name} →  leading-{name}
+ *   --letter-spacing-{name} → tracking-{name}
+ *   --font-weight-{name} →  font-{name}
+ */
+@theme {
+  /* ── Semantic Font Sizes ────────────────────────────────────
+   * Generates: text-display, text-h1, text-h2, text-h3, text-h4,
+   *            text-body-lg, text-body-base, text-body-sm,
+   *            text-caption, text-label
+   */
+  --font-size-display: 3rem;
+  --font-size-h1: 2.25rem;
+  --font-size-h2: 1.75rem;
+  --font-size-h3: 1.375rem;
+  --font-size-h4: 1.125rem;
+  --font-size-body-lg: 1.0625rem;
+  --font-size-body-base: 1rem;
+  --font-size-body-sm: 0.9375rem;
+  --font-size-caption: 0.8125rem;
+  --font-size-label: 0.75rem;
+
+  /* ── Editorial Line Heights ─────────────────────────────────
+   * Overrides Tailwind defaults with editorial values.
+   * Generates: leading-editorial-tight, leading-editorial-snug,
+   *            leading-editorial-relaxed, leading-editorial-loose
+   */
+  --line-height-editorial-tight: 1.2;
+  --line-height-editorial-snug: 1.4;
+  --line-height-editorial-normal: 1.6;
+  --line-height-editorial-relaxed: 1.75;
+  --line-height-editorial-loose: 1.9;
+
+  /* ── Letter Spacing ─────────────────────────────────────────
+   * Generates: tracking-editorial-tight, tracking-editorial-snug,
+   *            tracking-editorial-wide, tracking-editorial-wider
+   */
+  --letter-spacing-editorial-tight: -0.03em;
+  --letter-spacing-editorial-snug: -0.015em;
+  --letter-spacing-editorial-wide: 0.05em;
+  --letter-spacing-editorial-wider: 0.1em;
+
+  /* ── Color Palette ──────────────────────────────────────────
+   * Primary: near-black editorial scale
+   * Generates: text-primary-*, bg-primary-*, border-primary-*
+   */
+  --color-primary-50: #f7f7f7;
+  --color-primary-100: #e3e3e3;
+  --color-primary-200: #c8c8c8;
+  --color-primary-300: #a4a4a4;
+  --color-primary-400: #818181;
+  --color-primary-500: #666666;
+  --color-primary-600: #515151;
+  --color-primary-700: #434343;
+  --color-primary-800: #383838;
+  --color-primary-900: #1a1a1a;
+  --color-primary-950: #0d0d0d;
+
+  /* Secondary: warm stone — dates, metadata, captions */
+  --color-secondary-50: #fafaf9;
+  --color-secondary-100: #f5f5f4;
+  --color-secondary-200: #e7e5e4;
+  --color-secondary-300: #d6d3d1;
+  --color-secondary-400: #a8a29e;
+  --color-secondary-500: #78716c;
+  --color-secondary-600: #57534e;
+  --color-secondary-700: #44403c;
+  --color-secondary-800: #292524;
+  --color-secondary-900: #1c1917;
+
+  /* Accent: muted sage — interactive, hover, highlights */
+  --color-accent-50: #f6f7f6;
+  --color-accent-100: #e2e8e2;
+  --color-accent-200: #c4d1c4;
+  --color-accent-300: #9cb49c;
+  --color-accent-400: #6e926e;
+  --color-accent-500: #4d734d;
+  --color-accent-600: #3b5c3b;
+  --color-accent-700: #2f4a2f;
+  --color-accent-800: #263d26;
+  --color-accent-900: #1e301e;
+
+  /* Muted: page background, dividers, subtle fills */
+  --color-muted-50: #f9f9f9;
+  --color-muted-100: #f2f2f2;
+  --color-muted-200: #e8e8e8;
+  --color-muted-300: #d4d4d4;
+  --color-muted-400: #b0b0b0;
+  --color-muted-500: #8c8c8c;
+  --color-muted-600: #6e6e6e;
+
+  /* Surface: card and panel backgrounds */
+  --color-surface: #ffffff;
+  --color-surface-raised: #fdfdfd;
+}
+
+/* ── Layout constants (not Tailwind tokens) ──────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --max-w-content: 640px;
+  --max-w-wide: 960px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ── Base ────────────────────────────────────────────────── */
 html,
 body {
   max-width: 100vw;
@@ -17,11 +115,17 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  background-color: var(--color-muted-100);
+  color: var(--color-primary-900);
+  font-size: var(--font-size-body-base);
+  line-height: var(--line-height-editorial-relaxed);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
@@ -32,19 +136,141 @@ a {
   text-decoration: none;
 }
 
-.imgDark {
-  display: none;
+/* ── Markdown prose ──────────────────────────────────────── */
+.prose {
+  color: var(--color-primary-900);
+  line-height: var(--line-height-editorial-relaxed);
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+.prose h1 {
+  font-size: var(--font-size-h1);
+  font-weight: 700;
+  line-height: var(--line-height-editorial-snug);
+  letter-spacing: var(--letter-spacing-editorial-snug);
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
 
-  .imgLight {
-    display: none;
-  }
-  .imgDark {
-    display: unset;
-  }
+.prose h2 {
+  font-size: var(--font-size-h2);
+  font-weight: 600;
+  line-height: var(--line-height-editorial-snug);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose h3 {
+  font-size: var(--font-size-h3);
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose h4 {
+  font-size: var(--font-size-h4);
+  font-weight: 600;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose p {
+  margin-bottom: 1.25rem;
+}
+
+.prose a {
+  color: var(--color-accent-600);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prose a:hover {
+  color: var(--color-accent-700);
+}
+
+.prose strong {
+  font-weight: 600;
+  color: var(--color-primary-950);
+}
+
+.prose em {
+  font-style: italic;
+}
+
+.prose blockquote {
+  border-left: 3px solid var(--color-accent-300);
+  padding-left: 1rem;
+  color: var(--color-secondary-600);
+  font-style: italic;
+  margin: 1.5rem 0;
+}
+
+.prose code {
+  background-color: var(--color-muted-100);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.875em;
+  padding: 0.15em 0.35em;
+  border-radius: 3px;
+}
+
+.prose pre {
+  background-color: var(--color-muted-100);
+  border: 1px solid var(--color-muted-200);
+  border-radius: 4px;
+  padding: 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.prose pre code {
+  background: none;
+  padding: 0;
+  font-size: var(--font-size-body-sm);
+}
+
+.prose ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.prose ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.prose li {
+  margin-bottom: 0.375rem;
+}
+
+.prose img {
+  max-width: 100%;
+  border-radius: 4px;
+  margin: 1.5rem auto;
+  display: block;
+}
+
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--color-muted-200);
+  margin: 2rem 0;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-body-sm);
+  margin-bottom: 1.5rem;
+}
+
+.prose th,
+.prose td {
+  border: 1px solid var(--color-muted-200);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.prose th {
+  background-color: var(--color-muted-50);
+  font-weight: 600;
 }
