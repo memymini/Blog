@@ -16,6 +16,13 @@
     "turbo": "^2.8.16",
     "typescript": "5.9.2"
   },
+  "pnpm": {
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "class-validator": "0.15.1"
+      }
+    }
+  },
   "packageManager": "pnpm@9.0.0",
   "engines": {
     "node": ">=18"
