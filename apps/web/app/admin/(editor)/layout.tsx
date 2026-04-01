@@ -1,0 +1,22 @@
+"use client";
+
+import type { ReactNode } from "react";
+import { useAuth } from "@/context/auth";
+
+function EditorShell({ children }: { children: ReactNode }) {
+  const { isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted-100">
+        <div className="w-6 h-6 border-2 border-primary-900 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+}
+
+export default function EditorLayout({ children }: { children: ReactNode }) {
+  return <EditorShell>{children}</EditorShell>;
+}
