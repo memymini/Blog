@@ -119,7 +119,11 @@ export function LanguageToggle({
   }
 
   return (
-    <div ref={ref} className={cn("relative inline-block", className)} {...props}>
+    <div
+      ref={ref}
+      className={cn("relative inline-block", className)}
+      {...props}
+    >
       {/* Trigger */}
       <button
         ref={triggerRef}
@@ -130,7 +134,7 @@ export function LanguageToggle({
         onClick={() => setOpen((o) => !o)}
         onKeyDown={handleTriggerKeyDown}
         className={cn(
-          "flex items-center justify-center w-9 h-9 rounded-sm",
+          "flex items-center justify-center w-9 h-9 rounded-full",
           "text-secondary-500 hover:text-primary-900 hover:bg-muted-100",
           "transition-colors duration-150",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700 focus-visible:ring-offset-2",
@@ -161,7 +165,9 @@ export function LanguageToggle({
                 role="option"
                 aria-selected={isSelected}
                 tabIndex={isFocused ? 0 : -1}
-                ref={(el) => { if (isFocused) el?.focus(); }}
+                ref={(el) => {
+                  if (isFocused) el?.focus();
+                }}
                 onClick={() => select(lang.code)}
                 onMouseEnter={() => setFocusedIndex(i)}
                 className={cn(
@@ -172,7 +178,9 @@ export function LanguageToggle({
                 )}
               >
                 <span>{lang.label}</span>
-                {isSelected && <CheckIcon className="ml-2 text-accent-500 shrink-0" />}
+                {isSelected && (
+                  <CheckIcon className="ml-2 text-accent-500 shrink-0" />
+                )}
               </li>
             );
           })}

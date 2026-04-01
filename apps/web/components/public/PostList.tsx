@@ -1,6 +1,5 @@
 import Link from "next/link";
 import type { PostListItem, Lang } from "@repo/types";
-import { PostCard } from "@/components/ui";
 import { EmptyState } from "./EmptyState";
 
 interface PostListProps {
@@ -18,26 +17,33 @@ function formatDate(isoString: string): string {
 
 export function PostList({ posts, lang }: PostListProps) {
   if (posts.length === 0) {
-    return <EmptyState description="Try selecting a different country or language." />;
+    return (
+      <div className="py-16">
+        <EmptyState description="Try selecting a different country or language." />
+      </div>
+    );
   }
 
   return (
-    <div>
+    <ul>
       {posts.map((post) => (
-        <Link
-          key={post.id}
-          href={`/${lang}/posts/${post.id}`}
-          className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700 focus-visible:ring-offset-2 rounded-sm"
-        >
-          <PostCard
-            date={formatDate(post.created_at)}
-            flag={post.country.flag_url}
-            title={post.translation.title}
-            excerpt={post.translation.excerpt ?? undefined}
-            coverUrl={post.cover_url ?? undefined}
-          />
-        </Link>
+        <li key={post.id} className="border-b border-muted-100 last:border-b-0">
+          <Link
+            href={`/${lang}/posts/${post.id}`}
+            className="block px-8 py-7 hover:bg-muted-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-700"
+          >
+            <time
+              dateTime={post.created_at}
+              className="block text-caption text-secondary-400 mb-2"
+            >
+              {formatDate(post.created_at)} {post.country.flag_url}
+            </time>
+            <p className="text-h4 font-bold text-primary-900 leading-editorial-snug">
+              {post.translation.title}
+            </p>
+          </Link>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }

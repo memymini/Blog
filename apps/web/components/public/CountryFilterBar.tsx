@@ -23,12 +23,12 @@ export function CountryFilterBar({
   }
 
   return (
-    <div className="overflow-x-auto pb-1 -mx-4 px-4">
+    <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       <div className="flex items-center gap-2 min-w-max">
         <FilterButton
           active={!currentCountry}
           onClick={() => select(null)}
-          label="ALL"
+          label="🌎"
         />
         {countries.map((c) => (
           <FilterButton
@@ -58,8 +58,8 @@ function FilterButton({ active, onClick, label, title }: FilterButtonProps) {
       title={title}
       onClick={onClick}
       className={cn(
-        "flex items-center justify-center min-w-[2.25rem] h-9 px-2 rounded-sm",
-        "text-caption text-secondary-500 transition-colors duration-150",
+        "flex items-center justify-center h-8 px-4 rounded-full w-8",
+        "text-body-base text-secondary-500 transition-colors duration-150",
         "hover:bg-muted-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700",
         active && "bg-muted-200 text-primary-900 font-medium",
       )}

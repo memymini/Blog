@@ -2,36 +2,30 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import type { Lang } from "@repo/types";
-import { LanguageToggle } from "@/components/ui";
-
-const LANG_LABELS: Record<Lang, string> = { ko: "한국어", en: "English" };
-const LANGS: Lang[] = ["ko", "en"];
 
 interface LanguageToggleNavProps {
   currentLang: Lang;
 }
 
-/**
- * Thin client wrapper around LanguageToggle that handles lang-switch navigation.
- * Replaces the first path segment with the selected language code.
- */
 export function LanguageToggleNav({ currentLang }: LanguageToggleNavProps) {
   const router = useRouter();
   const pathname = usePathname();
 
-  function handleLanguageChange(code: string) {
-    // Replace /ko/... with /en/... (or vice versa)
-    const newPath = pathname.replace(/^\/(ko|en)/, `/${code}`);
+  const nextLang: Lang = currentLang === "ko" ? "en" : "ko";
+
+  function toggle() {
+    const newPath = pathname.replace(/^\/(ko|en)/, `/${nextLang}`);
     router.push(newPath);
   }
 
-  const languages = LANGS.map((l) => ({ code: l, label: LANG_LABELS[l] }));
-
   return (
-    <LanguageToggle
-      languages={languages}
-      currentLang={currentLang}
-      onLanguageChange={handleLanguageChange}
-    />
+    <button
+      type="button"
+      onClick={toggle}
+      aria-label={`Switch to ${nextLang === "en" ? "English" : "Korean"}`}
+      className="flex-none h-9 px-2.5 text-caption font-medium text-secondary-500 hover:text-primary-900 hover:bg-muted-100 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700"
+    >
+      {currentLang === "ko" ? "EN" : "KR"}
+    </button>
   );
 }
