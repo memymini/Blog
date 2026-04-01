@@ -145,6 +145,31 @@ export class AdminPostsController {
     return ok(await this.media.list(id));
   }
 
+  @Post(':id/media/upload')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Upload a media image file — returns the public URL' })
+  @ApiParam({ name: 'id', type: 'integer', example: 1 })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['file'],
+      properties: {
+        file: { type: 'string', format: 'binary', description: 'Image file (jpeg / png / webp)' },
+      },
+    },
+  })
+  @ApiOkResponse(apiRes({
+    type: 'object',
+    properties: { url: { type: 'string', example: 'https://example.com/post-images/1/media-123.jpg' } },
+  }))
+  async uploadMediaFile(
+    @Param('id', ParseIntPipe) id: number,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return ok(await this.media.uploadMediaFile(id, file));
+  }
+
   @Post(':id/media')
   @ApiOperation({ summary: 'Add a media asset (image / video / embed URL) to a post' })
   @ApiParam({ name: 'id', type: 'integer', example: 1 })

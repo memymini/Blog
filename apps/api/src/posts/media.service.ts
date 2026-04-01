@@ -49,6 +49,29 @@ export class MediaService {
     throwOnError(error);
   }
 
+  /** Uploads a media image to Supabase Storage and returns the public URL (does not touch posts table). */
+  async uploadMediaFile(
+    postId: number,
+    file: Express.Multer.File,
+  ): Promise<{ url: string }> {
+    const ext = file.originalname.split('.').pop();
+    const path = `${postId}/media-${Date.now()}.${ext}`;
+
+    const { error: uploadError } = await this.supabase.adminClient.storage
+      .from(COVER_BUCKET)
+      .upload(path, file.buffer, { contentType: file.mimetype, upsert: false });
+
+    if (uploadError) {
+      throw new InternalServerErrorException(uploadError.message);
+    }
+
+    const { data: urlData } = this.supabase.adminClient.storage
+      .from(COVER_BUCKET)
+      .getPublicUrl(path);
+
+    return { url: urlData.publicUrl };
+  }
+
   /** Uploads cover image to Supabase Storage and persists the public URL in posts.cover_url. */
   async uploadCover(
     postId: number,
