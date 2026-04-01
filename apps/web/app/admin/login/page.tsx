@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useAuth } from "@/context/auth";
 import { ApiError } from "@/lib/api/types";
-import { Button } from "@/components/ui";
-import { H2 } from "@/components/ui/typography";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -47,56 +45,65 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted-100 px-4">
-      <div className="w-full max-w-sm bg-surface rounded-sm border border-muted-200 shadow-sm p-8">
-        <H2 className="mb-6">Admin Login</H2>
+    <div className="min-h-screen bg-muted-100">
+      {/* Top-left label matching reference */}
+      <p className="px-6 py-5 text-body-sm text-secondary-400">login</p>
 
-        <form onSubmit={handleSubmit} noValidate className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-label text-secondary-600 mb-1">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="w-full h-10 px-3 text-body-sm border border-muted-300 rounded-sm bg-surface focus:outline-none focus:border-primary-400 transition-colors"
-            />
-          </div>
+      {/* Vertically centered card area */}
+      <div className="flex items-start justify-center px-4" style={{ marginTop: "10vh" }}>
+        <div className="w-full max-w-sm bg-surface p-8">
+          <h1 className="text-h2 font-bold text-primary-900 mb-8">Login</h1>
 
-          <div>
-            <label htmlFor="password" className="block text-label text-secondary-600 mb-1">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full h-10 px-3 text-body-sm border border-muted-300 rounded-sm bg-surface focus:outline-none focus:border-primary-400 transition-colors"
-            />
-          </div>
+          <form onSubmit={handleSubmit} noValidate className="space-y-6">
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-caption text-secondary-500 mb-1"
+              >
+                id
+              </label>
+              <input
+                id="email"
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full h-12 px-3 bg-muted-200 text-body-sm text-primary-900 border-0 focus:outline-none focus:ring-2 focus:ring-primary-400"
+              />
+            </div>
 
-          {error && (
-            <p role="alert" className="text-body-sm text-red-600">
-              {error}
-            </p>
-          )}
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-caption text-secondary-500 mb-1"
+              >
+                password
+              </label>
+              <input
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full h-12 px-3 bg-muted-200 text-body-sm text-primary-900 border-0 focus:outline-none focus:ring-2 focus:ring-primary-400"
+              />
+            </div>
 
-          <Button
-            type="submit"
-            variant="primary"
-            className="w-full"
-            loading={isSubmitting}
-          >
-            Login
-          </Button>
-        </form>
+            {error && (
+              <p role="alert" className="text-caption text-red-600">
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full h-12 bg-primary-900 text-surface text-body-sm font-medium hover:bg-primary-800 disabled:opacity-50 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-400"
+            >
+              {isSubmitting ? "Logging in…" : "Login"}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
