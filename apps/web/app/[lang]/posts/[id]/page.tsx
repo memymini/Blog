@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
+import { cookies } from "next/headers";
 import type { Lang } from "@repo/types";
 import { listPosts, getPost } from "@/lib/api/posts";
-import { Muted } from "@/components/ui/typography";
-import { H1 } from "@/components/ui/typography";
 import { MarkdownRenderer } from "@/components/public/MarkdownRenderer";
 import { LanguageToggleNav } from "@/components/public/LanguageToggleNav";
+import { AdminPostView } from "@/components/public/AdminPostView";
+import Link from "next/link";
+import Image from "next/image";
 
 export const revalidate = 3600;
 
@@ -51,89 +51,114 @@ export default async function PostPage({ params }: PostPageProps) {
   const post = await getPost(Number(id), lang);
   if (!post) notFound();
 
+  const typedLang = lang as Lang;
+
+  // Detect admin via httpOnly cookie (server-side only)
+  const cookieStore = await cookies();
+  const isAdmin = !!cookieStore.get("token")?.value;
+
   return (
-    <div className="min-h-screen bg-surface">
-      {/* Top bar */}
-      <header className="sticky top-0 z-40 bg-surface border-b border-muted-200">
-        <div
-          className="mx-auto px-4 h-14 flex items-center justify-between"
-          style={{ maxWidth: "var(--max-w-content)" }}
-        >
-          <Link
-            href={`/${lang}/posts`}
-            className="flex items-center gap-1.5 text-body-sm text-secondary-500 hover:text-primary-900 transition-colors"
-          >
-            <BackArrowIcon />
-            Posts
-          </Link>
-          <LanguageToggleNav currentLang={lang as Lang} />
-        </div>
-      </header>
+    <div className="min-h-screen bg-muted-100 flex justify-center">
+      <div className="max-w-200 w-full bg-surface min-h-screen">
+        {isAdmin ? (
+          /* Admin view — client component for inline editing */
+          <AdminPostView post={post} lang={typedLang} />
+        ) : (
+          /* Public view — static RSC */
+          <>
+            {/* Top bar */}
+            <div className="flex items-center justify-between px-5 py-3 border-b border-muted-200">
+              <Link
+                href={`/${lang}/posts`}
+                className="flex items-center gap-1.5 text-body-sm text-secondary-500 hover:text-primary-900 transition-colors"
+                aria-label="Back to posts"
+              >
+                <BackArrowIcon />
+              </Link>
+              <LanguageToggleNav currentLang={typedLang} />
+            </div>
 
-      <article
-        className="mx-auto px-4 py-12"
-        style={{ maxWidth: "var(--max-w-content)" }}
-      >
-        {/* Metadata */}
-        <div className="mb-6">
-          <Muted className="mb-1">
-            {formatDate(post.created_at)}
-            {post.country.flag_url && (
-              <span className="ml-1.5">{post.country.flag_url}</span>
-            )}
-          </Muted>
-          <H1 className="leading-editorial-snug">{post.translation.title}</H1>
-        </div>
+            {/* Content */}
+            <article>
+              {/* Cover image with date + title overlaid at bottom-left */}
+              {post.cover_url ? (
+                <div className="relative aspect-[16/9] overflow-hidden bg-muted-200">
+                  <Image
+                    src={post.cover_url}
+                    alt={post.translation.title}
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                  {/* Gradient overlay — dark at bottom, transparent at top */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
+                  {/* Date + title pinned to bottom-left */}
+                  <header className="absolute bottom-0 left-0 p-6">
+                    <time
+                      dateTime={post.created_at}
+                      className="block text-caption text-white/65 mb-1.5"
+                    >
+                      {formatDate(post.created_at)}
+                    </time>
+                    <h1 className="text-h2 font-bold text-white leading-editorial-snug">
+                      {post.country.flag_url} {post.translation.title}
+                    </h1>
+                  </header>
+                </div>
+              ) : (
+                /* Fallback when no cover image */
+                <header className="px-5 pt-8 pb-4">
+                  <time
+                    dateTime={post.created_at}
+                    className="block text-caption text-secondary-400 mb-2"
+                  >
+                    {formatDate(post.created_at)}
+                  </time>
+                  <h1 className="text-h2 font-bold text-primary-900 leading-editorial-snug">
+                    {post.country.flag_url} {post.translation.title}
+                  </h1>
+                </header>
+              )}
 
-        {/* Cover image */}
-        {post.cover_url && (
-          <div className="mb-8 overflow-hidden rounded-sm bg-muted-200 aspect-[16/9] relative">
-            <Image
-              src={post.cover_url}
-              alt={post.translation.title}
-              fill
-              className="object-cover"
-              priority
-            />
-          </div>
-        )}
+              <div className="px-5 py-8">
+                <MarkdownRenderer content={post.translation.contents} />
 
-        {/* Body */}
-        <MarkdownRenderer content={post.translation.contents} />
-
-        {/* Inline media (images/embeds not in markdown) */}
-        {post.media.length > 0 && (
-          <div className="mt-10 space-y-6">
-            {post.media.map((m) => (
-              <figure key={m.id}>
-                {m.type === "image" && (
-                  <div className="overflow-hidden rounded-sm bg-muted-200 relative aspect-[4/3]">
-                    <Image
-                      src={m.url}
-                      alt={m.alt_text ?? ""}
-                      fill
-                      className="object-cover"
-                    />
+                {post.media.length > 0 && (
+                  <div className="mt-10 space-y-6">
+                    {post.media.map((m) => (
+                      <figure key={m.id}>
+                        {m.type === "image" && (
+                          <div className="overflow-hidden bg-muted-200 relative aspect-[4/3]">
+                            <Image
+                              src={m.url}
+                              alt={m.alt_text ?? ""}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        )}
+                        {m.type === "embed" && (
+                          <iframe
+                            src={m.url}
+                            className="w-full aspect-video"
+                            allowFullScreen
+                            title={m.alt_text ?? "Embedded content"}
+                          />
+                        )}
+                        {m.caption && (
+                          <figcaption className="mt-2 text-caption text-secondary-400 text-center">
+                            {m.caption}
+                          </figcaption>
+                        )}
+                      </figure>
+                    ))}
                   </div>
                 )}
-                {m.type === "embed" && (
-                  <iframe
-                    src={m.url}
-                    className="w-full aspect-video rounded-sm"
-                    allowFullScreen
-                    title={m.alt_text ?? "Embedded content"}
-                  />
-                )}
-                {m.caption && (
-                  <figcaption className="mt-2 text-caption text-secondary-400 text-center">
-                    {m.caption}
-                  </figcaption>
-                )}
-              </figure>
-            ))}
-          </div>
+              </div>
+            </article>
+          </>
         )}
-      </article>
+      </div>
     </div>
   );
 }
@@ -142,8 +167,8 @@ function BackArrowIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
+      width="18"
+      height="18"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"

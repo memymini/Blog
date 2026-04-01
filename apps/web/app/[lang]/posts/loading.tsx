@@ -1,41 +1,39 @@
 export default function PostsLoading() {
   return (
-    <div className="min-h-screen bg-surface">
-      {/* Top bar skeleton */}
-      <header className="sticky top-0 z-40 bg-surface border-b border-muted-200">
-        <div
-          className="mx-auto px-4 h-14 flex items-center justify-between"
-          style={{ maxWidth: "var(--max-w-wide)" }}
-        >
-          <div className="h-4 w-24 bg-muted-200 rounded animate-pulse" />
-          <div className="h-9 w-9 bg-muted-200 rounded-sm animate-pulse" />
-        </div>
-      </header>
-
-      <main
-        className="mx-auto px-4 py-8"
-        style={{ maxWidth: "var(--max-w-wide)" }}
-      >
-        {/* Filter bar skeleton */}
-        <div className="flex gap-2 mb-6">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-9 w-10 bg-muted-200 rounded-sm animate-pulse"
-            />
-          ))}
-        </div>
-
-        {/* Post card skeletons */}
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="py-6 border-b border-muted-200">
-            <div className="h-3 w-24 bg-muted-200 rounded animate-pulse mb-3" />
-            <div className="h-5 w-3/4 bg-muted-200 rounded animate-pulse mb-2" />
-            <div className="h-4 w-full bg-muted-200 rounded animate-pulse mb-1" />
-            <div className="h-4 w-2/3 bg-muted-200 rounded animate-pulse" />
+    <div className="min-h-screen bg-muted-100 flex justify-center">
+      <div className="bg-surface min-h-screen max-w-200 w-full">
+        {/* Top bar skeleton */}
+        <div className="flex items-center gap-3 px-5 py-3 border-b border-muted-200">
+          {/* Filter buttons */}
+          <div className="flex items-center gap-2 flex-1">
+            {Array.from({ length: 7 }).map((_, i) => (
+              <div
+                key={i}
+                className="flex-none h-9 w-10 bg-muted-200 rounded-sm animate-pulse"
+              />
+            ))}
           </div>
-        ))}
-      </main>
+          {/* Lang toggle */}
+          <div className="flex-none h-9 w-9 bg-muted-200 rounded-sm animate-pulse" />
+        </div>
+
+        {/* Post item skeletons */}
+        <div className="pt-4">
+          <ul>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <li key={i} className="border-b border-muted-100 last:border-b-0 px-8 py-7">
+                {/* Date + flag */}
+                <div className="h-3 w-28 bg-muted-200 rounded animate-pulse mb-3" />
+                {/* Title — matches text-h4 height */}
+                <div
+                  className="h-5 bg-muted-200 rounded animate-pulse"
+                  style={{ width: `${55 + (i % 4) * 12}%` }}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }

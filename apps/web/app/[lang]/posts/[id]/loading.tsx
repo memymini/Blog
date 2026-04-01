@@ -1,47 +1,43 @@
 export default function PostLoading() {
   return (
-    <div className="min-h-screen bg-surface">
-      {/* Top bar skeleton */}
-      <header className="sticky top-0 z-40 bg-surface border-b border-muted-200">
-        <div
-          className="mx-auto px-4 h-14 flex items-center justify-between"
-          style={{ maxWidth: "var(--max-w-content)" }}
-        >
-          <div className="h-4 w-16 bg-muted-200 rounded animate-pulse" />
+    <div className="min-h-screen bg-muted-100 flex justify-center">
+      <div className="bg-surface min-h-screen max-w-200 w-full">
+        {/* Top bar skeleton */}
+        <div className="flex items-center justify-between px-5 py-3 border-b border-muted-200">
+          <div className="h-5 w-5 bg-muted-200 rounded animate-pulse" />
           <div className="h-9 w-9 bg-muted-200 rounded-sm animate-pulse" />
         </div>
-      </header>
 
-      <div
-        className="mx-auto px-4 py-12"
-        style={{ maxWidth: "var(--max-w-content)" }}
-      >
-        {/* Metadata skeleton */}
-        <div className="mb-6">
-          <div className="h-3 w-32 bg-muted-200 rounded animate-pulse mb-3" />
-          <div className="h-9 w-4/5 bg-muted-200 rounded animate-pulse mb-2" />
-          <div className="h-9 w-2/3 bg-muted-200 rounded animate-pulse" />
+        {/* Cover image with overlaid date + title */}
+        <div className="relative aspect-[16/9] bg-muted-200 animate-pulse">
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+          {/* Date + title pinned to bottom-left */}
+          <div className="absolute bottom-0 left-0 p-6 space-y-2">
+            <div className="h-3 w-20 bg-white/30 rounded animate-pulse" />
+            <div className="h-7 w-64 bg-white/30 rounded animate-pulse" />
+            <div className="h-7 w-44 bg-white/30 rounded animate-pulse" />
+          </div>
         </div>
 
-        {/* Cover image skeleton */}
-        <div className="mb-8 aspect-[16/9] bg-muted-200 rounded-sm animate-pulse" />
-
-        {/* Body skeleton */}
-        <div className="space-y-3">
+        {/* Body paragraphs */}
+        <div className="px-5 py-8 space-y-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
               className="h-4 bg-muted-200 rounded animate-pulse"
-              style={{ width: `${85 + (i % 3) * 5}%` }}
+              style={{ width: `${80 + (i % 3) * 7}%` }}
             />
           ))}
-          <div className="h-4 w-1/2 bg-muted-200 rounded animate-pulse" />
-          <div className="h-16" /> {/* paragraph gap */}
+          <div className="h-4 w-2/5 bg-muted-200 rounded animate-pulse" />
+
+          <div className="h-6" />
+
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i + 10}
               className="h-4 bg-muted-200 rounded animate-pulse"
-              style={{ width: `${75 + (i % 4) * 6}%` }}
+              style={{ width: `${70 + (i % 4) * 8}%` }}
             />
           ))}
         </div>

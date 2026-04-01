@@ -9,7 +9,10 @@ interface LangLayoutProps {
   params: Promise<{ lang: string }>;
 }
 
-export default async function LangLayout({ children, params }: LangLayoutProps) {
+export default async function LangLayout({
+  children,
+  params,
+}: LangLayoutProps) {
   const { lang } = await params;
 
   if (!VALID_LANGS.includes(lang as Lang)) {

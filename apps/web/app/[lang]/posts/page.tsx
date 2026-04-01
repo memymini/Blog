@@ -19,7 +19,10 @@ interface PostsPageProps {
   searchParams: Promise<{ country?: string; page?: string }>;
 }
 
-export default async function PostsPage({ params, searchParams }: PostsPageProps) {
+export default async function PostsPage({
+  params,
+  searchParams,
+}: PostsPageProps) {
   const { lang } = await params;
   const { country, page: pageStr } = await searchParams;
 
@@ -36,39 +39,35 @@ export default async function PostsPage({ params, searchParams }: PostsPageProps
   const posts = postsResponse.data ?? [];
 
   return (
-    <div className="min-h-screen bg-surface">
-      {/* Top bar */}
-      <header className="sticky top-0 z-40 bg-surface border-b border-muted-200">
-        <div
-          className="mx-auto px-4 h-14 flex items-center justify-between"
-          style={{ maxWidth: "var(--max-w-wide)" }}
-        >
-          <span className="text-body-sm font-medium text-primary-900">Travel Blog</span>
+    <div className="min-h-screen bg-muted-100 flex justify-center">
+      {/* Centered white card — full height on desktop, full-width on mobile */}
+      <div className="bg-surface min-h-screen max-w-200 w-full">
+        {/* Top bar: filter (scrollable) + language toggle */}
+        <div className="flex items-center px-4 py-4 gap-3 border-b border-muted-200 w-full">
+          <div className="flex-1 min-w-0">
+            <CountryFilterBar
+              countries={countries}
+              currentCountry={country}
+              lang={typedLang}
+            />
+          </div>
           <LanguageToggleNav currentLang={typedLang} />
         </div>
-      </header>
 
-      <main
-        className="mx-auto px-4 py-8"
-        style={{ maxWidth: "var(--max-w-wide)" }}
-      >
-        {/* Country filter */}
-        <div className="mb-6">
-          <CountryFilterBar
-            countries={countries}
-            currentCountry={country}
-            lang={typedLang}
-          />
+        <div>
+          <PostList posts={posts} lang={typedLang} />
         </div>
 
-        {/* Post list */}
-        <PostList posts={posts} lang={typedLang} />
-
         {/* Pagination */}
-        {postsResponse.meta && postsResponse.meta.total > postsResponse.meta.limit && (
-          <Pagination meta={postsResponse.meta} lang={typedLang} country={country} />
-        )}
-      </main>
+        {postsResponse.meta &&
+          postsResponse.meta.total > postsResponse.meta.limit && (
+            <Pagination
+              meta={postsResponse.meta}
+              lang={typedLang}
+              country={country}
+            />
+          )}
+      </div>
     </div>
   );
 }
@@ -86,13 +85,16 @@ function Pagination({
   const query = country ? `&country=${country}` : "";
 
   return (
-    <nav className="flex justify-center gap-3 mt-10" aria-label="Pagination">
+    <nav
+      className="flex justify-center gap-3 py-8 border-t border-muted-200"
+      aria-label="Pagination"
+    >
       {meta.page > 1 && (
         <a
           href={`/${lang}/posts?page=${meta.page - 1}${query}`}
           className="px-4 py-2 text-body-sm border border-muted-300 rounded-sm hover:bg-muted-50 transition-colors"
         >
-          Previous
+          ← Previous
         </a>
       )}
       {meta.page < totalPages && (
@@ -100,7 +102,7 @@ function Pagination({
           href={`/${lang}/posts?page=${meta.page + 1}${query}`}
           className="px-4 py-2 text-body-sm border border-muted-300 rounded-sm hover:bg-muted-50 transition-colors"
         >
-          Next
+          Next →
         </a>
       )}
     </nav>
