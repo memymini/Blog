@@ -4,11 +4,15 @@
  * @theme — Tailwind v4 CSS-based config (equivalent to theme.extend in v3).
  *
  * Naming conventions drive auto-generated utility classes:
- *   --font-size-{name}   →  text-{name}
+ *   --text-{name}        →  text-{name}   ← font-size (Tailwind v4 namespace)
  *   --color-{name}       →  text-{name} / bg-{name} / border-{name}
  *   --line-height-{name} →  leading-{name}
  *   --letter-spacing-{name} → tracking-{name}
  *   --font-weight-{name} →  font-{name}
+ *
+ * NOTE: Tailwind v4 uses --text-* for font sizes, NOT --font-size-*.
+ * Using --font-size-* only creates a CSS custom property but generates
+ * no utility class — text-h4, text-caption etc. would produce zero CSS.
  */
 @theme {
   /* ── Semantic Font Sizes ────────────────────────────────────
@@ -16,16 +20,16 @@
    *            text-body-lg, text-body-base, text-body-sm,
    *            text-caption, text-label
    */
-  --font-size-display: 3rem;
-  --font-size-h1: 2.25rem;
-  --font-size-h2: 1.75rem;
-  --font-size-h3: 1.375rem;
-  --font-size-h4: 1.125rem;
-  --font-size-body-lg: 1.0625rem;
-  --font-size-body-base: 1rem;
-  --font-size-body-sm: 0.9375rem;
-  --font-size-caption: 0.8125rem;
-  --font-size-label: 0.75rem;
+  --text-display: 3rem; /* 48px */
+  --text-h1: 2.25rem; /* 36px */
+  --text-h2: 1.75rem; /* 28px */
+  --text-h3: 1.375rem; /* 22px */
+  --text-h4: 1.125rem; /* 18px */
+  --text-body-lg: 1.0625rem; /* 17px */
+  --text-body-base: 1rem; /* 16px */
+  --text-body-sm: 0.9375rem; /* 15px */
+  --text-caption: 0.8125rem; /* 13px */
+  --text-label: 0.75rem; /* 12px */
 
   /* ── Editorial Line Heights ─────────────────────────────────
    * Overrides Tailwind defaults with editorial values.
@@ -108,32 +112,43 @@
 }
 
 /* ── Base ────────────────────────────────────────────────── */
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
+/*
+ * IMPORTANT: All base resets must live inside @layer base.
+ * In Tailwind v4 all utilities are in @layer utilities.
+ * Any CSS written *outside* a layer has higher cascade priority than
+ * layered CSS — including utility layers — so an unlayered
+ * `* { padding: 0; margin: 0 }` would silently override every px-*, py-*,
+ * m-*, gap-* class. Wrapping in @layer base keeps everything in the
+ * correct cascade order: base < components < utilities.
+ */
+@layer base {
+  html,
+  body {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
 
-body {
-  background-color: var(--color-muted-100);
-  color: var(--color-primary-900);
-  font-size: var(--font-size-body-base);
-  line-height: var(--line-height-editorial-relaxed);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  body {
+    background-color: var(--color-muted-100);
+    color: var(--color-primary-900);
+    font-size: var(--text-body-base);
+    line-height: var(--line-height-editorial-relaxed);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
 /* ── Markdown prose ──────────────────────────────────────── */
@@ -143,7 +158,7 @@ a {
 }
 
 .prose h1 {
-  font-size: var(--font-size-h1);
+  font-size: var(--text-h1);
   font-weight: 700;
   line-height: var(--line-height-editorial-snug);
   letter-spacing: var(--letter-spacing-editorial-snug);
@@ -152,7 +167,7 @@ a {
 }
 
 .prose h2 {
-  font-size: var(--font-size-h2);
+  font-size: var(--text-h2);
   font-weight: 600;
   line-height: var(--line-height-editorial-snug);
   margin-top: 2rem;
@@ -160,14 +175,14 @@ a {
 }
 
 .prose h3 {
-  font-size: var(--font-size-h3);
+  font-size: var(--text-h3);
   font-weight: 600;
   margin-top: 1.5rem;
   margin-bottom: 0.5rem;
 }
 
 .prose h4 {
-  font-size: var(--font-size-h4);
+  font-size: var(--text-h4);
   font-weight: 600;
   margin-top: 1.25rem;
   margin-bottom: 0.5rem;
@@ -248,6 +263,8 @@ a {
   border-radius: 4px;
   margin: 1.5rem auto;
   display: block;
+  /* Inline style="width:X%;..." from the editor overrides width/margin;
+     max-width ensures the image never overflows its container. */
 }
 
 .prose hr {
