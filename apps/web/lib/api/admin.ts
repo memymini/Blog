@@ -47,6 +47,23 @@ export async function deletePost(id: number): Promise<void> {
   return apiFetch<void>(`${BASE}/${id}`, { method: "DELETE" });
 }
 
+export async function uploadMediaFile(
+  id: number,
+  file: File,
+): Promise<{ url: string }> {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+  const form = new FormData();
+  form.append("file", file);
+  const res = await fetch(`${apiUrl}/admin/posts/${id}/media/upload`, {
+    method: "POST",
+    credentials: "include",
+    body: form,
+  });
+  if (!res.ok) throw new Error("Media upload failed");
+  const json = await res.json() as { success: boolean; data: { url: string } };
+  return json.data;
+}
+
 export async function uploadCover(
   id: number,
   file: File,
