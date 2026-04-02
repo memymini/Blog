@@ -3,9 +3,14 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
+import type { INestApplication } from '@nestjs/common';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+let app: INestApplication | undefined;
+
+async function createApp(): Promise<INestApplication> {
+  if (app) return app;
+
+  app = await NestFactory.create(AppModule);
 
   app.use(cookieParser());
 
@@ -15,7 +20,6 @@ async function bootstrap() {
 
   app.enableCors({
     origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-      // Allow requests with no origin (e.g. server-to-server, curl)
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
@@ -46,6 +50,18 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
 
-  await app.listen(process.env.PORT ?? 4000);
+  await app.init();
+  return app;
 }
-bootstrap();
+
+// Vercel serverless handler
+export default async function handler(req: unknown, res: unknown) {
+  const nestApp = await createApp();
+  const server = nestApp.getHttpAdapter().getInstance() as (req: unknown, res: unknown) => void;
+  server(req, res);
+}
+
+// Local dev — only runs when executed directly (not imported by Vercel)
+if (process.env.NODE_ENV !== 'production' || process.env.IS_LOCAL === 'true') {
+  createApp().then((nestApp) => nestApp.listen(process.env.PORT ?? 4000));
+}
