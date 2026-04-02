@@ -1,13 +1,19 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 
 function DashboardShell({ children }: { children: ReactNode }) {
-  const { isLoading } = useAuth();
+  const { isLoading, user } = useAuth();
+  const router = useRouter();
 
-  if (isLoading) {
+  useEffect(() => {
+    if (!isLoading && !user) router.push("/admin/login");
+  }, [isLoading, user, router]);
+
+  if (isLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted-50">
         <div className="w-6 h-6 border-2 border-primary-900 border-t-transparent rounded-full animate-spin" />

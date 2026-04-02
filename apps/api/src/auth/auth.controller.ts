@@ -6,11 +6,9 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Res,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import type { Response } from 'express';
 import {
   ApiBearerAuth,
   ApiExtraModels,
@@ -38,10 +36,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Sign in with email and password', description: 'Returns access_token and refresh_token on success.' })
   @ApiOkResponse(apiRes({ $ref: getSchemaPath(LoginResponseSchema) }))
   @ApiUnauthorizedResponse({ description: 'Invalid credentials' })
-  async login(
-    @Body() dto: LoginDto,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async login(@Body() dto: LoginDto) {
     const { data, error } = await this.supabase.client.auth.signInWithPassword({
       email: dto.email,
       password: dto.password,
@@ -50,15 +45,6 @@ export class AuthController {
     if (error || !data.session) {
       throw new UnauthorizedException(error?.message ?? 'Login failed');
     }
-
-    const isProd = process.env.NODE_ENV === 'production';
-    res.cookie('token', data.session.access_token, {
-      httpOnly: true,
-      sameSite: isProd ? 'none' : 'strict',
-      path: '/',
-      maxAge: (data.session.expires_in ?? 3600) * 1000,
-      secure: isProd,
-    });
 
     return ok({
       access_token: data.session.access_token,
@@ -79,15 +65,11 @@ export class AuthController {
   @ApiOperation({ summary: 'Sign out', description: 'Invalidates the current session server-side.' })
   @ApiNoContentResponse({ description: 'Signed out successfully' })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid token' })
-  async logout(
-    @Headers('authorization') auth: string,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async logout(@Headers('authorization') auth: string) {
     const token = auth?.startsWith('Bearer ') ? auth.slice(7) : undefined;
     if (token) {
       await this.supabase.adminClient.auth.admin.signOut(token);
     }
-    res.clearCookie('token', { path: '/' });
   }
 
   @Get('me')

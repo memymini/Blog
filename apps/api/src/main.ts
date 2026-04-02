@@ -14,12 +14,19 @@ async function createApp(): Promise<INestApplication> {
 
   app.use(cookieParser());
 
-  const allowedOrigins = (process.env.CORS_ORIGIN ?? 'http://localhost:3000')
-    .split(',')
-    .map((o) => o.trim());
+  const allowedOrigins = [
+    'http://localhost:3000',
+    ...(process.env.CORS_ORIGIN ?? '')
+      .split(',')
+      .map((o) => o.trim())
+      .filter(Boolean),
+  ];
 
   app.enableCors({
-    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
@@ -59,7 +66,10 @@ async function createApp(): Promise<INestApplication> {
 // Vercel serverless handler
 export default async function handler(req: unknown, res: unknown) {
   const nestApp = await createApp();
-  const server = nestApp.getHttpAdapter().getInstance() as (req: unknown, res: unknown) => void;
+  const server = nestApp.getHttpAdapter().getInstance() as (
+    req: unknown,
+    res: unknown,
+  ) => void;
   server(req, res);
 }
 

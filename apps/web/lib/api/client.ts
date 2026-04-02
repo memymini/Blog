@@ -16,8 +16,8 @@ function getBaseUrl() {
  * Core typed fetch wrapper. Unwraps ApiResponse<T> and PaginatedResponse<T>
  * envelopes automatically — callers receive T directly.
  *
- * - Client-side: sends cookies automatically via `credentials: 'include'`
- * - Server-side (RSC): plain fetch, no credentials injected here
+ * - Client-side: reads JWT from localStorage and sends as Authorization: Bearer header
+ * - Server-side (RSC): plain fetch, no auth injected
  *
  * Throws ApiError on non-2xx responses.
  */
@@ -32,16 +32,17 @@ export async function apiFetch<T>(
     ...(init.headers as Record<string, string> | undefined),
   };
 
+  // Browser: attach JWT from localStorage as Bearer token
+  if (isClient() && !headers["Authorization"]) {
+    const token = localStorage.getItem("token");
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const fetchOptions: RequestInit = {
     ...init,
     headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
   };
-
-  // Browser: include cookies so NestJS receives the httpOnly token cookie
-  if (isClient()) {
-    fetchOptions.credentials = "include";
-  }
 
   const res = await fetch(`${getBaseUrl()}${path}`, fetchOptions);
 
@@ -78,24 +79,4 @@ export async function apiFetch<T>(
   }
 
   return json as T;
-}
-
-/**
- * Authenticated fetch for server-side RSC calls (Route Handlers, Server Components).
- * Reads the `token` httpOnly cookie via next/headers and forwards it as Bearer.
- */
-export async function authFetch<T>(
-  path: string,
-  options: RequestOptions = {},
-): Promise<T> {
-  const { cookies } = await import("next/headers");
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
-
-  const headers: Record<string, string> = {
-    ...(options.headers as Record<string, string> | undefined),
-  };
-  if (token) headers["Authorization"] = `Bearer ${token}`;
-
-  return apiFetch<T>(path, { ...options, headers });
 }
