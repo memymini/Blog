@@ -37,9 +37,39 @@ export async function generateMetadata({ params }: PostPageProps) {
   const { lang, id } = await params;
   const post = await getPost(Number(id), lang);
   if (!post) return {};
+
+  const url = `https://memymini.vercel.app/${lang}/posts/${id}`;
+  const title = post.translation.title;
+  const description = post.translation.excerpt ?? undefined;
+  const images = post.cover_url
+    ? [{ url: post.cover_url, alt: title }]
+    : [];
+
   return {
-    title: post.translation.title,
-    description: post.translation.excerpt ?? undefined,
+    title,
+    description,
+    alternates: {
+      canonical: url,
+      languages: {
+        ko: `https://memymini.vercel.app/ko/posts/${id}`,
+        en: `https://memymini.vercel.app/en/posts/${id}`,
+      },
+    },
+    openGraph: {
+      type: "article",
+      url,
+      title,
+      description,
+      publishedTime: post.created_at,
+      locale: lang === "ko" ? "ko_KR" : "en_US",
+      images,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: post.cover_url ? [post.cover_url] : [],
+    },
   };
 }
 

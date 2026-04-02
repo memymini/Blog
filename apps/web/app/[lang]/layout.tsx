@@ -9,6 +9,21 @@ interface LangLayoutProps {
   params: Promise<{ lang: string }>;
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params;
+  return {
+    alternates: {
+      languages: {
+        ko: `/ko/posts`,
+        en: `/en/posts`,
+      },
+    },
+    other: {
+      "content-language": lang,
+    },
+  };
+}
+
 export default async function LangLayout({
   children,
   params,
