@@ -51,12 +51,13 @@ export class AuthController {
       throw new UnauthorizedException(error?.message ?? 'Login failed');
     }
 
+    const isProd = process.env.NODE_ENV === 'production';
     res.cookie('token', data.session.access_token, {
       httpOnly: true,
-      sameSite: 'strict',
+      sameSite: isProd ? 'none' : 'strict',
       path: '/',
       maxAge: (data.session.expires_in ?? 3600) * 1000,
-      secure: process.env.NODE_ENV === 'production',
+      secure: isProd,
     });
 
     return ok({
