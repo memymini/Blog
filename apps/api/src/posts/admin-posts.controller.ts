@@ -111,7 +111,7 @@ export class AdminPostsController {
   // ── Cover image ───────────────────────────────────────────────────────────
 
   @Post(':id/cover')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 10 * 1024 * 1024 } }))
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Upload cover image — URL persisted to posts.cover_url' })
   @ApiParam({ name: 'id', type: 'integer', example: 1 })
@@ -146,16 +146,16 @@ export class AdminPostsController {
   }
 
   @Post(':id/media/upload')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 50 * 1024 * 1024 } }))
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Upload a media image file — returns the public URL' })
+  @ApiOperation({ summary: 'Upload a media file (image or video) — returns the public URL' })
   @ApiParam({ name: 'id', type: 'integer', example: 1 })
   @ApiBody({
     schema: {
       type: 'object',
       required: ['file'],
       properties: {
-        file: { type: 'string', format: 'binary', description: 'Image file (jpeg / png / webp)' },
+        file: { type: 'string', format: 'binary', description: 'Image or video file' },
       },
     },
   })

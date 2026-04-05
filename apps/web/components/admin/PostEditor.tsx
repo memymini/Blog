@@ -226,7 +226,8 @@ export function PostEditor({
     }
     try {
       const { url } = await uploadMediaFile(postId, file);
-      const added = await addMedia(postId, { type: "image", url });
+      const type = file.type.startsWith("video/") ? "video" : "image";
+      const added = await addMedia(postId, { type, url });
       setMedia((prev) => [...prev, added]);
     } catch (err) {
       showToast(err instanceof ApiError ? err.message : "Failed to upload media", "error");
@@ -465,6 +466,13 @@ export function PostEditor({
                     />
                   </div>
                 )}
+                {m.type === "video" && (
+                  <video
+                    src={m.url}
+                    controls
+                    className="w-full"
+                  />
+                )}
                 {m.type === "embed" && (
                   <iframe
                     src={m.url}
@@ -551,7 +559,7 @@ export function PostEditor({
                 <input
                   ref={mediaFileRef}
                   type="file"
-                  accept="image/*"
+                  accept="image/*,video/*"
                   className="hidden"
                   onChange={(e) => {
                     const file = e.target.files?.[0];

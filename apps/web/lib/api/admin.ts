@@ -83,7 +83,8 @@ export async function uploadCover(
     body: form,
   });
   if (!res.ok) throw new Error("Cover upload failed");
-  return res.json() as Promise<{ url: string }>;
+  const json = await res.json() as { success: boolean; data: { url: string } };
+  return json.data;
 }
 
 export async function listMedia(id: number): Promise<PostMedia[]> {

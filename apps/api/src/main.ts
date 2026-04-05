@@ -10,8 +10,12 @@ let app: INestApplication | undefined;
 async function createApp(): Promise<INestApplication> {
   if (app) return app;
 
-  app = await NestFactory.create(AppModule);
+  app = await NestFactory.create(AppModule, { bodyParser: false });
 
+  // Increase JSON / urlencoded body limits (default 100 kb is too small for rich markdown)
+  const { json, urlencoded } = await import('express');
+  app.use(json({ limit: '10mb' }));
+  app.use(urlencoded({ limit: '10mb', extended: true }));
   app.use(cookieParser());
 
   const allowedOrigins = [

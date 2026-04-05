@@ -167,6 +167,13 @@ export default async function PostPage({ params }: PostPageProps) {
                             />
                           </div>
                         )}
+                        {m.type === "video" && (
+                          <video
+                            src={m.url}
+                            controls
+                            className="w-full"
+                          />
+                        )}
                         {m.type === "embed" && (
                           <iframe
                             src={m.url}
