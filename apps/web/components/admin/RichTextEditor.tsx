@@ -2,6 +2,7 @@
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import TextAlign from "@tiptap/extension-text-align";
 import { Markdown } from "tiptap-markdown";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -32,6 +33,7 @@ export function RichTextEditor({
   const editor = useEditor({
     extensions: [
       StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
       ResizableImage.configure({ inline: false, allowBase64: false }),
       Markdown.configure({
         html: true, // allow HTML blocks so <img> tags round-trip correctly
@@ -60,10 +62,11 @@ export function RichTextEditor({
 
         const styles: string[] = ["display:block"];
         if (width != null) styles.push(`width:${width}%`);
-        if (align === "center") styles.push("margin:0 auto");
-        else if (align === "right") styles.push("margin-left:auto");
+        if (align === "center") styles.push("margin-left:auto;margin-right:auto");
+        else if (align === "right") styles.push("margin-left:auto;margin-right:0");
 
-        const htmlTag = `<img src="${src}" style="${styles.join(";")}">`;
+        // data-align is required for parseHTML to restore alignment on reload
+        const htmlTag = `<img src="${src}" data-align="${align}" style="${styles.join(";")}">`;
         // Replace first matching markdown image syntax for this src
         md = md.replace(
           new RegExp(`!\\[[^\\]]*\\]\\(${escapeRegex(src)}(?:\\s[^)]*)?\\)`),
@@ -191,6 +194,19 @@ export function RichTextEditor({
             title="Insert image by URL"
           >
             <ImageLinkIcon />
+          </ToolbarButton>
+
+          <Separator />
+
+          {/* Text alignment */}
+          <ToolbarButton onClick={() => editor.chain().focus().setTextAlign("left").run()} active={editor.isActive({ textAlign: "left" })} title="Align left">
+            <TextAlignLeftIcon />
+          </ToolbarButton>
+          <ToolbarButton onClick={() => editor.chain().focus().setTextAlign("center").run()} active={editor.isActive({ textAlign: "center" })} title="Align center">
+            <TextAlignCenterIcon />
+          </ToolbarButton>
+          <ToolbarButton onClick={() => editor.chain().focus().setTextAlign("right").run()} active={editor.isActive({ textAlign: "right" })} title="Align right">
+            <TextAlignRightIcon />
           </ToolbarButton>
 
           <Separator />
@@ -380,6 +396,30 @@ function SpinnerIcon() {
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin">
       <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" strokeOpacity="0.25" />
       <path d="M21 12a9 9 0 00-9-9" />
+    </svg>
+  );
+}
+
+function TextAlignLeftIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="15" y2="12" /><line x1="3" y1="18" x2="18" y2="18" />
+    </svg>
+  );
+}
+
+function TextAlignCenterIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <line x1="3" y1="6" x2="21" y2="6" /><line x1="6" y1="12" x2="18" y2="12" /><line x1="4" y1="18" x2="20" y2="18" />
+    </svg>
+  );
+}
+
+function TextAlignRightIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <line x1="3" y1="6" x2="21" y2="6" /><line x1="9" y1="12" x2="21" y2="12" /><line x1="6" y1="18" x2="21" y2="18" />
     </svg>
   );
 }

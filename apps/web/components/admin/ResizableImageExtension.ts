@@ -35,13 +35,15 @@ export const ResizableImage = Image.extend({
       align: {
         default: "center",
         parseHTML: (el) => {
+          // data-align is the canonical source (written by onUpdate in RichTextEditor)
           const d = el.getAttribute("data-align");
-          if (d) return d;
+          if (d === "left" || d === "center" || d === "right") return d;
+          // Fallback: infer from explicit margin properties
           const ml = el.style.marginLeft;
           const mr = el.style.marginRight;
           if (ml === "auto" && mr === "auto") return "center";
           if (ml === "auto") return "right";
-          if (mr === "auto") return "left";
+          if (mr === "auto" || mr === "0px" || mr === "0") return "left";
           return "center";
         },
         renderHTML: (attrs) => ({ "data-align": attrs.align }),
