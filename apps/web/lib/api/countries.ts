@@ -7,5 +7,9 @@ const USE_MOCK =
 
 export async function getCountries(): Promise<Country[]> {
   if (USE_MOCK) return getMockCountries();
-  return apiFetch<Country[]>("/countries");
+  try {
+    return await apiFetch<Country[]>("/countries");
+  } catch {
+    return [];
+  }
 }

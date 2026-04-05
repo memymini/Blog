@@ -21,7 +21,11 @@ export async function listPosts(
   if (params.page) query.set("page", String(params.page));
   if (params.limit) query.set("limit", String(params.limit));
 
-  return apiFetch<PaginatedResponse<PostListItem>>(`/posts?${query}`);
+  try {
+    return await apiFetch<PaginatedResponse<PostListItem>>(`/posts?${query}`);
+  } catch {
+    return { success: true, data: [], error: null, meta: { total: 0, page: 1, limit: params.limit ?? 20 } };
+  }
 }
 
 export async function getPost(
