@@ -2,6 +2,17 @@ import Link from "next/link";
 import type { PostListItem, Lang } from "@repo/types";
 import { EmptyState } from "./EmptyState";
 
+const EMPTY_T: Record<Lang, { title: string; description: string }> = {
+  ko: {
+    title: "게시물이 없어요.",
+    description: "다른 나라나 언어를 선택해 보세요.",
+  },
+  en: {
+    title: "No posts found",
+    description: "Try selecting a different country or language.",
+  },
+};
+
 interface PostListProps {
   posts: PostListItem[];
   lang: Lang;
@@ -17,9 +28,10 @@ function formatDate(isoString: string): string {
 
 export function PostList({ posts, lang }: PostListProps) {
   if (posts.length === 0) {
+    const t = EMPTY_T[lang];
     return (
       <div className="py-16">
-        <EmptyState description="Try selecting a different country or language." />
+        <EmptyState title={t.title} description={t.description} />
       </div>
     );
   }

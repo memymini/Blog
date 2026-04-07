@@ -13,7 +13,7 @@ const geistMono = localFont({
 });
 
 const SITE_URL = "https://memymini.vercel.app";
-const SITE_NAME = "MeMyMini";
+const SITE_NAME = "memymini";
 const SITE_DESCRIPTION =
   "My travel blog — stories, places, and moments from around the world.";
 

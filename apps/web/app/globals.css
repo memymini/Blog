@@ -103,6 +103,10 @@
   /* Surface: card and panel backgrounds */
   --color-surface: #ffffff;
   --color-surface-raised: #fdfdfd;
+
+  /* Warm: soft yellow page background */
+  --color-warm-50: #fefde8;
+  --color-warm-100: #fef9c3;
 }
 
 /* ── Layout constants (not Tailwind tokens) ──────────────── */
@@ -129,7 +133,7 @@
   }
 
   body {
-    background-color: var(--color-muted-100);
+    background-color: var(--color-warm-50);
     color: var(--color-primary-900);
     font-size: var(--text-body-base);
     line-height: var(--line-height-editorial-relaxed);

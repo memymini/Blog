@@ -5,6 +5,7 @@ import { getCountries } from "@/lib/api/countries";
 import { CountryFilterBar } from "@/components/public/CountryFilterBar";
 import { PostList } from "@/components/public/PostList";
 import { LanguageToggleNav } from "@/components/public/LanguageToggleNav";
+import { ProfileCard } from "@/components/public/ProfileCard";
 
 export const revalidate = 3600;
 
@@ -39,34 +40,41 @@ export default async function PostsPage({
   const posts = postsResponse.data ?? [];
 
   return (
-    <div className="min-h-screen bg-muted-100 flex justify-center">
-      {/* Centered white card — full height on desktop, full-width on mobile */}
-      <div className="bg-surface min-h-screen max-w-200 w-full">
-        {/* Top bar: filter (scrollable) + language toggle */}
-        <div className="flex items-center px-4 py-4 gap-3 border-b border-muted-200 w-full">
-          <div className="flex-1 min-w-0">
-            <CountryFilterBar
-              countries={countries}
-              currentCountry={country}
-              lang={typedLang}
-            />
+    <div className="min-h-screen bg-warm-50 flex justify-center px-4 py-4">
+      <div className="w-full max-w-5xl flex gap-4 items-start">
+        {/* Profile sidebar — hidden on mobile, visible on md+ */}
+        <div className="hidden md:block w-52 shrink-0 sticky top-4">
+          <ProfileCard lang={typedLang} />
+        </div>
+
+        {/* Main content */}
+        <div className="flex-1 min-w-0 bg-surface shadow-sm overflow-hidden">
+          {/* Top bar: filter (scrollable) + language toggle */}
+          <div className="flex items-center px-4 py-4 gap-3 border-b border-muted-200 w-full">
+            <div className="flex-1 min-w-0">
+              <CountryFilterBar
+                countries={countries}
+                currentCountry={country}
+                lang={typedLang}
+              />
+            </div>
+            <LanguageToggleNav currentLang={typedLang} />
           </div>
-          <LanguageToggleNav currentLang={typedLang} />
-        </div>
 
-        <div>
-          <PostList posts={posts} lang={typedLang} />
-        </div>
+          <div>
+            <PostList posts={posts} lang={typedLang} />
+          </div>
 
-        {/* Pagination */}
-        {postsResponse.meta &&
-          postsResponse.meta.total > postsResponse.meta.limit && (
-            <Pagination
-              meta={postsResponse.meta}
-              lang={typedLang}
-              country={country}
-            />
-          )}
+          {/* Pagination */}
+          {postsResponse.meta &&
+            postsResponse.meta.total > postsResponse.meta.limit && (
+              <Pagination
+                meta={postsResponse.meta}
+                lang={typedLang}
+                country={country}
+              />
+            )}
+        </div>
       </div>
     </div>
   );

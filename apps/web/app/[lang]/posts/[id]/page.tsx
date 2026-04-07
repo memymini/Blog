@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Lang } from "@repo/types";
 import { listPosts, getPost } from "@/lib/api/posts";
 import { AdminPostView } from "@/components/public/AdminPostView";
+import { ProfileCard } from "@/components/public/ProfileCard";
 
 export const revalidate = 3600;
 
@@ -74,10 +75,17 @@ export default async function PostPage({ params }: PostPageProps) {
   const typedLang = lang as Lang;
 
   return (
-    <div className="min-h-screen bg-muted-100 flex justify-center">
-      <div className="max-w-200 w-full bg-surface min-h-screen">
-        {/* AdminPostView shows edit button only when authenticated (client-side auth check) */}
-        <AdminPostView post={post} lang={typedLang} />
+    <div className="min-h-screen bg-warm-50 flex justify-center px-4 py-4">
+      <div className="w-full max-w-5xl flex gap-4 items-start">
+        {/* Profile sidebar */}
+        <div className="hidden md:block w-52 shrink-0 sticky top-4">
+          <ProfileCard lang={typedLang} />
+        </div>
+
+        {/* Post content */}
+        <div className="flex-1 min-w-0 bg-surface shadow-sm overflow-hidden">
+          <AdminPostView post={post} lang={typedLang} />
+        </div>
       </div>
     </div>
   );
