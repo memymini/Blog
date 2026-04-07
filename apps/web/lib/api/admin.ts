@@ -4,6 +4,7 @@ import type {
   CreatePostPayload,
   UpdatePostPayload,
   CreateMediaPayload,
+  UpdateMediaPayload,
   PostMedia,
   PaginatedResponse,
 } from "@repo/types";
@@ -97,6 +98,17 @@ export async function addMedia(
 ): Promise<PostMedia> {
   return apiFetch<PostMedia>(`${BASE}/${id}/media`, {
     method: "POST",
+    body: payload,
+  });
+}
+
+export async function updateMedia(
+  postId: number,
+  mediaId: number,
+  payload: UpdateMediaPayload,
+): Promise<PostMedia> {
+  return apiFetch<PostMedia>(`${BASE}/${postId}/media/${mediaId}`, {
+    method: "PATCH",
     body: payload,
   });
 }

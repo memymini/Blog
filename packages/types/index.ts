@@ -59,6 +59,8 @@ export interface PostMedia {
   readonly alt_text: string | null;
   readonly caption: string | null;
   readonly display_order: number;
+  /** Display width as a percentage (10–100). Null means full-width (100%). */
+  readonly width: number | null;
 }
 
 // ─── Public View Types ────────────────────────────────────────────────────────
@@ -163,6 +165,13 @@ export interface CreateMediaPayload {
   readonly alt_text?: string;
   readonly caption?: string;
   readonly display_order?: number;
+  readonly width?: number;
+}
+
+export interface UpdateMediaPayload {
+  readonly width?: number;
+  readonly caption?: string;
+  readonly alt_text?: string;
 }
 
 export interface ListPostsQuery {

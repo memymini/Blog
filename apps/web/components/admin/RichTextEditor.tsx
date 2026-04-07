@@ -3,11 +3,72 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
+import { Paragraph } from "@tiptap/extension-paragraph";
+import { Heading } from "@tiptap/extension-heading";
+import { DOMSerializer } from "@tiptap/pm/model";
+import { defaultMarkdownSerializer } from "prosemirror-markdown";
 import { Markdown } from "tiptap-markdown";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { uploadMediaFile } from "@/lib/api/admin";
 import { ResizableImage } from "@/components/admin/ResizableImageExtension";
+import { VideoNode } from "@/components/admin/VideoExtension";
+
+// Serializes the inline content of a ProseMirror node to an HTML string.
+// Used so that aligned blocks persist with their formatting (bold, italic, etc.).
+function nodeContentToHTML(node: Parameters<typeof DOMSerializer.fromSchema>[0] extends never ? never : any): string {
+  const serializer = DOMSerializer.fromSchema(node.type.schema);
+  const fragment = serializer.serializeFragment(node.content);
+  const tmp = document.createElement("div");
+  tmp.appendChild(fragment);
+  return tmp.innerHTML;
+}
+
+// Extends paragraph serialization: aligned paragraphs are stored as
+// <p style="text-align:..."> HTML blocks so alignment survives save/reload.
+const AlignedParagraph = Paragraph.extend({
+  addStorage() {
+    return {
+      markdown: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        serialize(state: any, node: any) {
+          const align = node.attrs.textAlign;
+          if (align && align !== "left") {
+            state.write(`<p style="text-align:${align}">${nodeContentToHTML(node)}</p>`);
+            state.closeBlock(node);
+          } else {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (defaultMarkdownSerializer.nodes.paragraph as any)(state, node);
+          }
+        },
+        parse: {},
+      },
+    };
+  },
+});
+
+// Same treatment for headings (h1–h3).
+const AlignedHeading = Heading.extend({
+  addStorage() {
+    return {
+      markdown: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        serialize(state: any, node: any) {
+          const align = node.attrs.textAlign;
+          if (align && align !== "left") {
+            const tag = `h${node.attrs.level}`;
+            state.write(`<${tag} style="text-align:${align}">${nodeContentToHTML(node)}</${tag}>`);
+            state.closeBlock(node);
+          } else {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (defaultMarkdownSerializer.nodes.heading as any)(state, node);
+          }
+        },
+        parse: {},
+      },
+    };
+  },
+});
 
 interface RichTextEditorProps {
   value: string;
@@ -26,15 +87,23 @@ export function RichTextEditor({
   className,
 }: RichTextEditorProps) {
   const imageFileRef = useRef<HTMLInputElement>(null);
+  const videoFileRef = useRef<HTMLInputElement>(null);
   const [showImageUrlInput, setShowImageUrlInput] = useState(false);
+  const [showVideoUrlInput, setShowVideoUrlInput] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isUploadingVideo, setIsUploadingVideo] = useState(false);
 
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
+      // Disable StarterKit's paragraph/heading so our aligned versions take over
+      StarterKit.configure({ heading: false, paragraph: false }),
+      AlignedParagraph,
+      AlignedHeading.configure({ levels: [1, 2, 3] }),
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       ResizableImage.configure({ inline: false, allowBase64: false }),
+      VideoNode,
       Markdown.configure({
         html: true, // allow HTML blocks so <img> tags round-trip correctly
         transformPastedText: true,
@@ -88,14 +157,18 @@ export function RichTextEditor({
     immediatelyRender: false,
   });
 
-  // Sync external value changes (e.g. switching KO ↔ EN tabs)
+  // Sync external value changes (e.g. switching KO ↔ EN tabs).
+  // setContent triggers Tiptap's ReactNodeViewRenderer which calls flushSync internally.
+  // Deferring to a macrotask ensures React has finished its current flush before flushSync runs.
   useEffect(() => {
     if (!editor) return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const current = (editor.storage as any).markdown.getMarkdown() as string;
-    if (current !== value) {
+    if (current === value) return;
+    const id = setTimeout(() => {
       editor.commands.setContent(value, { emitUpdate: false });
-    }
+    }, 0);
+    return () => clearTimeout(id);
   }, [value, editor]);
 
   // Insert image by URL
@@ -107,12 +180,19 @@ export function RichTextEditor({
     setShowImageUrlInput(false);
   }
 
+  // Insert video by URL
+  function insertVideoUrl() {
+    const url = videoUrl.trim();
+    if (!url || !editor) return;
+    editor.chain().focus().setVideo({ src: url }).run();
+    setVideoUrl("");
+    setShowVideoUrlInput(false);
+  }
+
   // Upload image file → insert URL returned by the media API
   async function handleImageFile(file: File) {
     if (!editor) return;
     if (!postId) {
-      // No postId yet — can't upload. Ask the user to save first.
-      // (Inserting a base64 data URL would break markdown serialization.)
       alert("Save the post first, then you can upload images into the content.");
       return;
     }
@@ -124,6 +204,24 @@ export function RichTextEditor({
       // silent — user sees nothing inserted
     } finally {
       setIsUploadingImage(false);
+    }
+  }
+
+  // Upload video file → insert as VideoNode
+  async function handleVideoFile(file: File) {
+    if (!editor) return;
+    if (!postId) {
+      alert("Save the post first, then you can upload videos into the content.");
+      return;
+    }
+    setIsUploadingVideo(true);
+    try {
+      const { url } = await uploadMediaFile(postId, file);
+      editor.chain().focus().setVideo({ src: url }).run();
+    } catch {
+      // silent
+    } finally {
+      setIsUploadingVideo(false);
     }
   }
 
@@ -189,11 +287,30 @@ export function RichTextEditor({
 
           {/* Image — by URL */}
           <ToolbarButton
-            onClick={() => setShowImageUrlInput((v) => !v)}
+            onClick={() => { setShowImageUrlInput((v) => !v); setShowVideoUrlInput(false); }}
             active={showImageUrlInput}
             title="Insert image by URL"
           >
             <ImageLinkIcon />
+          </ToolbarButton>
+
+          {/* Video — file upload */}
+          <ToolbarButton
+            onClick={() => videoFileRef.current?.click()}
+            active={false}
+            disabled={isUploadingVideo}
+            title="Insert video from file"
+          >
+            {isUploadingVideo ? <SpinnerIcon /> : <VideoIcon />}
+          </ToolbarButton>
+
+          {/* Video — by URL */}
+          <ToolbarButton
+            onClick={() => { setShowVideoUrlInput((v) => !v); setShowImageUrlInput(false); }}
+            active={showVideoUrlInput}
+            title="Insert video by URL"
+          >
+            <VideoLinkIcon />
           </ToolbarButton>
 
           <Separator />
@@ -252,7 +369,36 @@ export function RichTextEditor({
         </div>
       )}
 
-      {/* Hidden file input */}
+      {/* Video URL input popover */}
+      {showVideoUrlInput && (
+        <div className="flex gap-2 mb-3">
+          <input
+            type="url"
+            value={videoUrl}
+            onChange={(e) => setVideoUrl(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); insertVideoUrl(); } }}
+            placeholder="https://example.com/video.mp4"
+            autoFocus
+            className="flex-1 h-8 px-2 text-body-sm border border-muted-300 rounded-sm bg-surface focus:outline-none focus:border-primary-400 transition-colors"
+          />
+          <button
+            type="button"
+            onMouseDown={(e) => { e.preventDefault(); insertVideoUrl(); }}
+            className="h-8 px-3 text-caption bg-primary-900 text-white rounded-sm hover:bg-primary-800 transition-colors"
+          >
+            Insert
+          </button>
+          <button
+            type="button"
+            onClick={() => { setShowVideoUrlInput(false); setVideoUrl(""); }}
+            className="h-8 px-2 text-caption text-secondary-500 hover:text-primary-900 transition-colors"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* Hidden file inputs */}
       <input
         ref={imageFileRef}
         type="file"
@@ -264,11 +410,22 @@ export function RichTextEditor({
           e.target.value = "";
         }}
       />
+      <input
+        ref={videoFileRef}
+        type="file"
+        accept="video/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) handleVideoFile(file);
+          e.target.value = "";
+        }}
+      />
 
       {/* Placeholder */}
       {!editor?.getText() && (
         <p className="absolute left-0 text-body-sm text-secondary-300 pointer-events-none select-none"
-          style={{ top: showImageUrlInput ? "96px" : "56px" }}>
+          style={{ top: showImageUrlInput || showVideoUrlInput ? "96px" : "56px" }}>
           {placeholder}
         </p>
       )}
@@ -420,6 +577,25 @@ function TextAlignRightIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
       <line x1="3" y1="6" x2="21" y2="6" /><line x1="9" y1="12" x2="21" y2="12" /><line x1="6" y1="18" x2="21" y2="18" />
+    </svg>
+  );
+}
+
+function VideoIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="23 7 16 12 23 17 23 7" />
+      <rect x="1" y="5" width="15" height="14" rx="2" />
+    </svg>
+  );
+}
+
+function VideoLinkIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="23 7 16 12 23 17 23 7" />
+      <rect x="1" y="5" width="15" height="14" rx="2" />
+      <line x1="8" y1="2" x2="14" y2="2" /><polyline points="11 2 11 5" />
     </svg>
   );
 }

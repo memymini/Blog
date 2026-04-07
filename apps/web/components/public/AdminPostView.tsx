@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { PostDetail, Lang } from "@repo/types";
 import { MarkdownRenderer } from "@/components/public/MarkdownRenderer";
 import { LanguageToggleNav } from "@/components/public/LanguageToggleNav";
+import { useAuth } from "@/context/auth";
 
 interface AdminPostViewProps {
   post: PostDetail;
@@ -19,6 +20,8 @@ function formatDate(isoString: string): string {
 
 export function AdminPostView({ post, lang }: AdminPostViewProps) {
   const router = useRouter();
+  const { user } = useAuth();
+  const isAdmin = !!user;
 
   return (
     <>
@@ -33,14 +36,16 @@ export function AdminPostView({ post, lang }: AdminPostViewProps) {
         </Link>
 
         <div className="flex items-center gap-1">
-          <button
-            type="button"
-            onClick={() => router.push(`/admin/posts/${post.id}`)}
-            className="flex items-center justify-center w-9 h-9 text-secondary-400 hover:text-primary-900 hover:bg-muted-100 rounded-sm transition-colors"
-            aria-label="Edit post"
-          >
-            <EditIcon />
-          </button>
+          {isAdmin && (
+            <button
+              type="button"
+              onClick={() => router.push(`/admin/posts/${post.id}`)}
+              className="flex items-center justify-center w-9 h-9 text-secondary-400 hover:text-primary-900 hover:bg-muted-100 rounded-sm transition-colors"
+              aria-label="Edit post"
+            >
+              <EditIcon />
+            </button>
+          )}
           <LanguageToggleNav currentLang={lang} />
         </div>
       </div>
@@ -88,33 +93,39 @@ export function AdminPostView({ post, lang }: AdminPostViewProps) {
 
           {post.media.length > 0 && (
             <div className="mt-10 space-y-6">
-              {post.media.map((m) => (
-                <figure key={m.id}>
-                  {m.type === "image" && (
-                    <div className="overflow-hidden bg-muted-200 relative aspect-[4/3]">
-                      <Image
+              {post.media.map((m) => {
+                const w = m.width ?? 100;
+                return (
+                  <figure key={m.id} style={{ width: `${w}%` }}>
+                    {m.type === "image" && (
+                      <div className="overflow-hidden bg-muted-200 relative aspect-[4/3]">
+                        <Image
+                          src={m.url}
+                          alt={m.alt_text ?? ""}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
+                    {m.type === "video" && (
+                      <video src={m.url} controls className="w-full" />
+                    )}
+                    {m.type === "embed" && (
+                      <iframe
                         src={m.url}
-                        alt={m.alt_text ?? ""}
-                        fill
-                        className="object-cover"
+                        className="w-full aspect-video"
+                        allowFullScreen
+                        title={m.alt_text ?? "Embedded content"}
                       />
-                    </div>
-                  )}
-                  {m.type === "embed" && (
-                    <iframe
-                      src={m.url}
-                      className="w-full aspect-video"
-                      allowFullScreen
-                      title={m.alt_text ?? "Embedded content"}
-                    />
-                  )}
-                  {m.caption && (
-                    <figcaption className="mt-2 text-caption text-secondary-400 text-center">
-                      {m.caption}
-                    </figcaption>
-                  )}
-                </figure>
-              ))}
+                    )}
+                    {m.caption && (
+                      <figcaption className="mt-2 text-caption text-secondary-400 text-center">
+                        {m.caption}
+                      </figcaption>
+                    )}
+                  </figure>
+                );
+              })}
             </div>
           )}
         </div>
