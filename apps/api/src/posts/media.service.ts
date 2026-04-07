@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import type { PostMedia } from '@repo/types';
 import { throwOnError } from '../common/supabase-error.util';
 import { SupabaseService } from '../supabase/supabase.service';
-import { CreateMediaDto } from './dto/create-media.dto';
+import { CreateMediaDto, UpdateMediaDto } from './dto/create-media.dto';
 
 const COVER_BUCKET = 'post-images';
 
@@ -31,7 +31,26 @@ export class MediaService {
         alt_text: dto.alt_text ?? null,
         caption: dto.caption ?? null,
         display_order: dto.display_order ?? 0,
+        width: dto.width ?? null,
       })
+      .select()
+      .single();
+
+    throwOnError(error);
+    return data as PostMedia;
+  }
+
+  async update(postId: number, mediaId: number, dto: UpdateMediaDto): Promise<PostMedia> {
+    const patch: Record<string, unknown> = {};
+    if (dto.width !== undefined) patch.width = dto.width;
+    if (dto.caption !== undefined) patch.caption = dto.caption;
+    if (dto.alt_text !== undefined) patch.alt_text = dto.alt_text;
+
+    const { data, error } = await this.supabase.adminClient
+      .from('post_media')
+      .update(patch)
+      .eq('id', mediaId)
+      .eq('post_id', postId)
       .select()
       .single();
 

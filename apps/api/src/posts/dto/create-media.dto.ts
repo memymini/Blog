@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsIn, IsInt, IsOptional, IsString, IsUrl, Min } from 'class-validator';
-import type { CreateMediaPayload, MediaType } from '@repo/types';
+import { IsIn, IsInt, IsOptional, IsString, IsUrl, Max, Min } from 'class-validator';
+import type { CreateMediaPayload, MediaType, UpdateMediaPayload } from '@repo/types';
 
 export class CreateMediaDto implements CreateMediaPayload {
   @ApiProperty({ enum: ['image', 'video', 'embed'], example: 'image' })
@@ -26,4 +26,30 @@ export class CreateMediaDto implements CreateMediaPayload {
   @Min(0)
   @IsOptional()
   display_order?: number;
+
+  @ApiPropertyOptional({ example: 100, description: 'Display width as percentage (10–100)' })
+  @IsInt()
+  @Min(10)
+  @Max(100)
+  @IsOptional()
+  width?: number;
+}
+
+export class UpdateMediaDto implements UpdateMediaPayload {
+  @ApiPropertyOptional({ example: 50, description: 'Display width as percentage (10–100)' })
+  @IsInt()
+  @Min(10)
+  @Max(100)
+  @IsOptional()
+  width?: number;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  caption?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  alt_text?: string;
 }

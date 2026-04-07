@@ -39,7 +39,7 @@ import {
   apiPaginatedRes,
   apiRes,
 } from '../common/swagger.schemas';
-import { CreateMediaDto } from './dto/create-media.dto';
+import { CreateMediaDto, UpdateMediaDto } from './dto/create-media.dto';
 import { CreatePostDto } from './dto/create-post.dto';
 import { AdminListPostsQueryDto } from './dto/list-posts.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -179,6 +179,19 @@ export class AdminPostsController {
     @Body() dto: CreateMediaDto,
   ) {
     return ok(await this.media.add(id, dto));
+  }
+
+  @Patch(':id/media/:mediaId')
+  @ApiOperation({ summary: 'Update a media asset (width, caption, alt_text)' })
+  @ApiParam({ name: 'id', type: 'integer', example: 1 })
+  @ApiParam({ name: 'mediaId', type: 'integer', example: 1 })
+  @ApiOkResponse(apiRes({ $ref: getSchemaPath(PostMediaSchema) }))
+  updateMedia(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('mediaId', ParseIntPipe) mediaId: number,
+    @Body() dto: UpdateMediaDto,
+  ) {
+    return ok(this.media.update(id, mediaId, dto));
   }
 
   @Delete(':id/media/:mediaId')
