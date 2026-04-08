@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
+import dynamic from "next/dynamic";
 import type { Country, Lang, PostMedia } from "@repo/types";
 import {
   createPost,
@@ -12,20 +12,19 @@ import {
   uploadCover,
   uploadMediaFile,
   addMedia,
-  updateMedia,
   deleteMedia,
 } from "@/lib/api/admin";
 import { ApiError } from "@/lib/api/types";
-import dynamic from "next/dynamic";
 import { MarkdownRenderer } from "@/components/public/MarkdownRenderer";
+import { useToast } from "@/components/admin/Toast";
+import { ImagePlusIcon } from "@/components/icons";
+import { PostEditorToolbar } from "@/components/admin/PostEditorToolbar";
+import { MediaItem } from "@/components/admin/MediaItem";
 
 const RichTextEditor = dynamic(
   () => import("@/components/admin/RichTextEditor").then((m) => m.RichTextEditor),
   { ssr: false },
 );
-import { useToast } from "@/components/admin/Toast";
-import { cn } from "@/lib/utils";
-import { BackArrowIcon, TrashIcon, ImagePlusIcon } from "@/components/icons";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -47,11 +46,6 @@ export interface PostEditorProps {
   countries: Country[];
 }
 
-const LANGS: { code: Lang; label: string }[] = [
-  { code: "ko", label: "KO" },
-  { code: "en", label: "EN" },
-];
-
 // ---------------------------------------------------------------------------
 // PostEditor
 // ---------------------------------------------------------------------------
@@ -67,38 +61,25 @@ export function PostEditor({
 }: PostEditorProps) {
   const router = useRouter();
   const { showToast } = useToast();
-
   const isEditMode = initialPostId !== undefined;
 
-  // Mutable post id — becomes set after first save in create mode
   const [postId, setPostId] = useState<number | undefined>(initialPostId);
-
-  // Toolbar state
   const [activeLang, setActiveLang] = useState<Lang>("ko");
   const [countryCode, setCountryCode] = useState(initialCountryCode);
   const [published, setPublished] = useState(initialPublished);
   const [isPreview, setIsPreview] = useState(false);
-
-  // Cover
   const [coverUrl, setCoverUrl] = useState<string | null>(initialCoverUrl ?? null);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
-  const coverInputRef = useRef<HTMLInputElement>(null);
-
-  // Translations
-  const [translations, setTranslations] = useState<Partial<Record<Lang, TranslationState>>>(
-    initialTranslations,
-  );
-
-  // Media
+  const [translations, setTranslations] = useState<Partial<Record<Lang, TranslationState>>>(initialTranslations);
   const [media, setMedia] = useState<PostMedia[]>(initialMedia);
   const [isAddingMedia, setIsAddingMedia] = useState(false);
   const [mediaUrl, setMediaUrl] = useState("");
   const [mediaCaption, setMediaCaption] = useState("");
-  const mediaFileRef = useRef<HTMLInputElement>(null);
-
-  // Action states
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const mediaFileRef = useRef<HTMLInputElement>(null);
 
   // ---------------------------------------------------------------------------
   // Helpers
@@ -124,7 +105,7 @@ export function PostEditor({
   }
 
   // ---------------------------------------------------------------------------
-  // Cover upload
+  // Handlers
   // ---------------------------------------------------------------------------
 
   async function handleCoverFile(file: File) {
@@ -146,10 +127,6 @@ export function PostEditor({
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // Save
-  // ---------------------------------------------------------------------------
-
   async function handleSave() {
     if (!countryCode) {
       showToast("Please select a country first.", "error");
@@ -159,19 +136,10 @@ export function PostEditor({
     try {
       const translationItems = buildTranslationItems();
       if (postId) {
-        await updatePost(postId, {
-          country_code: countryCode,
-          published,
-          cover_url: coverUrl,
-          translations: translationItems,
-        });
+        await updatePost(postId, { country_code: countryCode, published, cover_url: coverUrl, translations: translationItems });
         showToast("Saved!", "success");
       } else {
-        const post = await createPost({
-          country_code: countryCode,
-          published,
-          translations: translationItems,
-        });
+        const post = await createPost({ country_code: countryCode, published, translations: translationItems });
         setPostId(post.id);
         showToast("Post created!", "success");
         router.replace(`/admin/posts/${post.id}`);
@@ -182,10 +150,6 @@ export function PostEditor({
       setIsSaving(false);
     }
   }
-
-  // ---------------------------------------------------------------------------
-  // Delete
-  // ---------------------------------------------------------------------------
 
   async function handleDelete() {
     if (!postId) return;
@@ -201,18 +165,10 @@ export function PostEditor({
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // Media
-  // ---------------------------------------------------------------------------
-
   async function handleAddMediaUrl() {
     if (!postId || !mediaUrl.trim()) return;
     try {
-      const added = await addMedia(postId, {
-        type: "embed",
-        url: mediaUrl.trim(),
-        caption: mediaCaption.trim() || undefined,
-      });
+      const added = await addMedia(postId, { type: "embed", url: mediaUrl.trim(), caption: mediaCaption.trim() || undefined });
       setMedia((prev) => [...prev, added]);
       setMediaUrl("");
       setMediaCaption("");
@@ -258,105 +214,26 @@ export function PostEditor({
     <div className="min-h-screen bg-muted-100 flex justify-center">
       <div className="max-w-200 w-full bg-surface min-h-screen flex flex-col">
 
-        {/* ── Top toolbar ────────────────────────────────────────────────── */}
-        <div className="sticky top-0 z-20 bg-surface border-b border-muted-200 flex items-center gap-2 px-5 py-2.5">
-          {/* Back */}
-          <Link
-            href="/admin/posts"
-            className="flex items-center justify-center w-9 h-9 text-secondary-400 hover:text-primary-900 hover:bg-muted-100 rounded-sm transition-colors"
-            aria-label="Back to posts"
-          >
-            <BackArrowIcon />
-          </Link>
+        <PostEditorToolbar
+          activeLang={activeLang}
+          onLangChange={setActiveLang}
+          countryCode={countryCode}
+          onCountryChange={setCountryCode}
+          countries={countries}
+          published={published}
+          onPublishedToggle={() => setPublished((p) => !p)}
+          isPreview={isPreview}
+          onPreviewToggle={() => setIsPreview((p) => !p)}
+          isSaving={isSaving}
+          isDeleting={isDeleting}
+          isEditMode={isEditMode}
+          postId={postId}
+          onSave={handleSave}
+          onDelete={handleDelete}
+        />
 
-          <div className="w-px h-5 bg-muted-200 mx-0.5" />
-
-          {/* Lang tabs */}
-          {LANGS.map((l) => (
-            <button
-              key={l.code}
-              type="button"
-              onClick={() => setActiveLang(l.code)}
-              className={cn(
-                "h-8 px-3 text-caption font-medium rounded-sm transition-colors",
-                activeLang === l.code
-                  ? "bg-primary-900 text-white"
-                  : "text-secondary-500 hover:bg-muted-100 hover:text-primary-900",
-              )}
-            >
-              {l.label}
-            </button>
-          ))}
-
-          <div className="w-px h-5 bg-muted-200 mx-0.5" />
-
-          {/* Country select */}
-          <select
-            value={countryCode}
-            onChange={(e) => setCountryCode(e.target.value)}
-            className="h-8 px-2 text-caption border border-muted-300 rounded-sm bg-surface text-primary-900 focus:outline-none focus:border-primary-400 transition-colors"
-          >
-            <option value="">Country…</option>
-            {countries.map((c) => (
-              <option key={c.code} value={c.code}>
-                {c.flag_url} {c.name_en}
-              </option>
-            ))}
-          </select>
-
-          {/* Published toggle */}
-          <button
-            type="button"
-            onClick={() => setPublished((p) => !p)}
-            className={cn(
-              "h-8 px-3 text-caption rounded-sm border transition-colors",
-              published
-                ? "border-accent-400 bg-accent-50 text-accent-700"
-                : "border-muted-300 text-secondary-500 hover:border-muted-400",
-            )}
-          >
-            {published ? "● Published" : "○ Draft"}
-          </button>
-
-          <div className="flex-1" />
-
-          {/* Preview toggle */}
-          <button
-            type="button"
-            onClick={() => setIsPreview((p) => !p)}
-            className="h-8 px-3 text-caption border border-muted-300 rounded-sm text-secondary-500 hover:bg-muted-100 hover:text-primary-900 transition-colors"
-          >
-            {isPreview ? "Edit" : "Preview"}
-          </button>
-
-          {/* Save */}
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={isSaving}
-            className="h-8 px-4 text-caption font-medium bg-primary-900 text-white rounded-sm hover:bg-primary-800 disabled:opacity-50 transition-colors"
-          >
-            {isSaving ? "Saving…" : isEditMode ? "Save" : "Create"}
-          </button>
-
-          {/* Delete (edit mode only) */}
-          {isEditMode && postId && (
-            <button
-              type="button"
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="flex items-center justify-center w-9 h-9 text-secondary-400 hover:text-red-600 hover:bg-muted-100 rounded-sm transition-colors disabled:opacity-50"
-              aria-label="Delete post"
-            >
-              <TrashIcon />
-            </button>
-          )}
-        </div>
-
-        {/* ── Article body ───────────────────────────────────────────────── */}
         <article className="flex-1">
-
-          {/* ── PREVIEW MODE: looks exactly like public view ── */}
+          {/* Preview mode */}
           {isPreview ? (
             coverUrl ? (
               <div className="relative aspect-[16/9] overflow-hidden bg-muted-200">
@@ -376,9 +253,8 @@ export function PostEditor({
               </header>
             )
           ) : (
-            /* ── EDIT MODE: cover and title are always separate sections ── */
+            /* Edit mode */
             <>
-              {/* Cover section */}
               {coverUrl ? (
                 <div className="relative aspect-[16/9] overflow-hidden bg-muted-200 group">
                   <Image src={coverUrl} alt={displayTitle} fill className="object-cover" priority />
@@ -387,35 +263,22 @@ export function PostEditor({
                       <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     </div>
                   )}
-                  {/* Hover controls */}
                   <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 bg-black/20 transition-opacity">
-                    <button
-                      type="button"
-                      onClick={() => coverInputRef.current?.click()}
-                      className="bg-white/90 text-primary-900 text-caption px-3 py-1.5 rounded-sm hover:bg-white transition-colors"
-                    >
+                    <button type="button" onClick={() => coverInputRef.current?.click()} className="bg-white/90 text-primary-900 text-caption px-3 py-1.5 rounded-sm hover:bg-white transition-colors">
                       Change
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => setCoverUrl(null)}
-                      className="bg-white/90 text-red-600 text-caption px-3 py-1.5 rounded-sm hover:bg-white transition-colors"
-                    >
+                    <button type="button" onClick={() => setCoverUrl(null)} className="bg-white/90 text-red-600 text-caption px-3 py-1.5 rounded-sm hover:bg-white transition-colors">
                       Remove
                     </button>
                   </div>
                 </div>
               ) : (
-                <div
-                  onClick={() => coverInputRef.current?.click()}
-                  className="aspect-[16/9] bg-muted-100 border-b border-muted-200 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-muted-200 transition-colors"
-                >
+                <div onClick={() => coverInputRef.current?.click()} className="aspect-[16/9] bg-muted-100 border-b border-muted-200 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-muted-200 transition-colors">
                   <ImagePlusIcon className="text-muted-400" />
                   <span className="text-caption text-secondary-400">Click to add cover image</span>
                 </div>
               )}
 
-              {/* Title section — always below cover in edit mode */}
               <header className="px-5 pt-8 pb-4">
                 <input
                   value={translation.title}
@@ -427,20 +290,11 @@ export function PostEditor({
             </>
           )}
 
-          {/* Hidden file input */}
-          <input
-            ref={coverInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) handleCoverFile(file);
-              e.target.value = "";
-            }}
+          <input ref={coverInputRef} type="file" accept="image/*" className="hidden"
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) handleCoverFile(f); e.target.value = ""; }}
           />
 
-          {/* Content area */}
+          {/* Content */}
           <div className="px-5 py-8">
             {isPreview ? (
               <MarkdownRenderer content={translation.contents} />
@@ -454,92 +308,40 @@ export function PostEditor({
             )}
           </div>
 
-          {/* ── Media section ─────────────────────────────────────────── */}
+          {/* Media section */}
           <div className="px-5 pb-12 space-y-6">
-            {/* Existing media — each item is resizable via drag handle */}
             {media.map((m) => (
               <MediaItem
                 key={m.id}
                 item={m}
                 postId={postId!}
-                onWidthChange={(id, width) =>
-                  setMedia((prev) =>
-                    prev.map((x) => (x.id === id ? { ...x, width } : x)),
-                  )
-                }
+                onWidthChange={(id, width) => setMedia((prev) => prev.map((x) => (x.id === id ? { ...x, width } : x)))}
                 onDelete={handleDeleteMedia}
               />
             ))}
 
-            {/* Add media controls */}
             {postId ? (
               <div className="border border-dashed border-muted-300 rounded-sm p-4 space-y-3">
-                <p className="text-caption text-secondary-400 font-medium uppercase tracking-wide">
-                  Add Media
-                </p>
+                <p className="text-caption text-secondary-400 font-medium uppercase tracking-wide">Add Media</p>
 
                 {isAddingMedia ? (
                   <div className="space-y-2">
-                    <input
-                      type="url"
-                      value={mediaUrl}
-                      onChange={(e) => setMediaUrl(e.target.value)}
-                      placeholder="Embed URL (YouTube, etc.)"
-                      className="w-full h-9 px-3 text-body-sm border border-muted-300 rounded-sm bg-surface focus:outline-none focus:border-primary-400 transition-colors"
-                    />
-                    <input
-                      type="text"
-                      value={mediaCaption}
-                      onChange={(e) => setMediaCaption(e.target.value)}
-                      placeholder="Caption (optional)"
-                      className="w-full h-9 px-3 text-body-sm border border-muted-300 rounded-sm bg-surface focus:outline-none focus:border-primary-400 transition-colors"
-                    />
+                    <input type="url" value={mediaUrl} onChange={(e) => setMediaUrl(e.target.value)} placeholder="Embed URL (YouTube, etc.)" className="w-full h-9 px-3 text-body-sm border border-muted-300 rounded-sm bg-surface focus:outline-none focus:border-primary-400 transition-colors" />
+                    <input type="text" value={mediaCaption} onChange={(e) => setMediaCaption(e.target.value)} placeholder="Caption (optional)" className="w-full h-9 px-3 text-body-sm border border-muted-300 rounded-sm bg-surface focus:outline-none focus:border-primary-400 transition-colors" />
                     <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={handleAddMediaUrl}
-                        className="h-8 px-4 text-caption font-medium bg-primary-900 text-white rounded-sm hover:bg-primary-800 transition-colors"
-                      >
-                        Add Embed
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => { setIsAddingMedia(false); setMediaUrl(""); setMediaCaption(""); }}
-                        className="h-8 px-3 text-caption text-secondary-500 hover:text-primary-900 transition-colors"
-                      >
-                        Cancel
-                      </button>
+                      <button type="button" onClick={handleAddMediaUrl} className="h-8 px-4 text-caption font-medium bg-primary-900 text-white rounded-sm hover:bg-primary-800 transition-colors">Add Embed</button>
+                      <button type="button" onClick={() => { setIsAddingMedia(false); setMediaUrl(""); setMediaCaption(""); }} className="h-8 px-3 text-caption text-secondary-500 hover:text-primary-900 transition-colors">Cancel</button>
                     </div>
                   </div>
                 ) : (
                   <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => mediaFileRef.current?.click()}
-                      className="h-8 px-4 text-caption border border-muted-300 rounded-sm text-secondary-600 hover:bg-muted-100 transition-colors"
-                    >
-                      Upload Image / Video
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setIsAddingMedia(true)}
-                      className="h-8 px-4 text-caption border border-muted-300 rounded-sm text-secondary-600 hover:bg-muted-100 transition-colors"
-                    >
-                      Add Embed URL
-                    </button>
+                    <button type="button" onClick={() => mediaFileRef.current?.click()} className="h-8 px-4 text-caption border border-muted-300 rounded-sm text-secondary-600 hover:bg-muted-100 transition-colors">Upload Image / Video</button>
+                    <button type="button" onClick={() => setIsAddingMedia(true)} className="h-8 px-4 text-caption border border-muted-300 rounded-sm text-secondary-600 hover:bg-muted-100 transition-colors">Add Embed URL</button>
                   </div>
                 )}
 
-                <input
-                  ref={mediaFileRef}
-                  type="file"
-                  accept="image/*,video/*"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) handleMediaFile(file);
-                    e.target.value = "";
-                  }}
+                <input ref={mediaFileRef} type="file" accept="image/*,video/*" className="hidden"
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleMediaFile(f); e.target.value = ""; }}
                 />
               </div>
             ) : (
@@ -553,129 +355,3 @@ export function PostEditor({
     </div>
   );
 }
-
-// ---------------------------------------------------------------------------
-// ─── MediaItem ───────────────────────────────────────────────────────────────
-
-interface MediaItemProps {
-  item: PostMedia;
-  postId: number;
-  onWidthChange: (id: number, width: number) => void;
-  onDelete: (id: number) => void;
-}
-
-function MediaItem({ item: m, postId, onWidthChange, onDelete }: MediaItemProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const startX = useRef(0);
-  const startW = useRef(0);
-  const [isResizing, setIsResizing] = useState(false);
-  const width = m.width ?? 100;
-
-  function onResizeStart(e: React.MouseEvent) {
-    e.preventDefault();
-    startX.current = e.clientX;
-    startW.current = containerRef.current?.offsetWidth ?? 0;
-    setIsResizing(true);
-
-    function onMove(ev: MouseEvent) {
-      const parentW = containerRef.current?.parentElement?.offsetWidth ?? 1;
-      const delta = ev.clientX - startX.current;
-      const raw = ((startW.current + delta) / parentW) * 100;
-      const clamped = Math.round(Math.min(100, Math.max(20, raw)));
-      onWidthChange(m.id, clamped);
-    }
-
-    async function onUp() {
-      setIsResizing(false);
-      document.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseup", onUp);
-      const finalW =
-        containerRef.current && containerRef.current.parentElement
-          ? Math.round(
-              Math.min(
-                100,
-                Math.max(
-                  20,
-                  (containerRef.current.offsetWidth /
-                    containerRef.current.parentElement.offsetWidth) *
-                    100,
-                ),
-              ),
-            )
-          : width;
-      try {
-        await updateMedia(postId, m.id, { width: finalW });
-      } catch {
-        // revert on failure
-        onWidthChange(m.id, m.width ?? 100);
-      }
-    }
-
-    document.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseup", onUp);
-  }
-
-  return (
-    <div className="relative group flex justify-center">
-      <div
-        ref={containerRef}
-        className="relative"
-        style={{ width: `${width}%` }}
-      >
-        {/* Width badge */}
-        <div className="absolute top-2 left-2 z-10 bg-primary-900 rounded-sm px-1.5 py-0.5 text-white text-[11px] font-mono tabular-nums opacity-0 group-hover:opacity-100 transition-opacity">
-          {width}%
-        </div>
-
-        {m.type === "image" && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={m.url}
-            alt={m.alt_text ?? ""}
-            className="block w-full rounded-sm"
-          />
-        )}
-        {m.type === "video" && (
-          // eslint-disable-next-line jsx-a11y/media-has-caption
-          <video src={m.url} controls className="block w-full rounded-sm" />
-        )}
-        {m.type === "embed" && (
-          <iframe
-            src={m.url}
-            className="w-full aspect-video"
-            allowFullScreen
-            title={m.alt_text ?? "Embedded content"}
-          />
-        )}
-
-        {/* Right-edge resize handle */}
-        <div
-          onMouseDown={onResizeStart}
-          className={cn(
-            "absolute right-0 top-0 h-full w-4 flex items-center justify-center cursor-col-resize",
-            "opacity-0 transition-opacity group-hover:opacity-100",
-            isResizing && "opacity-100",
-          )}
-        >
-          <div className="w-1 h-12 bg-primary-900/70 rounded-full hover:bg-primary-900 transition-colors" />
-        </div>
-
-        {m.caption && (
-          <p className="mt-2 text-caption text-secondary-400 text-center">
-            {m.caption}
-          </p>
-        )}
-
-        {/* Delete button */}
-        <button
-          type="button"
-          onClick={() => onDelete(m.id)}
-          className="absolute top-2 right-6 bg-primary-900/70 text-white text-caption px-2 py-1 rounded-sm opacity-0 group-hover:opacity-100 hover:bg-red-600 transition-all"
-        >
-          Remove
-        </button>
-      </div>
-    </div>
-  );
-}
-
