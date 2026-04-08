@@ -25,6 +25,7 @@ const RichTextEditor = dynamic(
 );
 import { useToast } from "@/components/admin/Toast";
 import { cn } from "@/lib/utils";
+import { BackArrowIcon, TrashIcon, ImagePlusIcon } from "@/components/icons";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -409,7 +410,7 @@ export function PostEditor({
                   onClick={() => coverInputRef.current?.click()}
                   className="aspect-[16/9] bg-muted-100 border-b border-muted-200 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-muted-200 transition-colors"
                 >
-                  <ImagePlusIcon />
+                  <ImagePlusIcon className="text-muted-400" />
                   <span className="text-caption text-secondary-400">Click to add cover image</span>
                 </div>
               )}
@@ -554,51 +555,6 @@ export function PostEditor({
 }
 
 // ---------------------------------------------------------------------------
-// Icons
-// ---------------------------------------------------------------------------
-
-function BackArrowIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M19 12H5" />
-      <path d="M12 19l-7-7 7-7" />
-    </svg>
-  );
-}
-
-function TrashIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="17"
-      height="17"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <polyline points="3 6 5 6 21 6" />
-      <path d="M19 6l-1 14H6L5 6" />
-      <path d="M10 11v6M14 11v6" />
-      <path d="M9 6V4h6v2" />
-    </svg>
-  );
-}
-
 // ─── MediaItem ───────────────────────────────────────────────────────────────
 
 interface MediaItemProps {
@@ -723,26 +679,3 @@ function MediaItem({ item: m, postId, onWidthChange, onDelete }: MediaItemProps)
   );
 }
 
-function ImagePlusIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="32"
-      height="32"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.25"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      className="text-muted-400"
-    >
-      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-      <circle cx="8.5" cy="8.5" r="1.5" />
-      <polyline points="21 15 16 10 5 21" />
-      <line x1="12" y1="5" x2="12" y2="19" />
-      <line x1="5" y1="12" x2="19" y2="12" />
-    </svg>
-  );
-}
