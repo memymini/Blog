@@ -21,7 +21,13 @@ export const ResizableImage = Image.extend({
       width: {
         default: null,
         parseHTML: (el) => {
-          // Accept width="50" or style="width:50%"
+          // Primary: data-width written by the figure serializer in RichTextEditor
+          const dw = el.getAttribute("data-width");
+          if (dw) {
+            const n = parseFloat(dw);
+            return isNaN(n) ? null : n;
+          }
+          // Legacy fallback: width attr or style="width:X%"
           const attr = el.getAttribute("width");
           const style = el.style.width;
           const raw = attr ?? style;
@@ -30,7 +36,9 @@ export const ResizableImage = Image.extend({
           return isNaN(n) ? null : n;
         },
         renderHTML: (attrs) =>
-          attrs.width != null ? { style: `width:${attrs.width}%;display:block` } : {},
+          attrs.width != null
+            ? { style: `width:${attrs.width}%;display:block` }
+            : {},
       },
       align: {
         default: "center",

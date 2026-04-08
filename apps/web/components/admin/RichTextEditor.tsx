@@ -16,7 +16,11 @@ import { VideoNode } from "@/components/admin/VideoExtension";
 
 // Serializes the inline content of a ProseMirror node to an HTML string.
 // Used so that aligned blocks persist with their formatting (bold, italic, etc.).
-function nodeContentToHTML(node: Parameters<typeof DOMSerializer.fromSchema>[0] extends never ? never : any): string {
+function nodeContentToHTML(
+  node: Parameters<typeof DOMSerializer.fromSchema>[0] extends never
+    ? never
+    : any,
+): string {
   const serializer = DOMSerializer.fromSchema(node.type.schema);
   const fragment = serializer.serializeFragment(node.content);
   const tmp = document.createElement("div");
@@ -34,7 +38,9 @@ const AlignedParagraph = Paragraph.extend({
         serialize(state: any, node: any) {
           const align = node.attrs.textAlign;
           if (align && align !== "left") {
-            state.write(`<p style="text-align:${align}">${nodeContentToHTML(node)}</p>`);
+            state.write(
+              `<p style="text-align:${align}">${nodeContentToHTML(node)}</p>`,
+            );
             state.closeBlock(node);
           } else {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,7 +63,9 @@ const AlignedHeading = Heading.extend({
           const align = node.attrs.textAlign;
           if (align && align !== "left") {
             const tag = `h${node.attrs.level}`;
-            state.write(`<${tag} style="text-align:${align}">${nodeContentToHTML(node)}</${tag}>`);
+            state.write(
+              `<${tag} style="text-align:${align}">${nodeContentToHTML(node)}</${tag}>`,
+            );
             state.closeBlock(node);
           } else {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -127,15 +135,31 @@ export function RichTextEditor({
         };
         if (!src) return true; // guard against null/undefined src
         if (src.startsWith("data:")) return true; // data URLs — skip, never in markdown output
-        if (width == null && align === "center") return true; // default — keep ![](url)
+        // NOTE: ALL images go through <figure> serialization — including the default
+        // center/no-width case — so remark always sees a block-level element and never
+        // wraps the image in <p>, which was the root cause of double margins.
 
-        const styles: string[] = ["display:block"];
-        if (width != null) styles.push(`width:${width}%`);
-        if (align === "center") styles.push("margin-left:auto;margin-right:auto");
-        else if (align === "right") styles.push("margin-left:auto;margin-right:0");
+        // Use <figure> as the wrapper — it is a block-level element in the CommonMark
+        // spec, so remark treats it as a block HTML node instead of wrapping it in <p>.
+        // Bare <img> is inline HTML and gets wrapped in <p>, causing double margins
+        // and broken line breaks around images.
+        const containerStyles: string[] = [];
+        if (width != null) {
+          containerStyles.push(`width:${width}%`);
+          // centering/alignment only meaningful when image is narrower than container
+          if (align === "center")
+            containerStyles.push("margin-left:auto;margin-right:auto");
+          else if (align === "right")
+            containerStyles.push("margin-left:auto;margin-right:0");
+        }
 
-        // data-align is required for parseHTML to restore alignment on reload
-        const htmlTag = `<img src="${src}" data-align="${align}" style="${styles.join(";")}">`;
+        // data-align / data-width on the inner <img> so parseHTML can restore attrs on reload
+        const imgAttrs = `src="${src}" data-align="${align}"${width != null ? ` data-width="${width}"` : ""}`;
+        const figureStyle = containerStyles.length
+          ? ` style="${containerStyles.join(";")}"`
+          : "";
+        const htmlTag = `<figure${figureStyle}><img ${imgAttrs}></figure>`;
+
         // Replace first matching markdown image syntax for this src
         md = md.replace(
           new RegExp(`!\\[[^\\]]*\\]\\(${escapeRegex(src)}(?:\\s[^)]*)?\\)`),
@@ -193,7 +217,9 @@ export function RichTextEditor({
   async function handleImageFile(file: File) {
     if (!editor) return;
     if (!postId) {
-      alert("Save the post first, then you can upload images into the content.");
+      alert(
+        "Save the post first, then you can upload images into the content.",
+      );
       return;
     }
     setIsUploadingImage(true);
@@ -211,7 +237,9 @@ export function RichTextEditor({
   async function handleVideoFile(file: File) {
     if (!editor) return;
     if (!postId) {
-      alert("Save the post first, then you can upload videos into the content.");
+      alert(
+        "Save the post first, then you can upload videos into the content.",
+      );
       return;
     }
     setIsUploadingVideo(true);
@@ -231,45 +259,95 @@ export function RichTextEditor({
       {editor && (
         <div className="flex flex-wrap gap-0.5 mb-3 pb-2 border-b border-muted-200">
           {/* Text formatting */}
-          <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive("bold")} title="Bold">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleBold().run()}
+            active={editor.isActive("bold")}
+            title="Bold"
+          >
             <strong>B</strong>
           </ToolbarButton>
-          <ToolbarButton onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive("italic")} title="Italic">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+            active={editor.isActive("italic")}
+            title="Italic"
+          >
             <em>I</em>
           </ToolbarButton>
-          <ToolbarButton onClick={() => editor.chain().focus().toggleStrike().run()} active={editor.isActive("strike")} title="Strikethrough">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleStrike().run()}
+            active={editor.isActive("strike")}
+            title="Strikethrough"
+          >
             <s>S</s>
           </ToolbarButton>
-          <ToolbarButton onClick={() => editor.chain().focus().toggleCode().run()} active={editor.isActive("code")} title="Inline code">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleCode().run()}
+            active={editor.isActive("code")}
+            title="Inline code"
+          >
             {"</>"}
           </ToolbarButton>
 
           <Separator />
 
           {/* Headings */}
-          <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} active={editor.isActive("heading", { level: 1 })} title="Heading 1">
+          <ToolbarButton
+            onClick={() =>
+              editor.chain().focus().toggleHeading({ level: 1 }).run()
+            }
+            active={editor.isActive("heading", { level: 1 })}
+            title="Heading 1"
+          >
             H1
           </ToolbarButton>
-          <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} active={editor.isActive("heading", { level: 2 })} title="Heading 2">
+          <ToolbarButton
+            onClick={() =>
+              editor.chain().focus().toggleHeading({ level: 2 }).run()
+            }
+            active={editor.isActive("heading", { level: 2 })}
+            title="Heading 2"
+          >
             H2
           </ToolbarButton>
-          <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} active={editor.isActive("heading", { level: 3 })} title="Heading 3">
+          <ToolbarButton
+            onClick={() =>
+              editor.chain().focus().toggleHeading({ level: 3 }).run()
+            }
+            active={editor.isActive("heading", { level: 3 })}
+            title="Heading 3"
+          >
             H3
           </ToolbarButton>
 
           <Separator />
 
           {/* Lists & blocks */}
-          <ToolbarButton onClick={() => editor.chain().focus().toggleBulletList().run()} active={editor.isActive("bulletList")} title="Bullet list">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+            active={editor.isActive("bulletList")}
+            title="Bullet list"
+          >
             <ListBulletIcon />
           </ToolbarButton>
-          <ToolbarButton onClick={() => editor.chain().focus().toggleOrderedList().run()} active={editor.isActive("orderedList")} title="Ordered list">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+            active={editor.isActive("orderedList")}
+            title="Ordered list"
+          >
             <ListOrderedIcon />
           </ToolbarButton>
-          <ToolbarButton onClick={() => editor.chain().focus().toggleBlockquote().run()} active={editor.isActive("blockquote")} title="Blockquote">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleBlockquote().run()}
+            active={editor.isActive("blockquote")}
+            title="Blockquote"
+          >
             <QuoteIcon />
           </ToolbarButton>
-          <ToolbarButton onClick={() => editor.chain().focus().toggleCodeBlock().run()} active={editor.isActive("codeBlock")} title="Code block">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+            active={editor.isActive("codeBlock")}
+            title="Code block"
+          >
             <CodeBlockIcon />
           </ToolbarButton>
 
@@ -287,7 +365,10 @@ export function RichTextEditor({
 
           {/* Image — by URL */}
           <ToolbarButton
-            onClick={() => { setShowImageUrlInput((v) => !v); setShowVideoUrlInput(false); }}
+            onClick={() => {
+              setShowImageUrlInput((v) => !v);
+              setShowVideoUrlInput(false);
+            }}
             active={showImageUrlInput}
             title="Insert image by URL"
           >
@@ -306,7 +387,10 @@ export function RichTextEditor({
 
           {/* Video — by URL */}
           <ToolbarButton
-            onClick={() => { setShowVideoUrlInput((v) => !v); setShowImageUrlInput(false); }}
+            onClick={() => {
+              setShowVideoUrlInput((v) => !v);
+              setShowImageUrlInput(false);
+            }}
             active={showVideoUrlInput}
             title="Insert video by URL"
           >
@@ -316,25 +400,51 @@ export function RichTextEditor({
           <Separator />
 
           {/* Text alignment */}
-          <ToolbarButton onClick={() => editor.chain().focus().setTextAlign("left").run()} active={editor.isActive({ textAlign: "left" })} title="Align left">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setTextAlign("left").run()}
+            active={editor.isActive({ textAlign: "left" })}
+            title="Align left"
+          >
             <TextAlignLeftIcon />
           </ToolbarButton>
-          <ToolbarButton onClick={() => editor.chain().focus().setTextAlign("center").run()} active={editor.isActive({ textAlign: "center" })} title="Align center">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setTextAlign("center").run()}
+            active={editor.isActive({ textAlign: "center" })}
+            title="Align center"
+          >
             <TextAlignCenterIcon />
           </ToolbarButton>
-          <ToolbarButton onClick={() => editor.chain().focus().setTextAlign("right").run()} active={editor.isActive({ textAlign: "right" })} title="Align right">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setTextAlign("right").run()}
+            active={editor.isActive({ textAlign: "right" })}
+            title="Align right"
+          >
             <TextAlignRightIcon />
           </ToolbarButton>
 
           <Separator />
 
-          <ToolbarButton onClick={() => editor.chain().focus().setHorizontalRule().run()} active={false} title="Horizontal rule">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setHorizontalRule().run()}
+            active={false}
+            title="Horizontal rule"
+          >
             —
           </ToolbarButton>
-          <ToolbarButton onClick={() => editor.chain().focus().undo().run()} active={false} disabled={!editor.can().undo()} title="Undo">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().undo().run()}
+            active={false}
+            disabled={!editor.can().undo()}
+            title="Undo"
+          >
             <UndoIcon />
           </ToolbarButton>
-          <ToolbarButton onClick={() => editor.chain().focus().redo().run()} active={false} disabled={!editor.can().redo()} title="Redo">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().redo().run()}
+            active={false}
+            disabled={!editor.can().redo()}
+            title="Redo"
+          >
             <RedoIcon />
           </ToolbarButton>
         </div>
@@ -347,21 +457,32 @@ export function RichTextEditor({
             type="url"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); insertImageUrl(); } }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                insertImageUrl();
+              }
+            }}
             placeholder="https://example.com/image.jpg"
             autoFocus
             className="flex-1 h-8 px-2 text-body-sm border border-muted-300 rounded-sm bg-surface focus:outline-none focus:border-primary-400 transition-colors"
           />
           <button
             type="button"
-            onMouseDown={(e) => { e.preventDefault(); insertImageUrl(); }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              insertImageUrl();
+            }}
             className="h-8 px-3 text-caption bg-primary-900 text-white rounded-sm hover:bg-primary-800 transition-colors"
           >
             Insert
           </button>
           <button
             type="button"
-            onClick={() => { setShowImageUrlInput(false); setImageUrl(""); }}
+            onClick={() => {
+              setShowImageUrlInput(false);
+              setImageUrl("");
+            }}
             className="h-8 px-2 text-caption text-secondary-500 hover:text-primary-900 transition-colors"
           >
             ✕
@@ -376,21 +497,32 @@ export function RichTextEditor({
             type="url"
             value={videoUrl}
             onChange={(e) => setVideoUrl(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); insertVideoUrl(); } }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                insertVideoUrl();
+              }
+            }}
             placeholder="https://example.com/video.mp4"
             autoFocus
             className="flex-1 h-8 px-2 text-body-sm border border-muted-300 rounded-sm bg-surface focus:outline-none focus:border-primary-400 transition-colors"
           />
           <button
             type="button"
-            onMouseDown={(e) => { e.preventDefault(); insertVideoUrl(); }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              insertVideoUrl();
+            }}
             className="h-8 px-3 text-caption bg-primary-900 text-white rounded-sm hover:bg-primary-800 transition-colors"
           >
             Insert
           </button>
           <button
             type="button"
-            onClick={() => { setShowVideoUrlInput(false); setVideoUrl(""); }}
+            onClick={() => {
+              setShowVideoUrlInput(false);
+              setVideoUrl("");
+            }}
             className="h-8 px-2 text-caption text-secondary-500 hover:text-primary-900 transition-colors"
           >
             ✕
@@ -424,8 +556,12 @@ export function RichTextEditor({
 
       {/* Placeholder */}
       {!editor?.getText() && (
-        <p className="absolute left-0 text-body-sm text-secondary-300 pointer-events-none select-none"
-          style={{ top: showImageUrlInput || showVideoUrlInput ? "96px" : "56px" }}>
+        <p
+          className="absolute left-0 text-body-sm text-secondary-300 pointer-events-none select-none"
+          style={{
+            top: showImageUrlInput || showVideoUrlInput ? "96px" : "56px",
+          }}
+        >
           {placeholder}
         </p>
       )}
@@ -455,16 +591,27 @@ interface ToolbarButtonProps {
   children: React.ReactNode;
 }
 
-function ToolbarButton({ onClick, active, disabled = false, title, children }: ToolbarButtonProps) {
+function ToolbarButton({
+  onClick,
+  active,
+  disabled = false,
+  title,
+  children,
+}: ToolbarButtonProps) {
   return (
     <button
       type="button"
-      onMouseDown={(e) => { e.preventDefault(); onClick(); }}
+      onMouseDown={(e) => {
+        e.preventDefault();
+        onClick();
+      }}
       disabled={disabled}
       title={title}
       className={cn(
         "flex items-center justify-center w-8 h-8 text-caption rounded-sm transition-colors",
-        active ? "bg-primary-900 text-white" : "text-secondary-500 hover:bg-muted-100 hover:text-primary-900",
+        active
+          ? "bg-primary-900 text-white"
+          : "text-secondary-500 hover:bg-muted-100 hover:text-primary-900",
         disabled && "opacity-30 cursor-not-allowed",
       )}
     >
@@ -483,18 +630,43 @@ function Separator() {
 
 function ListBulletIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" />
-      <circle cx="3" cy="6" r="1" fill="currentColor" stroke="none" /><circle cx="3" cy="12" r="1" fill="currentColor" stroke="none" /><circle cx="3" cy="18" r="1" fill="currentColor" stroke="none" />
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line x1="8" y1="6" x2="21" y2="6" />
+      <line x1="8" y1="12" x2="21" y2="12" />
+      <line x1="8" y1="18" x2="21" y2="18" />
+      <circle cx="3" cy="6" r="1" fill="currentColor" stroke="none" />
+      <circle cx="3" cy="12" r="1" fill="currentColor" stroke="none" />
+      <circle cx="3" cy="18" r="1" fill="currentColor" stroke="none" />
     </svg>
   );
 }
 
 function ListOrderedIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="10" y1="6" x2="21" y2="6" /><line x1="10" y1="12" x2="21" y2="12" /><line x1="10" y1="18" x2="21" y2="18" />
-      <path d="M4 6h1v4M4 10h2" /><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1" />
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line x1="10" y1="6" x2="21" y2="6" />
+      <line x1="10" y1="12" x2="21" y2="12" />
+      <line x1="10" y1="18" x2="21" y2="18" />
+      <path d="M4 6h1v4M4 10h2" />
+      <path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1" />
     </svg>
   );
 }
@@ -509,48 +681,111 @@ function QuoteIcon() {
 
 function CodeBlockIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />
     </svg>
   );
 }
 
 function ImageIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <circle cx="8.5" cy="8.5" r="1.5" />
+      <polyline points="21 15 16 10 5 21" />
     </svg>
   );
 }
 
 function ImageLinkIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
-      <line x1="15" y1="9" x2="21" y2="3" /><polyline points="18 3 21 3 21 6" />
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <circle cx="8.5" cy="8.5" r="1.5" />
+      <polyline points="21 15 16 10 5 21" />
+      <line x1="15" y1="9" x2="21" y2="3" />
+      <polyline points="18 3 21 3 21 6" />
     </svg>
   );
 }
 
 function UndoIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 7v6h6" /><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13" />
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M3 7v6h6" />
+      <path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13" />
     </svg>
   );
 }
 
 function RedoIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 7v6h-6" /><path d="M3 17a9 9 0 019-9 9 9 0 016 2.3l3 2.7" />
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M21 7v6h-6" />
+      <path d="M3 17a9 9 0 019-9 9 9 0 016 2.3l3 2.7" />
     </svg>
   );
 }
 
 function SpinnerIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="animate-spin"
+    >
       <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" strokeOpacity="0.25" />
       <path d="M21 12a9 9 0 00-9-9" />
     </svg>
@@ -559,31 +794,70 @@ function SpinnerIcon() {
 
 function TextAlignLeftIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="15" y2="12" /><line x1="3" y1="18" x2="18" y2="18" />
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    >
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="3" y1="12" x2="15" y2="12" />
+      <line x1="3" y1="18" x2="18" y2="18" />
     </svg>
   );
 }
 
 function TextAlignCenterIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <line x1="3" y1="6" x2="21" y2="6" /><line x1="6" y1="12" x2="18" y2="12" /><line x1="4" y1="18" x2="20" y2="18" />
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    >
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="6" y1="12" x2="18" y2="12" />
+      <line x1="4" y1="18" x2="20" y2="18" />
     </svg>
   );
 }
 
 function TextAlignRightIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <line x1="3" y1="6" x2="21" y2="6" /><line x1="9" y1="12" x2="21" y2="12" /><line x1="6" y1="18" x2="21" y2="18" />
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    >
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="9" y1="12" x2="21" y2="12" />
+      <line x1="6" y1="18" x2="21" y2="18" />
     </svg>
   );
 }
 
 function VideoIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <polygon points="23 7 16 12 23 17 23 7" />
       <rect x="1" y="5" width="15" height="14" rx="2" />
     </svg>
@@ -592,10 +866,20 @@ function VideoIcon() {
 
 function VideoLinkIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <polygon points="23 7 16 12 23 17 23 7" />
       <rect x="1" y="5" width="15" height="14" rx="2" />
-      <line x1="8" y1="2" x2="14" y2="2" /><polyline points="11 2 11 5" />
+      <line x1="8" y1="2" x2="14" y2="2" />
+      <polyline points="11 2 11 5" />
     </svg>
   );
 }
