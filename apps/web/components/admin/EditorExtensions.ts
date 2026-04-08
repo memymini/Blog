@@ -1,7 +1,21 @@
+import { Extension } from "@tiptap/core";
 import { Paragraph } from "@tiptap/extension-paragraph";
 import { Heading } from "@tiptap/extension-heading";
 import { DOMSerializer } from "@tiptap/pm/model";
 import { defaultMarkdownSerializer } from "prosemirror-markdown";
+import { trailingNode } from "prosemirror-trailing-node";
+
+// Ensures there is always an empty paragraph at the end of the document.
+// Without this, block nodes (images, videos) at the end leave the user with
+// no place to position the cursor and type.
+export const TrailingNode = Extension.create({
+  name: "trailingNode",
+  addProseMirrorPlugins() {
+    return [
+      trailingNode({ nodeName: "paragraph", ignoredNodes: ["paragraph"] }),
+    ];
+  },
+});
 
 // Serializes the inline content of a ProseMirror node to an HTML string.
 // Used so that aligned blocks persist with their formatting (bold, italic, etc.).

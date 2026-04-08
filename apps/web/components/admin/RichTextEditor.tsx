@@ -4,14 +4,16 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
 import { Markdown } from "tiptap-markdown";
+import { TextSelection } from "@tiptap/pm/state";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { uploadMediaFile } from "@/lib/api/admin";
-import { ResizableImage } from "@/components/admin/ResizableImageExtension";
+import { ImageExtension } from "@/components/admin/ImageExtension";
 import { VideoNode } from "@/components/admin/VideoExtension";
 import {
   AlignedParagraph,
   AlignedHeading,
+  TrailingNode,
 } from "@/components/admin/EditorExtensions";
 import { EditorToolbar } from "@/components/admin/EditorToolbar";
 
@@ -47,53 +49,21 @@ export function RichTextEditor({
       AlignedParagraph,
       AlignedHeading.configure({ levels: [1, 2, 3] }),
       TextAlign.configure({ types: ["heading", "paragraph"] }),
-      ResizableImage.configure({ inline: false, allowBase64: false }),
+      ImageExtension,
       VideoNode,
+      TrailingNode,
       Markdown.configure({
-        html: true, // allow HTML blocks so <img> tags round-trip correctly
+        html: true, // allow HTML blocks so <img>/<video> tags round-trip correctly
         transformPastedText: true,
         transformCopiedText: true,
       }),
     ],
     content: value,
     onUpdate({ editor }) {
+      // ImageExtension.addStorage().markdown.serialize handles <figure> wrapping,
+      // so we just forward the serialized markdown directly.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let md = (editor.storage as any).markdown.getMarkdown() as string;
-
-      // tiptap-markdown serializes images as ![](url), losing width/align.
-      // Walk the doc and replace with <figure> so remark sees a block element
-      // (bare <img> is inline HTML and gets wrapped in <p>, causing double margins).
-      editor.state.doc.descendants((node) => {
-        if (node.type.name !== "image") return true;
-        const { src, width, align } = node.attrs as {
-          src: string;
-          width: number | null;
-          align: string;
-        };
-        if (!src || src.startsWith("data:")) return true;
-
-        const containerStyles: string[] = [];
-        if (width != null) {
-          containerStyles.push(`width:${width}%`);
-          if (align === "center")
-            containerStyles.push("margin-left:auto;margin-right:auto");
-          else if (align === "right")
-            containerStyles.push("margin-left:auto;margin-right:0");
-        }
-
-        const imgAttrs = `src="${src}" data-align="${align}"${width != null ? ` data-width="${width}"` : ""}`;
-        const figureStyle = containerStyles.length
-          ? ` style="${containerStyles.join(";")}"`
-          : "";
-        const htmlTag = `<figure${figureStyle}><img ${imgAttrs}></figure>`;
-
-        md = md.replace(
-          new RegExp(`!\\[[^\\]]*\\]\\(${escapeRegex(src)}(?:\\s[^)]*)?\\)`),
-          htmlTag,
-        );
-        return true;
-      });
-
+      const md = (editor.storage as any).markdown.getMarkdown() as string;
       onChange(md);
     },
     editorProps: {
@@ -120,10 +90,27 @@ export function RichTextEditor({
     return () => clearTimeout(id);
   }, [value, editor]);
 
+  // After inserting a block atom node (image/video), insertContent leaves the cursor
+  // as a NodeSelection ON the node — typing into a NodeSelection does nothing.
+  // This command advances the cursor to the next text position after the node.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const focusAfterBlock = ({ tr, dispatch }: { tr: any; dispatch: any }) => {
+    if (dispatch) {
+      const sel = TextSelection.near(tr.doc.resolve(tr.selection.to), 1);
+      tr.setSelection(sel);
+    }
+    return true;
+  };
+
   function insertImageUrl() {
     const url = imageUrl.trim();
     if (!url || !editor) return;
-    editor.chain().focus().setImage({ src: url }).run();
+    editor
+      .chain()
+      .focus()
+      .setImage({ src: url })
+      .command(focusAfterBlock)
+      .run();
     setImageUrl("");
     setShowImageUrlInput(false);
   }
@@ -131,7 +118,12 @@ export function RichTextEditor({
   function insertVideoUrl() {
     const url = videoUrl.trim();
     if (!url || !editor) return;
-    editor.chain().focus().setVideo({ src: url }).run();
+    editor
+      .chain()
+      .focus()
+      .setVideo({ src: url })
+      .command(focusAfterBlock)
+      .run();
     setVideoUrl("");
     setShowVideoUrlInput(false);
   }
@@ -139,15 +131,18 @@ export function RichTextEditor({
   async function handleImageFile(file: File) {
     if (!editor) return;
     if (!postId) {
-      alert(
-        "Save the post first, then you can upload images into the content.",
-      );
+      alert("Save the post first, then you can upload images into the content.");
       return;
     }
     setIsUploadingImage(true);
     try {
       const { url } = await uploadMediaFile(postId, file);
-      editor.chain().focus().setImage({ src: url }).run();
+      editor
+        .chain()
+        .focus()
+        .setImage({ src: url })
+        .command(focusAfterBlock)
+        .run();
     } catch {
       // silent — user sees nothing inserted
     } finally {
@@ -158,15 +153,18 @@ export function RichTextEditor({
   async function handleVideoFile(file: File) {
     if (!editor) return;
     if (!postId) {
-      alert(
-        "Save the post first, then you can upload videos into the content.",
-      );
+      alert("Save the post first, then you can upload videos into the content.");
       return;
     }
     setIsUploadingVideo(true);
     try {
       const { url } = await uploadMediaFile(postId, file);
-      editor.chain().focus().setVideo({ src: url }).run();
+      editor
+        .chain()
+        .focus()
+        .setVideo({ src: url })
+        .command(focusAfterBlock)
+        .run();
     } catch {
       // silent
     } finally {
@@ -318,8 +316,4 @@ export function RichTextEditor({
       <EditorContent editor={editor} />
     </div>
   );
-}
-
-function escapeRegex(str: string) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

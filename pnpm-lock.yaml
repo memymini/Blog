@@ -208,6 +208,9 @@ importers:
       prosemirror-markdown:
         specifier: ^1.13.4
         version: 1.13.4
+      prosemirror-trailing-node:
+        specifier: ^3.0.0
+        version: 3.0.0(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.7)
       react:
         specifier: ^19.2.0
         version: 19.2.0

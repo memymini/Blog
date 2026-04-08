@@ -163,7 +163,7 @@ export function ImagePlusIcon({ className }: { className?: string }) {
   );
 }
 
-// ─── Media alignment (shared by ResizableImageView and VideoView) ─────────────
+// ─── Media alignment (used by MediaView) ──────────────────────────────────────
 
 type Align = "left" | "center" | "right";
 

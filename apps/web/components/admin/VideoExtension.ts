@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
-import { VideoView } from "./VideoView";
+import { MediaView } from "./MediaView";
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
@@ -77,7 +77,7 @@ export const VideoNode = Node.create({
   },
 
   addNodeView() {
-    return ReactNodeViewRenderer(VideoView) as any;
+    return ReactNodeViewRenderer(MediaView) as any;
   },
 
   addCommands() {

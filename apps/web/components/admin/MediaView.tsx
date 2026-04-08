@@ -8,17 +8,18 @@ import { AlignIcon } from "@/components/icons";
 
 type Align = "left" | "center" | "right";
 
-const ALIGN_MARGIN: Record<Align, string> = {
-  left: "mr-auto",
-  center: "mx-auto",
-  right: "ml-auto",
+const ALIGN_ITEMS: Record<Align, string> = {
+  left: "flex-start",
+  center: "center",
+  right: "flex-end",
 };
 
-export function ResizableImageView({ node, updateAttributes, selected }: NodeViewProps) {
+export function MediaView({ node, updateAttributes, selected }: NodeViewProps) {
+  const type = node.type.name as "image" | "video";
   const src = node.attrs.src as string;
   const alt = (node.attrs.alt as string) ?? "";
   const width = (node.attrs.width as number | null) ?? 100;
-  const align = (node.attrs.align as Align) ?? "center";
+  const align = ((node.attrs.align as Align) ?? "center") as Align;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [isResizing, setIsResizing] = useState(false);
@@ -34,9 +35,9 @@ export function ResizableImageView({ node, updateAttributes, selected }: NodeVie
       startW.current = containerRef.current?.offsetWidth ?? 0;
       setIsResizing(true);
 
-      function onMove(e: MouseEvent) {
+      function onMove(ev: MouseEvent) {
         const parentW = containerRef.current?.parentElement?.offsetWidth ?? 1;
-        const delta = e.clientX - startX.current;
+        const delta = ev.clientX - startX.current;
         const raw = ((startW.current + delta) / parentW) * 100;
         const clamped = Math.round(Math.min(100, Math.max(20, raw)));
         updateAttributes({ width: clamped });
@@ -55,8 +56,10 @@ export function ResizableImageView({ node, updateAttributes, selected }: NodeVie
   );
 
   return (
-    <NodeViewWrapper className="relative my-4 flex flex-col" style={{ alignItems: { left: "flex-start", center: "center", right: "flex-end" }[align] }}>
-
+    <NodeViewWrapper
+      className="relative my-4 flex flex-col"
+      style={{ alignItems: ALIGN_ITEMS[align] }}
+    >
       {/* Floating toolbar — visible when selected */}
       {selected && (
         <div className="flex items-center gap-0.5 bg-primary-900 rounded-sm px-1 py-0.5 mb-1.5 shadow-md self-center">
@@ -77,29 +80,43 @@ export function ResizableImageView({ node, updateAttributes, selected }: NodeVie
               <AlignIcon align={a} />
             </button>
           ))}
-
           <div className="w-px h-4 bg-white/30 mx-0.5" />
-          <span className="text-white text-[11px] font-mono px-1 tabular-nums">{width}%</span>
+          <span className="text-white text-[11px] font-mono px-1 tabular-nums">
+            {width}%
+          </span>
         </div>
       )}
 
-      {/* Image + resize handle */}
+      {/* Media element + resize handle */}
       <div
         ref={containerRef}
         className="relative block"
         style={{ width: `${width}%` }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={src}
-          alt={alt}
-          draggable={false}
-          className={cn(
-            "block w-full rounded-sm select-none",
-            selected && "ring-2 ring-primary-400 ring-offset-1",
-            isResizing && "pointer-events-none",
-          )}
-        />
+        {type === "image" ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={src}
+            alt={alt}
+            draggable={false}
+            className={cn(
+              "block w-full rounded-sm select-none",
+              selected && "ring-2 ring-primary-400 ring-offset-1",
+              isResizing && "pointer-events-none",
+            )}
+          />
+        ) : (
+          // eslint-disable-next-line jsx-a11y/media-has-caption
+          <video
+            src={src}
+            controls
+            className={cn(
+              "block w-full rounded-sm",
+              selected && "ring-2 ring-primary-400 ring-offset-1",
+              isResizing && "pointer-events-none",
+            )}
+          />
+        )}
 
         {/* Right-edge resize handle */}
         <div
@@ -116,4 +133,3 @@ export function ResizableImageView({ node, updateAttributes, selected }: NodeVie
     </NodeViewWrapper>
   );
 }
-
