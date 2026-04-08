@@ -1,12 +1,11 @@
 import { notFound } from "next/navigation";
 import type { Lang } from "@repo/types";
 import { listPosts, getPost } from "@/lib/api/posts";
-import { AdminPostView } from "@/components/public/AdminPostView";
+import { PostDetailView } from "@/components/public/AdminPostView";
 import { ProfileCard } from "@/components/public/ProfileCard";
+import { VALID_LANGS, SITE_URL } from "@/lib/constants";
 
 export const revalidate = 3600;
-
-const VALID_LANGS: Lang[] = ["ko", "en"];
 
 export async function generateStaticParams() {
   try {
@@ -29,7 +28,7 @@ export async function generateMetadata({ params }: PostPageProps) {
   const post = await getPost(Number(id), lang);
   if (!post) return {};
 
-  const url = `https://memymini.vercel.app/${lang}/posts/${id}`;
+  const url = `${SITE_URL}/${lang}/posts/${id}`;
   const title = post.translation.title;
   const description = post.translation.excerpt ?? undefined;
   const images = post.cover_url
@@ -42,8 +41,8 @@ export async function generateMetadata({ params }: PostPageProps) {
     alternates: {
       canonical: url,
       languages: {
-        ko: `https://memymini.vercel.app/ko/posts/${id}`,
-        en: `https://memymini.vercel.app/en/posts/${id}`,
+        ko: `${SITE_URL}/ko/posts/${id}`,
+        en: `${SITE_URL}/en/posts/${id}`,
       },
     },
     openGraph: {
@@ -84,7 +83,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
         {/* Post content */}
         <div className="flex-1 min-w-0 bg-surface shadow-sm overflow-hidden">
-          <AdminPostView post={post} lang={typedLang} />
+          <PostDetailView post={post} lang={typedLang} />
         </div>
       </div>
     </div>

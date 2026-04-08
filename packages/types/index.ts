@@ -131,6 +131,15 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
   };
 }
 
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+
+/** Authenticated user shape returned by /auth/me and embedded in /auth/login. */
+export interface AuthUser {
+  readonly id: string;
+  readonly email: string | undefined;
+  readonly role: string | null;
+}
+
 // ─── Request Payload Types ────────────────────────────────────────────────────
 
 export interface CreatePostPayload {

@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
+import { VALID_LANGS } from "@/lib/constants";
 import type { Lang } from "@repo/types";
-
-const VALID_LANGS: Lang[] = ["ko", "en"];
 
 interface LangLayoutProps {
   children: ReactNode;

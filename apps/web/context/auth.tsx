@@ -10,14 +10,7 @@ import {
 } from "react";
 import { apiFetch } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/types";
-
-// ── Types ──────────────────────────────────────────────────────────────────────
-
-interface AuthUser {
-  id: string;
-  email: string;
-  role: string | null;
-}
+import type { AuthUser } from "@repo/types";
 
 interface AuthContextValue {
   user: AuthUser | null;

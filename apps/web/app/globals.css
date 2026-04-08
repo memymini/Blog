@@ -243,7 +243,7 @@
 .prose pre code {
   background: none;
   padding: 0;
-  font-size: var(--font-size-body-sm);
+  font-size: var(--text-body-sm);
 }
 
 .prose ul {
@@ -282,6 +282,13 @@
   width: 100%;
 }
 
+/* Inside the Tiptap editor, NodeViewWrapper (my-4) handles image spacing.
+   The .prose img margin would stack on top of it, adding ~1.5rem of extra
+   internal space inside the image container and breaking paragraph spacing. */
+.ProseMirror img {
+  margin: 0;
+}
+
 .prose hr {
   border: none;
   border-top: 1px solid var(--color-muted-200);
@@ -291,7 +298,7 @@
 .prose table {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--font-size-body-sm);
+  font-size: var(--text-body-sm);
   margin-bottom: 1.5rem;
 }
 

@@ -5,10 +5,9 @@ import type {
   ListPostsQuery,
 } from "@repo/types";
 import { apiFetch } from "./client";
+import { ApiError } from "./types";
 import { getMockPosts, getMockPost } from "@/lib/mock-data";
-
-const USE_MOCK =
-  process.env.USE_MOCK === "true" || process.env.NEXT_PUBLIC_USE_MOCK === "true";
+import { USE_MOCK } from "@/lib/constants";
 
 export async function listPosts(
   params: ListPostsQuery,
@@ -21,11 +20,9 @@ export async function listPosts(
   if (params.page) query.set("page", String(params.page));
   if (params.limit) query.set("limit", String(params.limit));
 
-  try {
-    return await apiFetch<PaginatedResponse<PostListItem>>(`/posts?${query}`);
-  } catch {
-    return { success: true, data: [], error: null, meta: { total: 0, page: 1, limit: params.limit ?? 20 } };
-  }
+  // Let errors propagate — callers rely on error.tsx boundary,
+  // not on a silent empty list, to signal server failures.
+  return await apiFetch<PaginatedResponse<PostListItem>>(`/posts?${query}`);
 }
 
 export async function getPost(
@@ -36,7 +33,10 @@ export async function getPost(
 
   try {
     return await apiFetch<PostDetail>(`/posts/${id}?lang=${lang}`);
-  } catch {
-    return null;
+  } catch (err) {
+    // 404 → genuine "not found"; page should call notFound()
+    if (err instanceof ApiError && err.statusCode === 404) return null;
+    // Everything else (5xx, network) → propagate to error boundary
+    throw err;
   }
 }

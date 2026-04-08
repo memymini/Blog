@@ -6,10 +6,9 @@ import { CountryFilterBar } from "@/components/public/CountryFilterBar";
 import { PostList } from "@/components/public/PostList";
 import { LanguageToggleNav } from "@/components/public/LanguageToggleNav";
 import { ProfileCard } from "@/components/public/ProfileCard";
+import { VALID_LANGS } from "@/lib/constants";
 
 export const revalidate = 3600;
-
-const VALID_LANGS: Lang[] = ["ko", "en"];
 
 export async function generateStaticParams() {
   return VALID_LANGS.map((lang) => ({ lang }));
@@ -30,11 +29,13 @@ export default async function PostsPage({
   if (!VALID_LANGS.includes(lang as Lang)) notFound();
 
   const typedLang = lang as Lang;
-  const page = pageStr ? Number(pageStr) : 1;
+  const page = Math.max(1, parseInt(pageStr ?? "1", 10) || 1);
+  // Ignore malformed country codes (API enforces 2-char alpha-2)
+  const safeCountry = country && /^[A-Za-z]{2}$/.test(country) ? country : undefined;
 
   const [countries, postsResponse] = await Promise.all([
     getCountries(),
-    listPosts({ lang: typedLang, country, page, limit: 20 }),
+    listPosts({ lang: typedLang, country: safeCountry, page, limit: 20 }),
   ]);
 
   const posts = postsResponse.data ?? [];
@@ -54,7 +55,7 @@ export default async function PostsPage({
             <div className="flex-1 min-w-0">
               <CountryFilterBar
                 countries={countries}
-                currentCountry={country}
+                currentCountry={safeCountry}
                 lang={typedLang}
               />
             </div>

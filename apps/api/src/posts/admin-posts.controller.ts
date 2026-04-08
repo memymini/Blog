@@ -43,7 +43,7 @@ import { CreateMediaDto, UpdateMediaDto } from './dto/create-media.dto';
 import { CreatePostDto } from './dto/create-post.dto';
 import { AdminListPostsQueryDto } from './dto/list-posts.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { MediaService } from './media.service';
+import { MediaService, COVER_MAX_BYTES, MEDIA_MAX_BYTES } from './media.service';
 import { PostsService } from './posts.service';
 
 @ApiTags('admin / posts')
@@ -111,7 +111,7 @@ export class AdminPostsController {
   // ── Cover image ───────────────────────────────────────────────────────────
 
   @Post(':id/cover')
-  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 10 * 1024 * 1024 } }))
+  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: COVER_MAX_BYTES } }))
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Upload cover image — URL persisted to posts.cover_url' })
   @ApiParam({ name: 'id', type: 'integer', example: 1 })
@@ -146,7 +146,7 @@ export class AdminPostsController {
   }
 
   @Post(':id/media/upload')
-  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 50 * 1024 * 1024 } }))
+  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: MEDIA_MAX_BYTES } }))
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Upload a media file (image or video) — returns the public URL' })
   @ApiParam({ name: 'id', type: 'integer', example: 1 })
@@ -186,12 +186,12 @@ export class AdminPostsController {
   @ApiParam({ name: 'id', type: 'integer', example: 1 })
   @ApiParam({ name: 'mediaId', type: 'integer', example: 1 })
   @ApiOkResponse(apiRes({ $ref: getSchemaPath(PostMediaSchema) }))
-  updateMedia(
+  async updateMedia(
     @Param('id', ParseIntPipe) id: number,
     @Param('mediaId', ParseIntPipe) mediaId: number,
     @Body() dto: UpdateMediaDto,
   ) {
-    return ok(this.media.update(id, mediaId, dto));
+    return ok(await this.media.update(id, mediaId, dto));
   }
 
   @Delete(':id/media/:mediaId')

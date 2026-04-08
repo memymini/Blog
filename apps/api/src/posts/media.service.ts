@@ -5,6 +5,8 @@ import { SupabaseService } from '../supabase/supabase.service';
 import { CreateMediaDto, UpdateMediaDto } from './dto/create-media.dto';
 
 const COVER_BUCKET = 'post-images';
+export const COVER_MAX_BYTES = 10 * 1024 * 1024;  // 10 MB
+export const MEDIA_MAX_BYTES = 50 * 1024 * 1024;  // 50 MB
 
 @Injectable()
 export class MediaService {

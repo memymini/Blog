@@ -4,21 +4,19 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import type { PostDetail, Lang } from "@repo/types";
+import { formatDate } from "@/lib/utils";
 import { MarkdownRenderer } from "@/components/public/MarkdownRenderer";
 import { LanguageToggleNav } from "@/components/public/LanguageToggleNav";
 import { useAuth } from "@/context/auth";
+import { BackArrowIcon, EditIcon } from "@/components/icons";
 
-interface AdminPostViewProps {
+interface PostDetailViewProps {
   post: PostDetail;
   lang: Lang;
 }
 
-function formatDate(isoString: string): string {
-  const d = new Date(isoString);
-  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
-}
-
-export function AdminPostView({ post, lang }: AdminPostViewProps) {
+/** Public post detail view — shows cover, content, and an edit button for admins. */
+export function PostDetailView({ post, lang }: PostDetailViewProps) {
   const router = useRouter();
   const { user } = useAuth();
   const isAdmin = !!user;

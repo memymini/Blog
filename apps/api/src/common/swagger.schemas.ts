@@ -96,6 +96,9 @@ export class PostMediaSchema {
 
   @ApiProperty({ example: 0 })
   display_order!: number;
+
+  @ApiProperty({ example: 100, nullable: true, description: 'Display width as a percentage (10–100). Null means full-width.' })
+  width!: number | null;
 }
 
 // ─── Public list view ─────────────────────────────────────────────────────────

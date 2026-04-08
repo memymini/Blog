@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { PostListItem, Lang } from "@repo/types";
+import { formatDate } from "@/lib/utils";
 import { EmptyState } from "./EmptyState";
 
 const EMPTY_T: Record<Lang, { title: string; description: string }> = {
@@ -18,13 +19,6 @@ interface PostListProps {
   lang: Lang;
 }
 
-function formatDate(isoString: string): string {
-  const d = new Date(isoString);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}.${month}.${day}`;
-}
 
 export function PostList({ posts, lang }: PostListProps) {
   if (posts.length === 0) {
