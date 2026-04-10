@@ -6,7 +6,7 @@ import type {
 } from "@repo/types";
 import { apiFetch } from "./client";
 import { ApiError } from "./types";
-import { getMockPosts, getMockPost } from "@/lib/mock-data";
+import { getMockPosts, getMockPost } from "@/__mocks__/mock-posts";
 import { USE_MOCK } from "@/lib/constants";
 
 export async function listPosts(
