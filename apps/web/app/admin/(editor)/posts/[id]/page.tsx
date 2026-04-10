@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
-import type { Country, Lang, PostMedia } from "@repo/types";
+import type { Country, Lang } from "@repo/types";
 import { getAdminPost } from "@/lib/api/admin";
 import { getCountries } from "@/lib/api/countries";
 import { ApiError } from "@/lib/api/types";
@@ -16,11 +16,9 @@ export default function EditPostPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Initial values for PostEditor
   const [initialCountryCode, setInitialCountryCode] = useState("");
   const [initialPublished, setInitialPublished] = useState(false);
   const [initialCoverUrl, setInitialCoverUrl] = useState<string | null>(null);
-  const [initialMedia, setInitialMedia] = useState<PostMedia[]>([]);
   const [initialTranslations, setInitialTranslations] = useState<
     Partial<Record<Lang, { title: string; contents: string }>>
   >({});
@@ -33,7 +31,6 @@ export default function EditPostPage() {
       setInitialCountryCode(post.country_code);
       setInitialPublished(post.published);
       setInitialCoverUrl(post.cover_url);
-      setInitialMedia(post.media);
 
       const map: Partial<Record<Lang, { title: string; contents: string }>> = {};
       for (const t of post.translations) {
@@ -81,7 +78,6 @@ export default function EditPostPage() {
       initialCountryCode={initialCountryCode}
       initialPublished={initialPublished}
       initialCoverUrl={initialCoverUrl}
-      initialMedia={initialMedia}
       initialTranslations={initialTranslations}
       countries={countries}
     />

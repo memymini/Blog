@@ -13,7 +13,6 @@ export type { TranslationState, TranslationsMap } from "./post/TranslationEditor
 
 // Media feature
 export { CoverUploader } from "./media/CoverUploader";
-export { MediaItem } from "./media/MediaItem";
 export { MediaManager } from "./media/MediaManager";
 export { MediaView } from "./media/MediaView";
 

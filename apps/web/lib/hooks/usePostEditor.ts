@@ -2,15 +2,12 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Country, Lang, PostMedia } from "@repo/types";
+import type { Country, Lang } from "@repo/types";
 import {
   createPost,
   updatePost,
   deletePost,
   uploadCover,
-  uploadMediaFile,
-  addMedia,
-  deleteMedia,
 } from "@/lib/api/admin";
 import { ApiError } from "@/lib/api/types";
 import { useToast } from "@/components/admin/Toast";
@@ -21,11 +18,10 @@ export interface TranslationState {
 }
 
 interface UsePostEditorOptions {
-  initialPostId?: number;
+  postId?: number;
   initialCountryCode?: string;
   initialPublished?: boolean;
   initialCoverUrl?: string | null;
-  initialMedia?: PostMedia[];
   initialTranslations?: Partial<Record<Lang, TranslationState>>;
   countries: Country[];
 }
@@ -35,11 +31,10 @@ interface UsePostEditorOptions {
  * The component itself handles only rendering.
  */
 export function usePostEditor({
-  initialPostId,
+  postId: initialPostId,
   initialCountryCode = "",
   initialPublished = false,
   initialCoverUrl = null,
-  initialMedia = [],
   initialTranslations = {},
   countries,
 }: UsePostEditorOptions) {
@@ -55,15 +50,10 @@ export function usePostEditor({
   const [coverUrl, setCoverUrl] = useState<string | null>(initialCoverUrl ?? null);
   const [isUploadingCover, setIsUploadingCover] = useState(false);
   const [translations, setTranslations] = useState<Partial<Record<Lang, TranslationState>>>(initialTranslations);
-  const [media, setMedia] = useState<PostMedia[]>(initialMedia);
-  const [isAddingMedia, setIsAddingMedia] = useState(false);
-  const [mediaUrl, setMediaUrl] = useState("");
-  const [mediaCaption, setMediaCaption] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const coverInputRef = useRef<HTMLInputElement>(null);
-  const mediaFileRef = useRef<HTMLInputElement>(null);
 
   function getTranslation(lang: Lang): TranslationState {
     return translations[lang] ?? { title: "", contents: "" };
@@ -150,52 +140,6 @@ export function usePostEditor({
     }
   }
 
-  async function handleAddMediaUrl() {
-    if (!postId || !mediaUrl.trim()) return;
-    try {
-      const added = await addMedia(postId, {
-        type: "embed",
-        url: mediaUrl.trim(),
-        caption: mediaCaption.trim() || undefined,
-      });
-      setMedia((prev) => [...prev, added]);
-      setMediaUrl("");
-      setMediaCaption("");
-      setIsAddingMedia(false);
-    } catch (err) {
-      showToast(err instanceof ApiError ? err.message : "Failed to add media", "error");
-    }
-  }
-
-  async function handleMediaFile(file: File) {
-    if (!postId) {
-      showToast("Save the post first, then add media.", "error");
-      return;
-    }
-    try {
-      const { url } = await uploadMediaFile(postId, file);
-      const type = file.type.startsWith("video/") ? "video" : "image";
-      const added = await addMedia(postId, { type, url });
-      setMedia((prev) => [...prev, added]);
-    } catch (err) {
-      showToast(err instanceof ApiError ? err.message : "Failed to upload media", "error");
-    }
-  }
-
-  async function handleDeleteMedia(mediaId: number) {
-    if (!postId) return;
-    try {
-      await deleteMedia(postId, mediaId);
-      setMedia((prev) => prev.filter((m) => m.id !== mediaId));
-    } catch (err) {
-      showToast(err instanceof ApiError ? err.message : "Failed to delete media", "error");
-    }
-  }
-
-  function handleMediaWidthChange(id: number, width: number) {
-    setMedia((prev) => prev.map((x) => (x.id === id ? { ...x, width } : x)));
-  }
-
   return {
     postId,
     activeLang,
@@ -209,27 +153,15 @@ export function usePostEditor({
     coverUrl,
     setCoverUrl,
     isUploadingCover,
-    media,
-    isAddingMedia,
-    setIsAddingMedia,
-    mediaUrl,
-    setMediaUrl,
-    mediaCaption,
-    setMediaCaption,
     isSaving,
     isDeleting,
     isEditMode,
     coverInputRef,
-    mediaFileRef,
     getTranslation,
     flagFor,
     setTranslationField,
     handleCoverFile,
     handleSave,
     handleDelete,
-    handleAddMediaUrl,
-    handleMediaFile,
-    handleDeleteMedia,
-    handleMediaWidthChange,
   };
 }
