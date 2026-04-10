@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Node, mergeAttributes, nodeInputRule } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
-import { MediaView } from "./MediaView";
+import { MediaView } from "../media/MediaView";
 
 const inputRegex = /(?:^|\s)(!\[(.+|:?)]\((\S+)(?:(?:\s+)["'](\S+)["'])?\))$/;
 

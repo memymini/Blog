@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import type { Country } from "@repo/types";
 import { getCountries } from "@/lib/api/countries";
-import { PostEditor } from "@/components/admin/PostEditor";
+import { PostEditor } from "@/components/admin";
 
 export default function NewPostPage() {
   const [countries, setCountries] = useState<Country[]>([]);

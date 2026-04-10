@@ -1,18 +1,25 @@
+// Root-level admin components
 export { AdminHeader } from "./AdminHeader";
 export { AdminPostRow } from "./AdminPostRow";
-export { CoverUploader } from "./CoverUploader";
-export { EditorToolbar } from "./EditorToolbar";
-export { MediaItem } from "./MediaItem";
-export { MediaManager } from "./MediaManager";
-export { MediaView } from "./MediaView";
-export { PostEditor } from "./PostEditor";
-export type { PostEditorProps } from "./PostEditor";
-export { PostEditorToolbar } from "./PostEditorToolbar";
-export { PostFormFields } from "./PostFormFields";
-export { RichTextEditor } from "./RichTextEditor";
 export { useToast, ToastProvider } from "./Toast";
-export { TranslationEditor } from "./TranslationEditor";
-export type { TranslationState, TranslationsMap } from "./TranslationEditor";
-export { TrailingNode, nodeContentToHTML, AlignedParagraph, AlignedHeading } from "./EditorExtensions";
-export { ImageExtension } from "./ImageExtension";
-export { VideoNode } from "./VideoExtension";
+
+// Post feature
+export { PostEditor } from "./post/PostEditor";
+export type { PostEditorProps } from "./post/PostEditor";
+export { PostEditorToolbar } from "./post/PostEditorToolbar";
+export { PostFormFields } from "./post/PostFormFields";
+export { TranslationEditor } from "./post/TranslationEditor";
+export type { TranslationState, TranslationsMap } from "./post/TranslationEditor";
+
+// Media feature
+export { CoverUploader } from "./media/CoverUploader";
+export { MediaItem } from "./media/MediaItem";
+export { MediaManager } from "./media/MediaManager";
+export { MediaView } from "./media/MediaView";
+
+// Editor feature
+export { RichTextEditor } from "./editor/RichTextEditor";
+export { EditorToolbar } from "./editor/EditorToolbar";
+export { TrailingNode, nodeContentToHTML, AlignedParagraph, AlignedHeading } from "./editor/EditorExtensions";
+export { ImageExtension } from "./editor/ImageExtension";
+export { VideoNode } from "./editor/VideoExtension";

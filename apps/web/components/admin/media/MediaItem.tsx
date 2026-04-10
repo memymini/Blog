@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import type { PostMedia } from "@repo/types";
 import { updateMedia } from "@/lib/api/admin";
 import { cn } from "@/lib/utils";
+import { useResizeDrag } from "@/lib/hooks/useResizeDrag";
 
 interface MediaItemProps {
   item: PostMedia;
@@ -14,53 +15,21 @@ interface MediaItemProps {
 
 export function MediaItem({ item: m, postId, onWidthChange, onDelete }: MediaItemProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const startX = useRef(0);
-  const startW = useRef(0);
-  const [isResizing, setIsResizing] = useState(false);
   const width = m.width ?? 100;
 
-  function onResizeStart(e: React.MouseEvent) {
-    e.preventDefault();
-    startX.current = e.clientX;
-    startW.current = containerRef.current?.offsetWidth ?? 0;
-    setIsResizing(true);
-
-    function onMove(ev: MouseEvent) {
-      const parentW = containerRef.current?.parentElement?.offsetWidth ?? 1;
-      const delta = ev.clientX - startX.current;
-      const raw = ((startW.current + delta) / parentW) * 100;
-      const clamped = Math.round(Math.min(100, Math.max(20, raw)));
-      onWidthChange(m.id, clamped);
+  async function handleResizeEnd(finalW: number) {
+    try {
+      await updateMedia(postId, m.id, { width: finalW });
+    } catch {
+      onWidthChange(m.id, m.width ?? 100);
     }
-
-    async function onUp() {
-      setIsResizing(false);
-      document.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseup", onUp);
-      const finalW =
-        containerRef.current && containerRef.current.parentElement
-          ? Math.round(
-              Math.min(
-                100,
-                Math.max(
-                  20,
-                  (containerRef.current.offsetWidth /
-                    containerRef.current.parentElement.offsetWidth) *
-                    100,
-                ),
-              ),
-            )
-          : width;
-      try {
-        await updateMedia(postId, m.id, { width: finalW });
-      } catch {
-        onWidthChange(m.id, m.width ?? 100);
-      }
-    }
-
-    document.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseup", onUp);
   }
+
+  const { isResizing, onResizeStart } = useResizeDrag(
+    containerRef,
+    (w) => onWidthChange(m.id, w),
+    handleResizeEnd,
+  );
 
   return (
     <div className="relative group flex justify-center">

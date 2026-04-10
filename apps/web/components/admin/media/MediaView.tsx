@@ -2,9 +2,10 @@
 
 import type { NodeViewProps } from "@tiptap/react";
 import { NodeViewWrapper } from "@tiptap/react";
-import { useCallback, useRef, useState } from "react";
+import { useRef } from "react";
 import { cn } from "@/lib/utils";
 import { AlignIcon } from "@/components/icons";
+import { useResizeDrag } from "@/lib/hooks/useResizeDrag";
 
 type Align = "left" | "center" | "right";
 
@@ -22,37 +23,9 @@ export function MediaView({ node, updateAttributes, selected }: NodeViewProps) {
   const align = ((node.attrs.align as Align) ?? "center") as Align;
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isResizing, setIsResizing] = useState(false);
-  const startX = useRef(0);
-  const startW = useRef(0);
-
-  const onResizeStart = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      startX.current = e.clientX;
-      startW.current = containerRef.current?.offsetWidth ?? 0;
-      setIsResizing(true);
-
-      function onMove(ev: MouseEvent) {
-        const parentW = containerRef.current?.parentElement?.offsetWidth ?? 1;
-        const delta = ev.clientX - startX.current;
-        const raw = ((startW.current + delta) / parentW) * 100;
-        const clamped = Math.round(Math.min(100, Math.max(20, raw)));
-        updateAttributes({ width: clamped });
-      }
-
-      function onUp() {
-        setIsResizing(false);
-        document.removeEventListener("mousemove", onMove);
-        document.removeEventListener("mouseup", onUp);
-      }
-
-      document.addEventListener("mousemove", onMove);
-      document.addEventListener("mouseup", onUp);
-    },
-    [updateAttributes],
+  const { isResizing, onResizeStart } = useResizeDrag(
+    containerRef,
+    (w) => updateAttributes({ width: w }),
   );
 
   return (

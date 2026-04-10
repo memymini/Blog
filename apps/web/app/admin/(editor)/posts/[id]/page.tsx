@@ -6,7 +6,7 @@ import type { Country, Lang, PostMedia } from "@repo/types";
 import { getAdminPost } from "@/lib/api/admin";
 import { getCountries } from "@/lib/api/countries";
 import { ApiError } from "@/lib/api/types";
-import { PostEditor } from "@/components/admin/PostEditor";
+import { PostEditor } from "@/components/admin";
 
 export default function EditPostPage() {
   const params = useParams<{ id: string }>();

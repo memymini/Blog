@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
-import { MediaView } from "./MediaView";
+import { MediaView } from "../media/MediaView";
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
