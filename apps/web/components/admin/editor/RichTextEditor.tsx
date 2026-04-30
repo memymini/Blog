@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { EditorContent } from "@tiptap/react";
 import { cn } from "@/lib/utils";
 import { uploadMediaFile } from "@/lib/api/admin";
@@ -15,6 +16,11 @@ interface RichTextEditorProps {
   postId?: number;
   placeholder?: string;
   className?: string;
+  /**
+   * When provided, the EditorToolbar is portaled into this container
+   * instead of rendering inline above the editor content.
+   */
+  toolbarContainerRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 export function RichTextEditor({
@@ -23,6 +29,7 @@ export function RichTextEditor({
   postId,
   placeholder = "Write here…",
   className,
+  toolbarContainerRef,
 }: RichTextEditorProps) {
   const imageFileRef = useRef<HTMLInputElement>(null);
   const videoFileRef = useRef<HTMLInputElement>(null);
@@ -38,7 +45,12 @@ export function RichTextEditor({
   function insertImageUrl() {
     const url = imageUrl.trim();
     if (!url || !editor) return;
-    editor.chain().focus().setImage({ src: url }).command(focusAfterBlock).run();
+    editor
+      .chain()
+      .focus()
+      .setImage({ src: url })
+      .command(focusAfterBlock)
+      .run();
     setImageUrl("");
     setShowImageUrlInput(false);
   }
@@ -46,7 +58,12 @@ export function RichTextEditor({
   function insertVideoUrl() {
     const url = videoUrl.trim();
     if (!url || !editor) return;
-    editor.chain().focus().setVideo({ src: url }).command(focusAfterBlock).run();
+    editor
+      .chain()
+      .focus()
+      .setVideo({ src: url })
+      .command(focusAfterBlock)
+      .run();
     setVideoUrl("");
     setShowVideoUrlInput(false);
   }
@@ -54,13 +71,20 @@ export function RichTextEditor({
   async function handleImageFile(file: File) {
     if (!editor) return;
     if (!postId) {
-      alert("Save the post first, then you can upload images into the content.");
+      alert(
+        "Save the post first, then you can upload images into the content.",
+      );
       return;
     }
     setIsUploadingImage(true);
     try {
       const { url } = await uploadMediaFile(postId, file);
-      editor.chain().focus().setImage({ src: url }).command(focusAfterBlock).run();
+      editor
+        .chain()
+        .focus()
+        .setImage({ src: url })
+        .command(focusAfterBlock)
+        .run();
     } catch {
       // silent — user sees nothing inserted
     } finally {
@@ -71,13 +95,20 @@ export function RichTextEditor({
   async function handleVideoFile(file: File) {
     if (!editor) return;
     if (!postId) {
-      alert("Save the post first, then you can upload videos into the content.");
+      alert(
+        "Save the post first, then you can upload videos into the content.",
+      );
       return;
     }
     setIsUploadingVideo(true);
     try {
       const { url } = await uploadMediaFile(postId, file);
-      editor.chain().focus().setVideo({ src: url }).command(focusAfterBlock).run();
+      editor
+        .chain()
+        .focus()
+        .setVideo({ src: url })
+        .command(focusAfterBlock)
+        .run();
     } catch {
       // silent
     } finally {
@@ -85,34 +116,51 @@ export function RichTextEditor({
     }
   }
 
+  const toolbarProps = {
+    editor,
+    isUploadingImage,
+    isUploadingVideo,
+    showImageUrlInput,
+    showVideoUrlInput,
+    onImageFileClick: () => imageFileRef.current?.click(),
+    onVideoFileClick: () => videoFileRef.current?.click(),
+    onToggleImageUrl: () => {
+      setShowImageUrlInput((v) => !v);
+      setShowVideoUrlInput(false);
+    },
+    onToggleVideoUrl: () => {
+      setShowVideoUrlInput((v) => !v);
+      setShowImageUrlInput(false);
+    },
+  };
+
+  const toolbarInPortal = Boolean(toolbarContainerRef?.current);
+
   return (
     <div className={cn("relative", className)}>
-      {editor && (
-        <EditorToolbar
-          editor={editor}
-          isUploadingImage={isUploadingImage}
-          isUploadingVideo={isUploadingVideo}
-          showImageUrlInput={showImageUrlInput}
-          showVideoUrlInput={showVideoUrlInput}
-          onImageFileClick={() => imageFileRef.current?.click()}
-          onVideoFileClick={() => videoFileRef.current?.click()}
-          onToggleImageUrl={() => {
-            setShowImageUrlInput((v) => !v);
-            setShowVideoUrlInput(false);
-          }}
-          onToggleVideoUrl={() => {
-            setShowVideoUrlInput((v) => !v);
-            setShowImageUrlInput(false);
-          }}
-        />
-      )}
+      {/* Toolbar: portaled into sticky header slot, or inline as fallback */}
+      {editor &&
+        (toolbarInPortal ? (
+          createPortal(
+            <EditorToolbar
+              {...toolbarProps}
+              className="px-5 py-2 mb-0 pb-0 border-0"
+            />,
+            toolbarContainerRef!.current!,
+          )
+        ) : (
+          <EditorToolbar {...toolbarProps} />
+        ))}
 
       {showImageUrlInput && (
         <MediaUrlInput
           value={imageUrl}
           onChange={setImageUrl}
           onInsert={insertImageUrl}
-          onCancel={() => { setShowImageUrlInput(false); setImageUrl(""); }}
+          onCancel={() => {
+            setShowImageUrlInput(false);
+            setImageUrl("");
+          }}
           placeholder="https://example.com/image.jpg"
         />
       )}
@@ -122,7 +170,10 @@ export function RichTextEditor({
           value={videoUrl}
           onChange={setVideoUrl}
           onInsert={insertVideoUrl}
-          onCancel={() => { setShowVideoUrlInput(false); setVideoUrl(""); }}
+          onCancel={() => {
+            setShowVideoUrlInput(false);
+            setVideoUrl("");
+          }}
           placeholder="https://example.com/video.mp4"
         />
       )}
@@ -154,7 +205,14 @@ export function RichTextEditor({
         <p
           className="absolute left-0 text-body-sm text-secondary-300 pointer-events-none select-none"
           style={{
-            top: showImageUrlInput || showVideoUrlInput ? "96px" : "56px",
+            // When toolbar is in portal, only URL inputs sit above the placeholder
+            top: toolbarInPortal
+              ? showImageUrlInput || showVideoUrlInput
+                ? "48px"
+                : "8px"
+              : showImageUrlInput || showVideoUrlInput
+                ? "96px"
+                : "56px",
           }}
         >
           {placeholder}

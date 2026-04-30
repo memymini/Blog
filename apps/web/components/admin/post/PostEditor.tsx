@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import type { Country, Lang } from "@repo/types";
@@ -25,6 +26,7 @@ export interface PostEditorProps {
 
 export function PostEditor(props: PostEditorProps) {
   const ed = usePostEditor(props);
+  const editorToolbarRef = useRef<HTMLDivElement>(null);
   const translation = ed.getTranslation(ed.activeLang);
   const displayTitle = translation.title || "Untitled";
 
@@ -48,6 +50,12 @@ export function PostEditor(props: PostEditorProps) {
           postId={ed.postId}
           onSave={ed.handleSave}
           onDelete={ed.handleDelete}
+        />
+
+        {/* Sticky editor toolbar slot — EditorToolbar portals into here */}
+        <div
+          ref={editorToolbarRef}
+          className="sticky top-[57px] z-10 bg-surface border-b border-muted-200 empty:hidden"
         />
 
         <article className="flex-1">
@@ -134,6 +142,7 @@ export function PostEditor(props: PostEditorProps) {
                 onChange={(md) => ed.setTranslationField(ed.activeLang, "contents", md)}
                 postId={ed.postId}
                 placeholder="Write here…"
+                toolbarContainerRef={editorToolbarRef}
               />
             )}
           </div>

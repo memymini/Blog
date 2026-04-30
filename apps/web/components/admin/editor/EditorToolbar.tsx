@@ -30,6 +30,7 @@ interface EditorToolbarProps {
   onVideoFileClick: () => void;
   onToggleImageUrl: () => void;
   onToggleVideoUrl: () => void;
+  className?: string;
 }
 
 export function EditorToolbar({
@@ -42,9 +43,10 @@ export function EditorToolbar({
   onVideoFileClick,
   onToggleImageUrl,
   onToggleVideoUrl,
+  className,
 }: EditorToolbarProps) {
   return (
-    <div className="flex flex-wrap gap-0.5 mb-3 pb-2 border-b border-muted-200">
+    <div className={cn("flex flex-wrap gap-0.5 mb-3 pb-2 border-b border-muted-200", className)}>
       {/* Text formatting */}
       <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive("bold")} title="Bold">
         <strong>B</strong>
