@@ -1,11 +1,11 @@
 type Align = "left" | "center" | "right";
 
-export function AlignIcon({ align }: { align: Align }) {
+export function AlignIcon({ align, size = 12 }: { align: Align; size?: number }) {
   if (align === "left") {
     return (
       <svg
-        width="12"
-        height="12"
+        width={size}
+        height={size}
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -21,8 +21,8 @@ export function AlignIcon({ align }: { align: Align }) {
   if (align === "center") {
     return (
       <svg
-        width="12"
-        height="12"
+        width={size}
+        height={size}
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -37,8 +37,8 @@ export function AlignIcon({ align }: { align: Align }) {
   }
   return (
     <svg
-      width="12"
-      height="12"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"

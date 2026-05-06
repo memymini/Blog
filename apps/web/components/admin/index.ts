@@ -7,13 +7,8 @@ export { useToast, ToastProvider } from "./Toast";
 export { PostEditor } from "./post/PostEditor";
 export type { PostEditorProps } from "./post/PostEditor";
 export { PostEditorToolbar } from "./post/PostEditorToolbar";
-export { PostFormFields } from "./post/PostFormFields";
-export { TranslationEditor } from "./post/TranslationEditor";
-export type { TranslationState, TranslationsMap } from "./post/TranslationEditor";
 
 // Media feature
-export { CoverUploader } from "./media/CoverUploader";
-export { MediaManager } from "./media/MediaManager";
 export { MediaView } from "./media/MediaView";
 
 // Editor feature

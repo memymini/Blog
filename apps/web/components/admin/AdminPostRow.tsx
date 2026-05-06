@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import type { AdminPostListItem } from "@repo/types";
 import { cn } from "@/lib/utils";
-import { PencilIcon, TrashIcon } from "@/components/icons";
+import { EditIcon, TrashIcon } from "@/components/icons";
 
 interface AdminPostRowProps {
   post: AdminPostListItem;
@@ -64,7 +64,7 @@ export function AdminPostRow({ post, onDelete }: AdminPostRowProps) {
           aria-label="Edit post"
           className="p-2 rounded-sm hover:bg-muted-100 text-secondary-500 hover:text-primary-900 transition-colors"
         >
-          <PencilIcon />
+          <EditIcon size={15} />
         </button>
         <button
           type="button"
