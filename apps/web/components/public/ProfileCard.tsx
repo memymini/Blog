@@ -24,6 +24,7 @@ export function ProfileCard({ lang }: ProfileCardProps) {
             src={PROFILE.imageSrc}
             alt={name}
             fill
+            sizes="112px"
             className="object-cover"
           />
         </div>

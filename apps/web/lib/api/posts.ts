@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type {
   PostListItem,
   PostDetail,
@@ -25,10 +26,12 @@ export async function listPosts(
   return await apiFetch<PaginatedResponse<PostListItem>>(`/posts?${query}`);
 }
 
-export async function getPost(
+// cache() deduplicates calls with identical args within a single render pass,
+// so generateMetadata and the page component share one network request.
+export const getPost = cache(async (
   id: number,
   lang: string,
-): Promise<PostDetail | null> {
+): Promise<PostDetail | null> => {
   if (USE_MOCK) return getMockPost(id, lang);
 
   try {
@@ -39,4 +42,4 @@ export async function getPost(
     // Everything else (5xx, network) → propagate to error boundary
     throw err;
   }
-}
+});
