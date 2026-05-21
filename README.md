@@ -1,159 +1,179 @@
-# Turborepo starter
+# Travel Blog
 
-This Turborepo starter is maintained by the Turborepo core team.
+![Next.js](https://img.shields.io/badge/Next.js-16.1.5-black?logo=next.js&logoColor=white)
+![NestJS](https://img.shields.io/badge/NestJS-11-E0234E?logo=nestjs&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-2.x-3ECF8E?logo=supabase&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38BDF8?logo=tailwindcss&logoColor=white)
 
-## Using this example
+A personal travel archive built for speed, clarity, and genuine connection — documenting journeys across the world in both Korean and English.
 
-Run the following command:
+**Live Site:** `<!-- Add your deployed URL here -->`
+&nbsp;&nbsp;|&nbsp;&nbsp;
+**API Docs:** `<!-- Add your deployed API URL here -->/docs`
 
-```sh
-npx create-turbo@latest
+---
+
+## About This Project
+
+I built this blog because I love traveling. I wanted a space to archive the memories and stories from every country I've explored.
+
+Also, I enjoy connecting with people from diverse backgrounds. So I included a bilingual feature (Korean/English) to share my stories with people around the world.
+
+---
+
+## Screenshots
+
+> Add screenshots here once deployed. Suggested captures:
+>
+> - Post list page (desktop and mobile)
+> - Post detail with cover image and bilingual toggle
+> - Admin editor (Tiptap WYSIWYG in action)
+> - Country filter bar
+
+`<!-- Screenshot: post list page -->`
+`<!-- Screenshot: post detail page -->`
+`<!-- Screenshot: admin editor -->`
+
+---
+
+## Tech Stack
+
+| Layer        | Technology                                       |
+| ------------ | ------------------------------------------------ |
+| Frontend     | Next.js 16.1.5 — App Router, SSG + ISR           |
+| Backend      | NestJS 11 — REST API with Swagger                |
+| Database     | Supabase (PostgreSQL + Row-Level Security)       |
+| Auth         | Supabase JWT + NestJS `AdminGuard`               |
+| File Storage | Supabase Storage (`post-images` bucket)          |
+| Styling      | Tailwind CSS v4 — custom editorial design system |
+| Rich Text    | Tiptap 3 + `tiptap-markdown`                     |
+| Monorepo     | Turborepo + pnpm workspaces                      |
+| Deployment   | Vercel — separate projects for `web` and `api`   |
+| Language     | Strict TypeScript 5.9 end-to-end                 |
+
+---
+
+## Key Features
+
+**For readers:**
+
+- **Bilingual posts (KO / EN)** — every post is written in Korean and English so the same story reaches different audiences; a language toggle is always one click away
+- **Country-based filtering** — posts are tagged by destination and filterable by country, making it easy to browse by region
+- **Static generation with ISR** — pages are pre-rendered at build time and revalidated hourly for near-instant load times worldwide
+- **OpenGraph & SEO** — per-post `og:article` metadata, `hreflang` alternates, Twitter cards, and canonical URLs so posts are shareable and discoverable
+
+**For authoring:**
+
+- **WYSIWYG Tiptap editor** — writes like a word processor, saves as Markdown; supports resizable and alignable inline images, video embedding, text alignment, and syntax-highlighted code blocks
+- **Media management** — drag-resize gallery items, upload cover images and media files directly to Supabase Storage
+- **Draft / published toggle** — keep posts private until ready; admin-only routes are JWT-protected
+
+**For reliability:**
+
+- **Consistent API envelope** — every endpoint returns `ApiResponse<T>` or `PaginatedResponse<T>` with `success`, `data`, and `error` fields
+- **Shared TypeScript types** — a single `packages/types` package is the source of truth for both the frontend and API; no type drift between layers
+- **Row-Level Security** — Supabase RLS policies enforce public read on published content and admin-only writes at the database level
+
+---
+
+## Architecture
+
+```
+  Browser / Next.js 16 (SSG + ISR)
+         |           ^
+    REST / JSON      |
+         v           |
+  NestJS 11 API (Vercel Serverless)
+         |           ^
+  Supabase JS        |
+    +----------------+----------------+
+    |                                 |
+    v                                 v
+  PostgreSQL                  Supabase Storage
+  (posts, translations,       (cover images,
+   countries, media)           media files)
 ```
 
-## What's inside?
+---
 
-This Turborepo includes the following packages/apps:
+## Security
 
-### Apps and Packages
+- **Row-Level Security (RLS)** — public users can only read published content; all writes are restricted to admin-role users at the database level
+- **JWT Validation + NestJS AdminGuard** — every `/admin/*` route validates the Supabase Bearer JWT and checks `app_metadata.role === 'admin'`
+- **Rate Limiting** — not yet implemented; consider adding `@nestjs/throttler` before broad public exposure
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+---
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+## Project Structure
 
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+```
+blog/
+├── apps/
+│   ├── web/                        # Next.js frontend
+│   │   ├── app/
+│   │   │   ├── [lang]/             # Localized public routes (ko / en)
+│   │   │   │   ├── posts/          # Post list page (SSG + ISR)
+│   │   │   │   └── posts/[id]/     # Post detail page (SSG + ISR)
+│   │   │   └── admin/              # Admin section (client-side auth guard)
+│   │   │       ├── login/
+│   │   │       ├── (dashboard)/    # Post list + AdminShell layout
+│   │   │       └── (editor)/       # Full-screen post editor layout
+│   │   ├── components/
+│   │   │   ├── admin/
+│   │   │   │   ├── editor/         # Tiptap editor, toolbar, extensions
+│   │   │   │   ├── media/          # Cover uploader, media manager, drag-resize
+│   │   │   │   └── post/           # PostEditor, PostEditorToolbar, TranslationEditor
+│   │   │   ├── icons/              # Categorized SVG icon components
+│   │   │   ├── public/             # PostList, CountryFilterBar, MarkdownRenderer, ProfileCard
+│   │   │   └── ui/                 # Button, Card, LanguageToggle, typography system
+│   │   ├── context/auth.tsx        # AuthProvider + useAuth hook (localStorage JWT)
+│   │   ├── lib/
+│   │   │   ├── api/                # Typed fetch wrappers (posts, countries, admin)
+│   │   │   ├── hooks/              # usePostEditor, useRichTextEditor, useResizeDrag
+│   │   │   ├── constants.ts        # VALID_LANGS, SITE_URL, USE_MOCK
+│   │   │   └── utils.ts            # cn(), formatDate()
+│   │   └── __mocks__/mock-posts.ts # Local mock data (USE_MOCK=true)
+│   │
+│   └── api/                        # NestJS backend
+│       └── src/
+│           ├── auth/               # AdminGuard (Supabase JWT), AuthController
+│           ├── countries/          # GET /countries
+│           ├── posts/
+│           │   ├── posts.controller.ts        # Public endpoints
+│           │   ├── admin-posts.controller.ts  # Admin CRUD
+│           │   ├── posts.service.ts
+│           │   ├── translations.service.ts
+│           │   ├── media.service.ts
+│           │   └── dto/
+│           ├── common/             # response.util, supabase-error.util, swagger.schemas
+│           └── supabase/           # SupabaseService (anon + service-role clients)
+│
+├── packages/
+│   ├── types/index.ts              # Single source of truth for all shared TypeScript types
+│   ├── ui/                         # Shared React primitives
+│   ├── eslint-config/
+│   └── typescript-config/
+│
+├── docs/
+│   └── ADMIN_GUIDE.md              # Admin role setup and account management
+│
+└── prisma/schema.prisma            # Prisma schema (mirrors Supabase DB)
 ```
 
-Without global `turbo`, use your package manager:
+---
 
-```sh
-cd my-turborepo
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+## Database Schema
+
+```sql
+countries         code PK | name_en | flag_url
+posts             id PK | country_code FK | published | cover_url | created_at | updated_at
+post_translations post_id FK | lang (composite PK) | title | excerpt | contents (Markdown) | updated_at
+post_media        id PK | post_id FK | type | url | alt_text | caption | display_order | width
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+Migrations live in `apps/api/supabase/migrations/` and are applied via the Supabase CLI or the dashboard SQL editor.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+---
 
-```sh
-turbo build --filter=docs
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+_This project is for portfolio purposes. Unauthorized security scanning or API stress testing is strictly prohibited._
