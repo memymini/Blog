@@ -1,54 +1,20 @@
-"use client";
-
-import { useRouter } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 import type { PostDetail, Lang } from "@repo/types";
 import { formatDate } from "@/lib/utils";
+import { blurPlaceholder } from "@/lib/image";
 import { MarkdownRenderer } from "@/components/public/MarkdownRenderer";
-import { LanguageToggleNav } from "@/components/public/LanguageToggleNav";
-import { useAuth } from "@/context/auth";
-import { BackArrowIcon, EditIcon } from "@/components/icons";
+import { PostDetailToolbar } from "@/components/public/PostDetailToolbar";
 
 interface PostDetailViewProps {
   post: PostDetail;
   lang: Lang;
 }
 
-/** Public post detail view — shows cover, content, and an edit button for admins. */
 export function PostDetailView({ post, lang }: PostDetailViewProps) {
-  const router = useRouter();
-  const { user } = useAuth();
-  const isAdmin = !!user;
-
   return (
     <>
-      {/* Top bar */}
-      <div className="flex items-center justify-between px-5 py-3 border-b border-muted-200">
-        <Link
-          href={`/${lang}/posts`}
-          className="flex items-center gap-1.5 text-body-sm text-secondary-500 hover:text-primary-900 transition-colors"
-          aria-label="Back to posts"
-        >
-          <BackArrowIcon />
-        </Link>
+      <PostDetailToolbar postId={post.id} lang={lang} />
 
-        <div className="flex items-center gap-1">
-          {isAdmin && (
-            <button
-              type="button"
-              onClick={() => router.push(`/admin/posts/${post.id}`)}
-              className="flex items-center justify-center w-9 h-9 text-secondary-400 hover:text-primary-900 hover:bg-muted-100 rounded-sm transition-colors"
-              aria-label="Edit post"
-            >
-              <EditIcon />
-            </button>
-          )}
-          <LanguageToggleNav currentLang={lang} />
-        </div>
-      </div>
-
-      {/* Content */}
       <article>
         {post.cover_url ? (
           <div className="relative aspect-[16/9] overflow-hidden bg-muted-200">
@@ -56,8 +22,11 @@ export function PostDetailView({ post, lang }: PostDetailViewProps) {
               src={post.cover_url}
               alt={post.translation.title}
               fill
+              sizes="(max-width: 1024px) 100vw, 800px"
               className="object-cover"
               priority
+              placeholder="blur"
+              blurDataURL={blurPlaceholder}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
             <header className="absolute bottom-0 left-0 p-6">
@@ -101,7 +70,10 @@ export function PostDetailView({ post, lang }: PostDetailViewProps) {
                           src={m.url}
                           alt={m.alt_text ?? ""}
                           fill
+                          sizes="(max-width: 1024px) 100vw, 800px"
                           className="object-cover"
+                          placeholder="blur"
+                          blurDataURL={blurPlaceholder}
                         />
                       </div>
                     )}
@@ -131,4 +103,3 @@ export function PostDetailView({ post, lang }: PostDetailViewProps) {
     </>
   );
 }
-

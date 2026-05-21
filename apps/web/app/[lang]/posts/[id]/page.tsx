@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Lang } from "@repo/types";
 import { listPosts, getPost } from "@/lib/api/posts";
-import { PostDetailView } from "@/components/public/AdminPostView";
+import { PostDetailView } from "@/components/public/PostDetailView";
 import { ProfileCard } from "@/components/public/ProfileCard";
 import { VALID_LANGS, SITE_URL } from "@/lib/constants";
 
