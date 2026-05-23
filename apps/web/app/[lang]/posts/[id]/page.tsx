@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Lang } from "@repo/types";
 import { listPosts, getPost } from "@/lib/api/posts";
-import { PostDetailView } from "@/components/public/PostDetailView";
-import { ProfileCard } from "@/components/public/ProfileCard";
+import { PostDetailView } from "@/components/client/PostDetailView";
+import { ProfileCard } from "@/components/client/ProfileCard";
 import { VALID_LANGS, SITE_URL } from "@/lib/constants";
 
 export const revalidate = 3600;

@@ -2,10 +2,10 @@ import { notFound } from "next/navigation";
 import type { Lang } from "@repo/types";
 import { listPosts } from "@/lib/api/posts";
 import { getCountries } from "@/lib/api/countries";
-import { CountryFilterBar } from "@/components/public/CountryFilterBar";
-import { PostList } from "@/components/public/PostList";
-import { LanguageToggleNav } from "@/components/public/LanguageToggleNav";
-import { ProfileCard } from "@/components/public/ProfileCard";
+import { CountryFilterBar } from "@/components/client/CountryFilterBar";
+import { PostList } from "@/components/client/PostList";
+import { LanguageToggleNav } from "@/components/client/LanguageToggleNav";
+import { ProfileCard } from "@/components/client/ProfileCard";
 import { VALID_LANGS } from "@/lib/constants";
 
 export const revalidate = 3600;

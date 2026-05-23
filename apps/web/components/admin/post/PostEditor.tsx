@@ -4,7 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import type { Country, Lang } from "@repo/types";
-import { MarkdownRenderer } from "@/components/public/MarkdownRenderer";
+import { MarkdownRenderer } from "@/components/client/MarkdownRenderer";
 import { ImagePlusIcon } from "@/components/icons";
 import { usePostEditor, type TranslationState } from "@/lib/hooks/usePostEditor";
 import { PostEditorToolbar } from "./PostEditorToolbar";

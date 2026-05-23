@@ -2,8 +2,8 @@ import Image from "next/image";
 import type { PostDetail, Lang } from "@repo/types";
 import { formatDate } from "@/lib/utils";
 import { blurPlaceholder } from "@/lib/image";
-import { MarkdownRenderer } from "@/components/public/MarkdownRenderer";
-import { PostDetailToolbar } from "@/components/public/PostDetailToolbar";
+import { MarkdownRenderer } from "@/components/client/MarkdownRenderer";
+import { PostDetailToolbar } from "@/components/client/PostDetailToolbar";
 
 interface PostDetailViewProps {
   post: PostDetail;

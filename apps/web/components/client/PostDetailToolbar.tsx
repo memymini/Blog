@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { Lang } from "@repo/types";
-import { LanguageToggleNav } from "@/components/public/LanguageToggleNav";
+import { LanguageToggleNav } from "@/components/client/LanguageToggleNav";
 import { useAuth } from "@/context/auth";
 import { BackArrowIcon, EditIcon } from "@/components/icons";
 
