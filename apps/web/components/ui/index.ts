@@ -5,5 +5,7 @@ export {
   type ButtonSize,
 } from "./Button";
 
+export { ToastProvider, useToast } from "./Toast";
+
 // Typography re-exported for convenience
 export * from "./typography";

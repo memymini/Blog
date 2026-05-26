@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import type { AdminPostListItem } from "@repo/types";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/utils";
 import { EditIcon, TrashIcon } from "@/components/icons";
 
 interface AdminPostRowProps {

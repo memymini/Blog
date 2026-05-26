@@ -1,7 +1,7 @@
 import Image from "next/image";
 import type { PostDetail, Lang } from "@repo/types";
-import { formatDate } from "@/lib/utils";
-import { blurPlaceholder } from "@/lib/image";
+import { formatDate } from "@/utils/utils";
+import { blurPlaceholder } from "@/utils/image";
 import { MarkdownRenderer } from "@/components/client/MarkdownRenderer";
 import { PostDetailToolbar } from "@/components/client/PostDetailToolbar";
 

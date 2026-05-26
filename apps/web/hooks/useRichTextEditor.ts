@@ -6,7 +6,7 @@ import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
 import { Markdown } from "tiptap-markdown";
 import { TextSelection } from "@tiptap/pm/state";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/utils";
 import { ImageExtension } from "@/components/admin/editor/ImageExtension";
 import { VideoNode } from "@/components/admin/editor/VideoExtension";
 import {

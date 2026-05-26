@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Country } from "@repo/types";
-import { getCountries } from "@/lib/api/countries";
+import { getCountries } from "@/services/countryAPI";
 import { PostEditor } from "@/components/admin";
 
 export default function NewPostPage() {

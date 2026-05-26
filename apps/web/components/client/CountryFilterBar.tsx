@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import type { Country, Lang } from "@repo/types";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/utils";
 
 interface CountryFilterBarProps {
   countries: Country[];

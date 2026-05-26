@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { apiFetch } from '@/lib/api/client'
-import { ApiError } from '@/lib/api/types'
+import { apiFetch } from '@/utils/client'
+import { ApiError } from '@/utils/client'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 

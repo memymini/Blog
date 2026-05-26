@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useAuth } from "@/context/auth";
-import { ApiError } from "@/lib/api/types";
+import { ApiError } from "@/utils/client";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),

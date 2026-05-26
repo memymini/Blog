@@ -3,9 +3,9 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import type { Country, Lang } from "@repo/types";
-import { getAdminPost } from "@/lib/api/admin";
-import { getCountries } from "@/lib/api/countries";
-import { ApiError } from "@/lib/api/types";
+import { getAdminPost } from "@/services/adminAPI";
+import { getCountries } from "@/services/countryAPI";
+import { ApiError } from "@/utils/client";
 import { PostEditor } from "@/components/admin";
 
 export default function EditPostPage() {

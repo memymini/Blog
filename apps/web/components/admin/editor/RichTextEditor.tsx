@@ -3,11 +3,11 @@
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { EditorContent } from "@tiptap/react";
-import { cn } from "@/lib/utils";
-import { uploadMediaFile } from "@/lib/api/admin";
+import { cn } from "@/utils/utils";
+import { uploadMediaFile } from "@/services/adminAPI";
 import { EditorToolbar } from "./EditorToolbar";
 import { MediaUrlInput } from "./MediaUrlInput";
-import { useRichTextEditor } from "@/lib/hooks/useRichTextEditor";
+import { useRichTextEditor } from "@/hooks/useRichTextEditor";
 
 interface RichTextEditorProps {
   value: string;

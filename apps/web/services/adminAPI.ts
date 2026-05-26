@@ -8,7 +8,7 @@ import type {
   PostMedia,
   PaginatedResponse,
 } from "@repo/types";
-import { apiFetch } from "./client";
+import { apiFetch } from "@/utils/client";
 
 // All admin calls go directly to NestJS.
 // apiFetch automatically attaches the JWT from localStorage as Authorization: Bearer.

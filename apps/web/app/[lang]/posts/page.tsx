@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
 import type { Lang } from "@repo/types";
-import { listPosts } from "@/lib/api/posts";
-import { getCountries } from "@/lib/api/countries";
+import { listPosts } from "@/services/blogAPI";
+import { getCountries } from "@/services/countryAPI";
 import { CountryFilterBar } from "@/components/client/CountryFilterBar";
 import { PostList } from "@/components/client/PostList";
 import { LanguageToggleNav } from "@/components/client/LanguageToggleNav";
 import { ProfileCard } from "@/components/client/ProfileCard";
-import { VALID_LANGS } from "@/lib/constants";
+import { VALID_LANGS } from "@/utils/constants";
 
 export const revalidate = 3600;
 

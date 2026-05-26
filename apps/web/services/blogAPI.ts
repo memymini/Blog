@@ -5,10 +5,10 @@ import type {
   PaginatedResponse,
   ListPostsQuery,
 } from "@repo/types";
-import { apiFetch } from "./client";
-import { ApiError } from "./types";
+import { apiFetch } from "@/utils/client";
+import { ApiError } from "@/utils/client";
 import { getMockPosts, getMockPost } from "@/__mocks__/mock-posts";
-import { USE_MOCK } from "@/lib/constants";
+import { USE_MOCK } from "@/utils/constants";
 
 export async function listPosts(
   params: ListPostsQuery,

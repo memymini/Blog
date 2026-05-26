@@ -3,12 +3,12 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type { AdminPostListItem, PaginatedResponse } from "@repo/types";
-import { listAdminPosts, deletePost } from "@/lib/api/admin";
-import { ApiError } from "@/lib/api/types";
+import { listAdminPosts, deletePost } from "@/services/adminAPI";
+import { ApiError } from "@/utils/client";
 import { Button } from "@/components/ui";
 import { H2, BodySm } from "@/components/ui/typography";
 import { AdminPostRow } from "@/components/admin/AdminPostRow";
-import { useToast } from "@/components/admin/Toast";
+import { useToast } from "@/components/ui/Toast";
 
 const LIMIT = 20;
 

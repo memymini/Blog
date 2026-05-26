@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
-import { VALID_LANGS } from "@/lib/constants";
+import { VALID_LANGS } from "@/utils/constants";
 import type { Lang } from "@repo/types";
 
 interface LangLayoutProps {

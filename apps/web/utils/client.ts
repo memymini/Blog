@@ -1,5 +1,21 @@
 import type { ApiResponse, PaginatedResponse } from "@repo/types";
-import { ApiError, type RequestOptions } from "./types";
+
+export class ApiError extends Error {
+  constructor(
+    public statusCode: number,
+    message: string,
+    public body?: unknown,
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
+export interface RequestOptions extends Omit<RequestInit, "body"> {
+  body?: unknown;
+  /** Skip cookie-based auth injection (for public endpoints) */
+  skipAuth?: boolean;
+}
 
 const SERVER_URL = process.env.API_URL ?? "http://localhost:4000";
 const CLIENT_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";

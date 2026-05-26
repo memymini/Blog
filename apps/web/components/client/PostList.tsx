@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { PostListItem, Lang } from "@repo/types";
-import { formatDate } from "@/lib/utils";
+import { formatDate } from "@/utils/utils";
 import { EmptyState } from "./EmptyState";
 
 const EMPTY_T: Record<Lang, { title: string; description: string }> = {

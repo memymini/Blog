@@ -8,9 +8,9 @@ import {
   updatePost,
   deletePost,
   uploadCover,
-} from "@/lib/api/admin";
-import { ApiError } from "@/lib/api/types";
-import { useToast } from "@/components/admin/Toast";
+} from "@/services/adminAPI";
+import { ApiError } from "@/utils/client";
+import { useToast } from "@/components/ui/Toast";
 
 export interface TranslationState {
   title: string;

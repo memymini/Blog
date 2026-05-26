@@ -4,7 +4,7 @@ import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
 import type { ComponentPropsWithoutRef } from "react";
-import { canOptimizeImage } from "@/lib/image";
+import { canOptimizeImage } from "@/utils/image";
 
 interface MarkdownRendererProps {
   content: string;

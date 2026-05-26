@@ -1,7 +1,7 @@
 import type { Country } from "@repo/types";
-import { apiFetch } from "./client";
+import { apiFetch } from "@/utils/client";
 import { getMockCountries } from "@/__mocks__/mock-posts";
-import { USE_MOCK } from "@/lib/constants";
+import { USE_MOCK } from "@/utils/constants";
 
 export async function getCountries(): Promise<Country[]> {
   if (USE_MOCK) return getMockCountries();

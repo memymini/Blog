@@ -8,8 +8,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { apiFetch } from "@/lib/api/client";
-import { ApiError } from "@/lib/api/types";
+import { apiFetch } from "@/utils/client";
+import { ApiError } from "@/utils/client";
 import type { AuthUser } from "@repo/types";
 
 interface AuthContextValue {

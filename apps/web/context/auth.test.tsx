@@ -2,14 +2,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AuthProvider, useAuth } from '@/context/auth'
-import { ApiError } from '@/lib/api/types'
+import { ApiError } from '@/utils/client'
 
 // Mock the entire apiFetch layer so tests never reach the network
-vi.mock('@/lib/api/client', () => ({
+vi.mock('@/utils/client', () => ({
   apiFetch: vi.fn(),
 }))
 
-import { apiFetch } from '@/lib/api/client'
+import { apiFetch } from '@/utils/client'
 
 // ── Shared fixtures ────────────────────────────────────────────────────────────
 

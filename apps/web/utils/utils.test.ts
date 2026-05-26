@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { cn, formatDate } from '@/lib/utils'
+import { cn, formatDate } from '@/utils/utils'
 
 // ── cn() ──────────────────────────────────────────────────────────────────────
 

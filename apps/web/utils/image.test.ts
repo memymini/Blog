@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { canOptimizeImage } from '@/lib/image'
+import { canOptimizeImage } from '@/utils/image'
 
 describe('canOptimizeImage()', () => {
   it('returns true for a *.supabase.co subdomain', () => {

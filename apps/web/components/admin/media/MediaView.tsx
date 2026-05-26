@@ -3,9 +3,9 @@
 import type { NodeViewProps } from "@tiptap/react";
 import { NodeViewWrapper } from "@tiptap/react";
 import { useRef } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/utils";
 import { AlignIcon } from "@/components/icons";
-import { useResizeDrag } from "@/lib/hooks/useResizeDrag";
+import { useResizeDrag } from "@/hooks/useResizeDrag";
 
 type Align = "left" | "center" | "right";
 

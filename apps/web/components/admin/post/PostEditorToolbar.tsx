@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { Country, Lang } from "@repo/types";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/utils";
 import { BackArrowIcon, TrashIcon } from "@/components/icons";
 
 const LANGS: { code: Lang; label: string }[] = [
