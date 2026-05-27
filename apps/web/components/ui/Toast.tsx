@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { cn } from "@/utils/utils";
+import { Button } from "@/components/ui/Button";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -41,10 +42,13 @@ let nextId = 0;
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const showToast = useCallback((message: string, type: ToastType = "success") => {
-    const id = ++nextId;
-    setToasts((prev) => [...prev, { id, message, type }]);
-  }, []);
+  const showToast = useCallback(
+    (message: string, type: ToastType = "success") => {
+      const id = ++nextId;
+      setToasts((prev) => [...prev, { id, message, type }]);
+    },
+    [],
+  );
 
   function dismiss(id: number) {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -89,14 +93,15 @@ function ToastItem({
       )}
     >
       <span className="flex-1">{toast.message}</span>
-      <button
-        type="button"
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={() => onDismiss(toast.id)}
         aria-label="Dismiss"
-        className="shrink-0 opacity-70 hover:opacity-100 transition-opacity"
+        className="shrink-0 h-6 w-6 text-white opacity-70 hover:opacity-100 hover:bg-white/10 transition-opacity"
       >
         ✕
-      </button>
+      </Button>
     </div>
   );
 }

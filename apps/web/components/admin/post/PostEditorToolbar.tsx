@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import type { Country, Lang } from "@repo/types";
-import { cn } from "@/utils/utils";
 import { BackArrowIcon, TrashIcon } from "@/components/icons";
+import { Button } from "@/components/ui/Button";
 
 const LANGS: { code: Lang; label: string }[] = [
   { code: "ko", label: "KO" },
@@ -59,19 +59,15 @@ export function PostEditorToolbar({
 
       {/* Lang tabs */}
       {LANGS.map((l) => (
-        <button
+        <Button
           key={l.code}
-          type="button"
+          variant={activeLang === l.code ? "primary" : "ghost"}
+          size="sm"
           onClick={() => onLangChange(l.code)}
-          className={cn(
-            "h-8 px-3 text-caption font-medium rounded-sm transition-colors",
-            activeLang === l.code
-              ? "bg-primary-900 text-white"
-              : "text-secondary-500 hover:bg-muted-100 hover:text-primary-900",
-          )}
+          className={activeLang !== l.code ? "text-secondary-500 hover:text-primary-900" : undefined}
         >
           {l.label}
-        </button>
+        </Button>
       ))}
 
       <div className="w-px h-5 bg-muted-200 mx-0.5" />
@@ -91,51 +87,49 @@ export function PostEditorToolbar({
       </select>
 
       {/* Published toggle */}
-      <button
-        type="button"
+      <Button
+        variant="outline"
+        size="sm"
         onClick={onPublishedToggle}
-        className={cn(
-          "h-8 px-3 text-caption rounded-sm border transition-colors",
-          published
-            ? "border-accent-400 bg-accent-50 text-accent-700"
-            : "border-muted-300 text-secondary-500 hover:border-muted-400",
-        )}
+        className={published ? "border-accent-400 bg-accent-50 text-accent-700" : "text-secondary-500 hover:border-muted-400"}
       >
         {published ? "● Published" : "○ Draft"}
-      </button>
+      </Button>
 
       <div className="flex-1" />
 
       {/* Preview toggle */}
-      <button
-        type="button"
+      <Button
+        variant="outline"
+        size="sm"
         onClick={onPreviewToggle}
-        className="h-8 px-3 text-caption border border-muted-300 rounded-sm text-secondary-500 hover:bg-muted-100 hover:text-primary-900 transition-colors"
+        className="text-secondary-500 hover:text-primary-900"
       >
         {isPreview ? "Edit" : "Preview"}
-      </button>
+      </Button>
 
       {/* Save */}
-      <button
-        type="button"
+      <Button
+        variant="primary"
+        size="sm"
         onClick={onSave}
         disabled={isSaving}
-        className="h-8 px-4 text-caption font-medium bg-primary-900 text-white rounded-sm hover:bg-primary-800 disabled:opacity-50 transition-colors"
       >
         {isSaving ? "Saving…" : isEditMode ? "Save" : "Create"}
-      </button>
+      </Button>
 
       {/* Delete (edit mode only) */}
       {isEditMode && postId && (
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={onDelete}
           disabled={isDeleting}
-          className="flex items-center justify-center w-9 h-9 text-secondary-400 hover:text-red-600 hover:bg-muted-100 rounded-sm transition-colors disabled:opacity-50"
           aria-label="Delete post"
+          className="text-secondary-400 hover:text-red-600"
         >
           <TrashIcon />
-        </button>
+        </Button>
       )}
     </div>
   );

@@ -8,6 +8,7 @@ import { MarkdownRenderer } from "@/components/client/MarkdownRenderer";
 import { ImagePlusIcon } from "@/components/icons";
 import { usePostEditor, type TranslationState } from "@/hooks/usePostEditor";
 import { PostEditorToolbar } from "./PostEditorToolbar";
+import { Button } from "@/components/ui/Button";
 
 const RichTextEditor = dynamic(
   () => import("../editor/RichTextEditor").then((m) => m.RichTextEditor),
@@ -88,20 +89,22 @@ export function PostEditor(props: PostEditorProps) {
                     </div>
                   )}
                   <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 bg-black/20 transition-opacity">
-                    <button
-                      type="button"
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => ed.coverInputRef.current?.click()}
-                      className="bg-white/90 text-primary-900 text-caption px-3 py-1.5 rounded-sm hover:bg-white transition-colors"
+                      className="bg-white/90 text-primary-900 hover:bg-white"
                     >
                       Change
-                    </button>
-                    <button
-                      type="button"
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => ed.setCoverUrl(null)}
-                      className="bg-white/90 text-red-600 text-caption px-3 py-1.5 rounded-sm hover:bg-white transition-colors"
+                      className="bg-white/90 text-red-600 hover:bg-white hover:text-red-600"
                     >
                       Remove
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ) : (

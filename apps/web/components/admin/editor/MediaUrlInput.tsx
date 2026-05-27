@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/Button";
+
 interface MediaUrlInputProps {
   value: string;
   onChange: (v: string) => void;
@@ -31,23 +33,24 @@ export function MediaUrlInput({
         autoFocus
         className="flex-1 h-8 px-2 text-body-sm border border-muted-300 rounded-sm bg-surface focus:outline-none focus:border-primary-400 transition-colors"
       />
-      <button
-        type="button"
+      <Button
+        variant="primary"
+        size="sm"
         onMouseDown={(e) => {
           e.preventDefault();
           onInsert();
         }}
-        className="h-8 px-3 text-caption bg-primary-900 text-white rounded-sm hover:bg-primary-800 transition-colors"
       >
         Insert
-      </button>
-      <button
-        type="button"
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
         onClick={onCancel}
-        className="h-8 px-2 text-caption text-secondary-500 hover:text-primary-900 transition-colors"
+        className="px-2 text-secondary-500 hover:text-primary-900"
       >
         ✕
-      </button>
+      </Button>
     </div>
   );
 }

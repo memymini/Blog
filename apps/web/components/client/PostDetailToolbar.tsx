@@ -6,6 +6,7 @@ import type { Lang } from "@repo/types";
 import { LanguageToggleNav } from "@/components/client/LanguageToggleNav";
 import { useAuth } from "@/context/auth";
 import { BackArrowIcon, EditIcon } from "@/components/icons";
+import { Button } from "@/components/ui/Button";
 
 interface PostDetailToolbarProps {
   postId: number;
@@ -29,14 +30,15 @@ export function PostDetailToolbar({ postId, lang }: PostDetailToolbarProps) {
 
       <div className="flex items-center gap-1">
         {isAdmin && (
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => router.push(`/admin/posts/${postId}`)}
-            className="flex items-center justify-center w-9 h-9 text-secondary-400 hover:text-primary-900 hover:bg-muted-100 rounded-sm transition-colors"
             aria-label="Edit post"
+            className="text-secondary-400 hover:text-primary-900"
           >
             <EditIcon />
-          </button>
+          </Button>
         )}
         <LanguageToggleNav currentLang={lang} />
       </div>

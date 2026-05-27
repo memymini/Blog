@@ -7,7 +7,7 @@ import { LoadingSpinner } from "@/components/icons";
 const variantClasses = {
   /** Solid — primary CTAs */
   primary:
-    "bg-primary-900 text-white hover:bg-primary-800 active:bg-primary-950 focus-visible:ring-primary-900",
+    "bg-primary-100 text-white hover:bg-primary-200 active:bg-primary-100 focus-visible:ring-primary-900",
   /** Ghost — secondary actions, icon buttons */
   ghost:
     "bg-transparent text-primary-700 hover:bg-muted-100 active:bg-muted-200 focus-visible:ring-primary-700",
@@ -90,4 +90,3 @@ export function Button({
     </button>
   );
 }
-

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useAuth } from "@/context/auth";
 import { ApiError } from "@/utils/client";
+import { Button } from "@/components/ui/Button";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -50,7 +51,10 @@ export default function LoginPage() {
       <p className="px-6 py-5 text-body-sm text-secondary-400">login</p>
 
       {/* Vertically centered card area */}
-      <div className="flex items-start justify-center px-4" style={{ marginTop: "10vh" }}>
+      <div
+        className="flex items-start justify-center px-4"
+        style={{ marginTop: "10vh" }}
+      >
         <div className="w-full max-w-sm bg-surface p-8">
           <h1 className="text-h2 font-bold text-primary-900 mb-8">Login</h1>
 
@@ -95,13 +99,14 @@ export default function LoginPage() {
               </p>
             )}
 
-            <button
+            <Button
               type="submit"
+              variant="primary"
               disabled={isSubmitting}
-              className="w-full h-12 bg-primary-900 text-surface text-body-sm font-medium hover:bg-primary-800 disabled:opacity-50 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-400"
+              className="w-full h-12 text-body-sm font-medium"
             >
               {isSubmitting ? "Logging in…" : "Login"}
-            </button>
+            </Button>
           </form>
         </div>
       </div>

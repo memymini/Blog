@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import type { Country, Lang } from "@repo/types";
 import { cn } from "@/utils/utils";
+import { Button } from "@/components/ui/Button";
 
 interface CountryFilterBarProps {
   countries: Country[];
@@ -53,18 +54,16 @@ interface FilterButtonProps {
 
 function FilterButton({ active, onClick, label, title }: FilterButtonProps) {
   return (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
       title={title}
       onClick={onClick}
       className={cn(
-        "flex items-center justify-center h-8 px-4 rounded-full w-8",
-        "text-body-base text-secondary-500 transition-colors duration-150",
-        "hover:bg-muted-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700",
+        "h-8 w-8 px-4 rounded-full text-body-base text-secondary-500 hover:bg-muted-200",
         active && "bg-muted-200 text-primary-900 font-medium",
       )}
     >
       {label}
-    </button>
+    </Button>
   );
 }

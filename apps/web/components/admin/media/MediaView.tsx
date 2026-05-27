@@ -6,6 +6,7 @@ import { useRef } from "react";
 import { cn } from "@/utils/utils";
 import { AlignIcon } from "@/components/icons";
 import { useResizeDrag } from "@/hooks/useResizeDrag";
+import { Button } from "@/components/ui/Button";
 
 type Align = "left" | "center" | "right";
 
@@ -37,21 +38,22 @@ export function MediaView({ node, updateAttributes, selected }: NodeViewProps) {
       {selected && (
         <div className="flex items-center gap-0.5 bg-primary-900 rounded-sm px-1 py-0.5 mb-1.5 shadow-md self-center">
           {(["left", "center", "right"] as Align[]).map((a) => (
-            <button
+            <Button
               key={a}
-              type="button"
+              variant="ghost"
+              size="icon"
               onMouseDown={(e) => {
                 e.preventDefault();
                 updateAttributes({ align: a });
               }}
               className={cn(
-                "w-6 h-6 flex items-center justify-center text-white rounded-sm transition-colors",
-                align === a ? "bg-white/25" : "hover:bg-white/10",
+                "w-6 h-6 text-white hover:bg-transparent",
+                align === a ? "bg-white/25 hover:bg-white/25" : "hover:bg-white/10",
               )}
               title={`Align ${a}`}
             >
               <AlignIcon align={a} />
-            </button>
+            </Button>
           ))}
           <div className="w-px h-4 bg-white/30 mx-0.5" />
           <span className="text-white text-[11px] font-mono px-1 tabular-nums">

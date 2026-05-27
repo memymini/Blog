@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import type { Lang } from "@repo/types";
+import { Button } from "@/components/ui/Button";
 
 interface LanguageToggleNavProps {
   currentLang: Lang;
@@ -19,13 +20,13 @@ export function LanguageToggleNav({ currentLang }: LanguageToggleNavProps) {
   }
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="ghost"
       onClick={toggle}
       aria-label={`Switch to ${nextLang === "en" ? "English" : "Korean"}`}
-      className="flex-none h-9 px-2.5 text-caption font-medium text-secondary-500 hover:text-primary-900 hover:bg-muted-100 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700"
+      className="flex-none px-2.5 text-caption font-medium text-secondary-500 hover:text-primary-900 rounded-full"
     >
       {currentLang === "ko" ? "EN" : "KR"}
-    </button>
+    </Button>
   );
 }

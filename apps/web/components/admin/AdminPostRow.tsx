@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import type { AdminPostListItem } from "@repo/types";
 import { cn } from "@/utils/utils";
 import { EditIcon, TrashIcon } from "@/components/icons";
+import { Button } from "@/components/ui/Button";
 
 interface AdminPostRowProps {
   post: AdminPostListItem;
@@ -13,8 +14,7 @@ interface AdminPostRowProps {
 export function AdminPostRow({ post, onDelete }: AdminPostRowProps) {
   const router = useRouter();
 
-  const title =
-    post.country.name_en || `Post #${post.id}`;
+  const title = post.country.name_en || `Post #${post.id}`;
 
   function handleDelete() {
     if (window.confirm(`Delete post #${post.id}? This cannot be undone.`)) {
@@ -58,24 +58,25 @@ export function AdminPostRow({ post, onDelete }: AdminPostRowProps) {
 
       {/* Actions */}
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => router.push(`/admin/posts/${post.id}`)}
           aria-label="Edit post"
-          className="p-2 rounded-sm hover:bg-muted-100 text-secondary-500 hover:text-primary-900 transition-colors"
+          className="text-secondary-500 hover:text-primary-900"
         >
           <EditIcon size={15} />
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={handleDelete}
           aria-label="Delete post"
-          className="p-2 rounded-sm hover:bg-red-50 text-secondary-500 hover:text-red-600 transition-colors"
+          className="text-secondary-500 hover:text-red-600 hover:bg-red-50"
         >
           <TrashIcon />
-        </button>
+        </Button>
       </div>
     </div>
   );
 }
-
