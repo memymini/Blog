@@ -73,6 +73,7 @@ export function MediaView({ node, updateAttributes, selected }: NodeViewProps) {
           <img
             src={src}
             alt={alt}
+            loading="lazy"
             draggable={false}
             className={cn(
               "block w-full rounded-sm select-none",

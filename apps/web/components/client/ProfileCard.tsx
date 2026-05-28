@@ -26,6 +26,7 @@ export function ProfileCard({ lang }: ProfileCardProps) {
             fill
             sizes="112px"
             className="object-cover"
+            priority
           />
         </div>
 
