@@ -13,6 +13,6 @@ export { MediaView } from "./media/MediaView";
 // Editor feature
 export { RichTextEditor } from "./editor/RichTextEditor";
 export { EditorToolbar } from "./editor/EditorToolbar";
-export { TrailingNode, nodeContentToHTML, AlignedParagraph, AlignedHeading } from "./editor/EditorExtensions";
+export { TrailingNode } from "./editor/EditorExtensions";
 export { ImageExtension } from "./editor/ImageExtension";
 export { VideoNode } from "./editor/VideoExtension";

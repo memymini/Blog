@@ -6,26 +6,18 @@ import { MediaView } from "../media/MediaView";
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     video: {
-      setVideo: (attrs: {
-        src: string;
-        width?: number | null;
-        align?: "left" | "center" | "right" | null;
-      }) => ReturnType;
+      setVideo: (attrs: { src: string }) => ReturnType;
     };
   }
 }
 
-const ALIGN_MARGIN: Record<string, string> = {
-  left: "margin-right:auto",
-  center: "margin-left:auto;margin-right:auto",
-  right: "margin-left:auto",
-};
-
 /**
  * Block video node for the rich text editor.
- * Supports drag-resize and left/center/right alignment (same UX as ResizableImage).
- * Serializes as <video src="..." controls style="width:XX%;margin:...;display:block"></video>
- * so it round-trips through tiptap-markdown → MarkdownRenderer (rehype-raw).
+ *
+ * Serializes as a raw <video> HTML block. This is the only viable representation
+ * since standard Markdown has no video syntax. The public MarkdownRenderer handles
+ * it via rehype-raw. Note: with html:false in tiptap-markdown, existing <video>
+ * blocks will not be re-parsed when reopening a saved post in the admin editor.
  */
 export const VideoNode = Node.create({
   name: "video",
@@ -37,34 +29,6 @@ export const VideoNode = Node.create({
   addAttributes() {
     return {
       src: { default: null },
-      align: {
-        default: "center",
-        parseHTML: (el: HTMLElement) => {
-          const ml = el.style.marginLeft;
-          const mr = el.style.marginRight;
-          if (ml === "auto" && mr === "auto") return "center";
-          if (mr === "auto") return "left";
-          if (ml === "auto") return "right";
-          return "center";
-        },
-        renderHTML: () => ({}), // handled in width renderHTML below
-      },
-      width: {
-        default: null,
-        parseHTML: (el: HTMLElement) => {
-          const style = el.style.width;
-          if (!style) return null;
-          const n = parseFloat(style);
-          return isNaN(n) ? null : n;
-        },
-        renderHTML: (attrs: Record<string, any>) => {
-          const parts: string[] = ["display:block"];
-          if (attrs.width != null) parts.push(`width:${attrs.width}%`);
-          const align = (attrs.align as string) ?? "center";
-          if (ALIGN_MARGIN[align]) parts.push(ALIGN_MARGIN[align]);
-          return { style: parts.join(";") };
-        },
-      },
     };
   },
 
@@ -83,30 +47,19 @@ export const VideoNode = Node.create({
   addCommands() {
     return {
       setVideo:
-        (attrs: {
-          src: string;
-          width?: number | null;
-          align?: "left" | "center" | "right" | null;
-        }) =>
+        (attrs: { src: string }) =>
         ({ commands }: any) =>
           commands.insertContent({ type: "video", attrs }),
     } as any;
   },
 
-  // tiptap-markdown picks up this serializer automatically via extension.storage.markdown
   addStorage() {
     return {
       markdown: {
         serialize(state: any, node: any) {
           const src = node.attrs.src as string | null;
           if (!src) return;
-          const width = node.attrs.width as number | null;
-          const align = (node.attrs.align as string) ?? "center";
-          const parts: string[] = ["display:block"];
-          if (width != null) parts.push(`width:${width}%`);
-          if (ALIGN_MARGIN[align]) parts.push(ALIGN_MARGIN[align]);
-          const styleAttr = ` style="${parts.join(";")}"`;
-          state.write(`<video src="${src}" controls${styleAttr}></video>`);
+          state.write(`<video src="${src}" controls></video>`);
           state.closeBlock(node);
         },
         parse: {},

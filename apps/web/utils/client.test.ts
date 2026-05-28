@@ -76,7 +76,7 @@ describe('apiFetch()', () => {
       makeResponse({ success: true, data: { id: 'u1', email: 'a@b.com', role: 'admin' }, error: null }),
     )
     await apiFetch('/auth/me')
-    const [, init] = vi.mocked(fetch).mock.calls[0]
+    const [, init] = vi.mocked(fetch).mock.calls[0]!
     expect((init?.headers as Record<string, string>)['Authorization']).toBe(
       'Bearer jwt-test-token',
     )
@@ -85,7 +85,7 @@ describe('apiFetch()', () => {
   it('sends no Authorization header when localStorage has no token', async () => {
     vi.mocked(fetch).mockResolvedValue(makeResponse({ success: true, data: [], error: null }))
     await apiFetch('/posts')
-    const [, init] = vi.mocked(fetch).mock.calls[0]
+    const [, init] = vi.mocked(fetch).mock.calls[0]!
     expect((init?.headers as Record<string, string>)['Authorization']).toBeUndefined()
   })
 

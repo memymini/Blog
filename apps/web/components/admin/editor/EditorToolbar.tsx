@@ -12,7 +12,6 @@ import {
   ImageLinkIcon,
   VideoIcon,
   VideoLinkIcon,
-  AlignIcon,
   UndoIcon,
   RedoIcon,
   SpinnerIcon,
@@ -174,30 +173,6 @@ export function EditorToolbar({
         <VideoLinkIcon />
       </ToolbarButton>
 
-      <Separator />
-
-      {/* Text alignment */}
-      <ToolbarButton
-        onClick={() => editor.chain().focus().setTextAlign("left").run()}
-        active={editor.isActive({ textAlign: "left" })}
-        title="Align left"
-      >
-        <AlignIcon align="left" size={14} />
-      </ToolbarButton>
-      <ToolbarButton
-        onClick={() => editor.chain().focus().setTextAlign("center").run()}
-        active={editor.isActive({ textAlign: "center" })}
-        title="Align center"
-      >
-        <AlignIcon align="center" size={14} />
-      </ToolbarButton>
-      <ToolbarButton
-        onClick={() => editor.chain().focus().setTextAlign("right").run()}
-        active={editor.isActive({ textAlign: "right" })}
-        title="Align right"
-      >
-        <AlignIcon align="right" size={14} />
-      </ToolbarButton>
 
       <Separator />
 

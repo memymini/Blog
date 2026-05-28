@@ -3,17 +3,12 @@
 import { useEffect } from "react";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import TextAlign from "@tiptap/extension-text-align";
 import { Markdown } from "tiptap-markdown";
 import { TextSelection } from "@tiptap/pm/state";
 import { cn } from "@/utils/utils";
 import { ImageExtension } from "@/components/admin/editor/ImageExtension";
 import { VideoNode } from "@/components/admin/editor/VideoExtension";
-import {
-  AlignedParagraph,
-  AlignedHeading,
-  TrailingNode,
-} from "@/components/admin/editor/EditorExtensions";
+import { TrailingNode } from "@/components/admin/editor/EditorExtensions";
 
 interface UseRichTextEditorOptions {
   value: string;
@@ -27,16 +22,12 @@ interface UseRichTextEditorOptions {
 export function useRichTextEditor({ value, onChange }: UseRichTextEditorOptions) {
   const editor = useEditor({
     extensions: [
-      // Disable StarterKit's paragraph/heading so our aligned versions take over
-      StarterKit.configure({ heading: false, paragraph: false }),
-      AlignedParagraph,
-      AlignedHeading.configure({ levels: [1, 2, 3] }),
-      TextAlign.configure({ types: ["heading", "paragraph"] }),
+      StarterKit,
       ImageExtension,
       VideoNode,
       TrailingNode,
       Markdown.configure({
-        html: true, // allow HTML blocks so <img>/<video> tags round-trip correctly
+        html: false,
         transformPastedText: true,
         transformCopiedText: true,
       }),
