@@ -16,8 +16,8 @@ function MarkdownImage({ src, alt }: ComponentPropsWithoutRef<"img">) {
     <Image
       src={src}
       alt={alt ?? ""}
-      width={0}
-      height={0}
+      width={800}
+      height={600}
       sizes="(max-width: 768px) 100vw, 720px"
       className="w-full h-auto"
       unoptimized={!canOptimizeImage(src)}
