@@ -11,6 +11,7 @@ import type {
 } from '@repo/types';
 import { throwOnError } from '../common/supabase-error.util';
 import { SupabaseService } from '../supabase/supabase.service';
+import { WebhookService } from '../webhook/webhook.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 
@@ -25,7 +26,10 @@ type RawAdminListItem = Omit<AdminPostListItem, 'available_langs'> & {
 
 @Injectable()
 export class PostsService {
-  constructor(private readonly supabase: SupabaseService) {}
+  constructor(
+    private readonly supabase: SupabaseService,
+    private readonly webhook: WebhookService,
+  ) {}
 
   /**
    * Published posts with one lean translation (title + excerpt) and country.
@@ -173,7 +177,9 @@ export class PostsService {
       await this.upsertTranslations(id, dto.translations);
     }
 
-    return this.findOneAdmin(id);
+    const result = await this.findOneAdmin(id);
+    try { await this.webhook.triggerRevalidation(id); } catch { /* never block the response */ }
+    return result;
   }
 
   async remove(id: number): Promise<void> {
@@ -183,6 +189,7 @@ export class PostsService {
       .eq('id', id);
 
     throwOnError(error);
+    try { await this.webhook.triggerRevalidation(id); } catch { /* never block the response */ }
   }
 
   private async upsertTranslations(

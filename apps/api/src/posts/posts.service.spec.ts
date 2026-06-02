@@ -9,7 +9,7 @@ import {
 } from '../__test-utils__/supabase.mock';
 import { SupabaseService } from '../supabase/supabase.service';
 import { PostsService } from './posts.service';
-import { WebhookService } from './webhook.service';
+import { WebhookService } from '../webhook/webhook.service';
 
 const MOCK_POST = {
   id: 1,
