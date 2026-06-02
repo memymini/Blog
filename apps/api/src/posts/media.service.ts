@@ -61,6 +61,27 @@ export class MediaService {
   }
 
   async remove(postId: number, mediaId: number): Promise<void> {
+    const { data } = await this.supabase.adminClient
+      .from('post_media')
+      .select('url')
+      .eq('id', mediaId)
+      .eq('post_id', postId)
+      .single();
+
+    const mediaUrl = (data as { url?: string } | null)?.url;
+    if (mediaUrl) {
+      const marker = `/public/${COVER_BUCKET}/`;
+      const idx = mediaUrl.indexOf(marker);
+      if (idx !== -1) {
+        const storagePath = mediaUrl.slice(idx + marker.length);
+        try {
+          await this.supabase.adminClient.storage.from(COVER_BUCKET).remove([storagePath]);
+        } catch {
+          // non-critical: storage file may already be absent
+        }
+      }
+    }
+
     const { error } = await this.supabase.adminClient
       .from('post_media')
       .delete()
@@ -100,6 +121,14 @@ export class MediaService {
   ): Promise<{ url: string }> {
     const ext = file.originalname.split('.').pop();
     const path = `${postId}/cover.${ext}`;
+
+    // Remove any previously uploaded cover files — extension may differ on replacement
+    try {
+      const candidates = ['jpg', 'jpeg', 'png', 'webp'].map(e => `${postId}/cover.${e}`);
+      await this.supabase.adminClient.storage.from(COVER_BUCKET).remove(candidates);
+    } catch {
+      // best-effort: no existing cover is fine
+    }
 
     const { error: uploadError } = await this.supabase.adminClient.storage
       .from(COVER_BUCKET)
