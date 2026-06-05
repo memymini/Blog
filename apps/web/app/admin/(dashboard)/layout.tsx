@@ -24,7 +24,7 @@ function DashboardShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col bg-muted-50">
       <AdminHeader />
-      <main className="flex-1 mx-auto w-full px-6 py-8" style={{ maxWidth: "var(--max-w-wide)" }}>
+      <main className="flex-1 mx-auto w-full px-4 sm:px-6 py-8" style={{ maxWidth: "var(--max-w-wide)" }}>
         {children}
       </main>
     </div>
