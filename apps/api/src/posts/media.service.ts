@@ -163,6 +163,43 @@ export class MediaService {
       });
   }
 
+  /**
+   * Deletes inline storage files that are no longer referenced in any translation markdown.
+   * Compares storage objects (media-* prefix) against the provided set of referenced URLs.
+   */
+  async purgeOrphanStorageFiles(postId: number, referencedUrls: Set<string>): Promise<void> {
+    const { data } = await this.supabase.adminClient.storage
+      .from(COVER_BUCKET)
+      .list(String(postId), { limit: 200 });
+
+    if (!data?.length) return;
+
+    const orphanPaths = data
+      .filter((f) => f.name.startsWith('media-'))
+      .map((f) => ({ path: `${postId}/${f.name}` }))
+      .filter(({ path }) => {
+        const { data: urlData } = this.supabase.adminClient.storage
+          .from(COVER_BUCKET)
+          .getPublicUrl(path);
+        return !referencedUrls.has(urlData.publicUrl);
+      })
+      .map(({ path }) => path);
+
+    if (orphanPaths.length) {
+      await this.supabase.adminClient.storage.from(COVER_BUCKET).remove(orphanPaths);
+    }
+  }
+
+  /** Removes all candidate cover files from storage for the given post (best-effort). */
+  async deleteCoverFromStorage(postId: number): Promise<void> {
+    const candidates = ['jpg', 'jpeg', 'png', 'webp'].map((e) => `${postId}/cover.${e}`);
+    try {
+      await this.supabase.adminClient.storage.from(COVER_BUCKET).remove(candidates);
+    } catch {
+      // best-effort: no existing cover is fine
+    }
+  }
+
   /** Uploads cover image to Supabase Storage and persists the public URL in posts.cover_url. */
   async uploadCover(
     postId: number,

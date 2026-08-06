@@ -14,6 +14,8 @@ import { SupabaseService } from '../supabase/supabase.service';
 import { WebhookService } from '../webhook/webhook.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { MediaService } from './media.service';
+import { extractImageUrls } from './utils/extract-image-urls.util';
 
 // Shape returned by Supabase before we normalize translation[] → translation
 type RawPostListItem = Omit<PostListItem, 'translation'> & {
@@ -29,6 +31,7 @@ export class PostsService {
   constructor(
     private readonly supabase: SupabaseService,
     private readonly webhook: WebhookService,
+    private readonly mediaService: MediaService,
   ) {}
 
   /**
@@ -161,6 +164,18 @@ export class PostsService {
   }
 
   async update(id: number, dto: UpdatePostDto): Promise<AdminPostDetail> {
+    // Capture current cover URL before overwriting, so we can clean up storage
+    // if the caller explicitly nulls it out (cover removed, not replaced).
+    let oldCoverUrl: string | null | undefined;
+    if (dto.cover_url === null) {
+      const { data } = await this.supabase.adminClient
+        .from('posts')
+        .select('cover_url')
+        .eq('id', id)
+        .single();
+      oldCoverUrl = (data as { cover_url?: string | null } | null)?.cover_url;
+    }
+
     const payload: Partial<{ country_code: string; published: boolean; cover_url: string | null }> = {};
     if (dto.country_code !== undefined) payload.country_code = dto.country_code;
     if (dto.published !== undefined) payload.published = dto.published;
@@ -177,9 +192,58 @@ export class PostsService {
       await this.upsertTranslations(id, dto.translations);
     }
 
+    // Orphan GC: always run against the full translation set so saves that
+    // don't touch translations (e.g. cover-only saves) still clean up dirty
+    // post_media rows and orphan storage files.
+    await this.purgeOrphanedMedia(id, dto.translations ?? null);
+
+    // Cover cleanup: if cover_url was explicitly set to null and an old file existed,
+    // delete the storage object (uploadCover handles replacement; this handles removal).
+    if (dto.cover_url === null && oldCoverUrl) {
+      await this.mediaService.deleteCoverFromStorage(id);
+    }
+
     const result = await this.findOneAdmin(id);
     try { await this.webhook.triggerRevalidation(id); } catch { /* never block the response */ }
     return result;
+  }
+
+  private async purgeOrphanedMedia(
+    postId: number,
+    incomingTranslations: TranslationUpsertItem[] | null,
+  ): Promise<void> {
+    // When the DTO doesn't include translations (e.g. cover-only save), fetch
+    // the current translation contents from the DB so GC still runs.
+    const translationContents: string[] = incomingTranslations?.length
+      ? incomingTranslations.map((t) => t.contents)
+      : await this.supabase.adminClient
+          .from('post_translations')
+          .select('contents')
+          .eq('post_id', postId)
+          .then(({ data }) => ((data as { contents: string }[] | null) ?? []).map((r) => r.contents));
+
+    const referencedUrls = new Set(
+      translationContents.flatMap((c) => extractImageUrls(c)),
+    );
+    // 1. Delete storage files no longer referenced in any translation.
+    await this.mediaService.purgeOrphanStorageFiles(postId, referencedUrls);
+    // 2. Remove post_media rows whose URL IS embedded inline in the markdown.
+    //    These were inserted by the old uploadMediaFile() bug and would otherwise
+    //    render as a duplicate gallery section below the post body.
+    await this.purgeInlinePostMediaRows(postId, referencedUrls);
+  }
+
+  private async purgeInlinePostMediaRows(
+    postId: number,
+    inlineUrls: Set<string>,
+  ): Promise<void> {
+    if (!inlineUrls.size) return;
+    // adminClient bypasses RLS — works for both published and unpublished posts.
+    await this.supabase.adminClient
+      .from('post_media')
+      .delete()
+      .eq('post_id', postId)
+      .in('url', [...inlineUrls]);
   }
 
   async remove(id: number): Promise<void> {
