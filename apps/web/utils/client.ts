@@ -60,7 +60,24 @@ export async function apiFetch<T>(
     body: body !== undefined ? JSON.stringify(body) : undefined,
   };
 
-  const res = await fetch(`${getBaseUrl()}${path}`, fetchOptions);
+  const targetUrl = `${getBaseUrl()}${path}`;
+  let res: Response;
+  try {
+    res = await fetch(targetUrl, fetchOptions);
+  } catch (firstErr) {
+    // One automatic retry after 1 s — covers transient failures such as the
+    // NestJS hot-reload restart window (~1-2 s) without masking real outages.
+    await new Promise((r) => setTimeout(r, 1000));
+    try {
+      res = await fetch(targetUrl, fetchOptions);
+    } catch (err) {
+      const cause = err instanceof Error ? err.message : String(err);
+      throw new Error(
+        `Network request failed — ${fetchOptions.method ?? 'GET'} ${targetUrl}: ${cause}`,
+        { cause: err instanceof Error ? err : firstErr },
+      );
+    }
+  }
 
   if (!res.ok) {
     let errorBody: unknown;
