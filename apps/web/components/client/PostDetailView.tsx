@@ -54,50 +54,8 @@ export function PostDetailView({ post, lang }: PostDetailViewProps) {
             </h1>
           </header>
         )}
-
         <div className="px-5 py-8">
           <MarkdownRenderer content={post.translation.contents} />
-
-          {post.media.length > 0 && (
-            <div className="mt-10 space-y-6">
-              {post.media.map((m) => {
-                const w = m.width ?? 100;
-                return (
-                  <figure key={m.id} style={{ width: `${w}%` }}>
-                    {m.type === "image" && (
-                      <div className="overflow-hidden bg-muted-200 relative aspect-[4/3]">
-                        <Image
-                          src={m.url}
-                          alt={m.alt_text ?? ""}
-                          fill
-                          sizes="(max-width: 1024px) 100vw, 800px"
-                          className="object-cover"
-                          placeholder="blur"
-                          blurDataURL={blurPlaceholder}
-                        />
-                      </div>
-                    )}
-                    {m.type === "video" && (
-                      <video src={m.url} controls className="w-full" />
-                    )}
-                    {m.type === "embed" && (
-                      <iframe
-                        src={m.url}
-                        className="w-full aspect-video"
-                        allowFullScreen
-                        title={m.alt_text ?? "Embedded content"}
-                      />
-                    )}
-                    {m.caption && (
-                      <figcaption className="mt-2 text-caption text-secondary-400 text-center">
-                        {m.caption}
-                      </figcaption>
-                    )}
-                  </figure>
-                );
-              })}
-            </div>
-          )}
         </div>
       </article>
     </>
