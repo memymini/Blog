@@ -91,7 +91,7 @@ export class MediaService {
     throwOnError(error);
   }
 
-  /** Uploads a media image to Supabase Storage and returns the public URL (does not touch posts table). */
+  /** Uploads a media file to Supabase Storage and returns the public URL. */
   async uploadMediaFile(
     postId: number,
     file: Express.Multer.File,
@@ -112,6 +112,55 @@ export class MediaService {
       .getPublicUrl(path);
 
     return { url: urlData.publicUrl };
+  }
+
+  /**
+   * Deletes one inline media file from storage by its public URL.
+   * Only removes files whose storage path belongs to this post and starts with
+   * `media-`, so cover images and other posts' files can never be deleted here.
+   * Also purges any stale post_media row with the same URL (created by old bug).
+   */
+  async deleteFileByUrl(postId: number, url: string): Promise<void> {
+    const marker = `/public/${COVER_BUCKET}/`;
+    const idx = url.indexOf(marker);
+    if (idx !== -1) {
+      const storagePath = url.slice(idx + marker.length);
+      if (storagePath.startsWith(`${postId}/media-`)) {
+        try {
+          await this.supabase.adminClient.storage.from(COVER_BUCKET).remove([storagePath]);
+        } catch {
+          // file may already be absent — not an error
+        }
+      }
+    }
+    // Belt-and-suspenders: remove any leftover post_media row with this URL.
+    await this.supabase.adminClient
+      .from('post_media')
+      .delete()
+      .eq('post_id', postId)
+      .eq('url', url);
+  }
+
+  /**
+   * Lists all inline-uploaded media files (media-* prefix) in storage for a post.
+   * Used by the admin gallery panel and the orphan GC — avoids touching post_media,
+   * which is reserved for curated display gallery items only.
+   */
+  async listUploadedFiles(postId: number): Promise<{ url: string }[]> {
+    const { data } = await this.supabase.adminClient.storage
+      .from(COVER_BUCKET)
+      .list(String(postId), { limit: 200 });
+
+    if (!data?.length) return [];
+
+    return data
+      .filter((f) => f.name.startsWith('media-'))
+      .map((f) => {
+        const { data: urlData } = this.supabase.adminClient.storage
+          .from(COVER_BUCKET)
+          .getPublicUrl(`${postId}/${f.name}`);
+        return { url: urlData.publicUrl };
+      });
   }
 
   /** Uploads cover image to Supabase Storage and persists the public URL in posts.cover_url. */

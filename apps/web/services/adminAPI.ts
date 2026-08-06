@@ -92,6 +92,17 @@ export async function listMedia(id: number): Promise<PostMedia[]> {
   return apiFetch<PostMedia[]>(`${BASE}/${id}/media`);
 }
 
+export async function listUploadedFiles(id: number): Promise<{ url: string }[]> {
+  return apiFetch<{ url: string }[]>(`${BASE}/${id}/media/uploaded`);
+}
+
+export async function deleteMediaFile(id: number, url: string): Promise<void> {
+  return apiFetch<void>(`${BASE}/${id}/media/file`, {
+    method: 'DELETE',
+    body: { url },
+  });
+}
+
 export async function addMedia(
   id: number,
   payload: CreateMediaPayload,

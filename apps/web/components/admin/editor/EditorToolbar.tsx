@@ -15,6 +15,7 @@ import {
   UndoIcon,
   RedoIcon,
   SpinnerIcon,
+  GalleryIcon,
 } from "@/components/icons";
 
 interface EditorToolbarProps {
@@ -24,10 +25,14 @@ interface EditorToolbarProps {
   isUploadingVideo: boolean;
   showImageUrlInput: boolean;
   showVideoUrlInput: boolean;
+  showGallery: boolean;
   onImageFileClick: () => void;
   onVideoFileClick: () => void;
   onToggleImageUrl: () => void;
   onToggleVideoUrl: () => void;
+  onToggleGallery: () => void;
+  /** Pass postId to show the Gallery button. Omit when no post is saved yet. */
+  postId?: number;
   className?: string;
 }
 
@@ -37,10 +42,13 @@ export function EditorToolbar({
   isUploadingVideo,
   showImageUrlInput,
   showVideoUrlInput,
+  showGallery,
   onImageFileClick,
   onVideoFileClick,
   onToggleImageUrl,
   onToggleVideoUrl,
+  onToggleGallery,
+  postId,
   className,
 }: EditorToolbarProps) {
   return (
@@ -155,6 +163,15 @@ export function EditorToolbar({
       >
         <ImageLinkIcon />
       </ToolbarButton>
+      {postId !== undefined && (
+        <ToolbarButton
+          onClick={onToggleGallery}
+          active={showGallery}
+          title="Insert from gallery"
+        >
+          <GalleryIcon />
+        </ToolbarButton>
+      )}
 
       {/* Video */}
       <ToolbarButton

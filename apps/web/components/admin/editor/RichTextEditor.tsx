@@ -4,10 +4,11 @@ import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { EditorContent } from "@tiptap/react";
 import { cn } from "@/utils/utils";
-import { uploadMediaFile } from "@/services/adminAPI";
+import { uploadMediaFile, deleteMediaFile } from "@/services/adminAPI";
 import { EditorToolbar } from "./EditorToolbar";
 import { MediaUrlInput } from "./MediaUrlInput";
 import { useRichTextEditor } from "@/hooks/useRichTextEditor";
+import { MediaGallery } from "@/components/admin/media/MediaGallery";
 
 interface RichTextEditorProps {
   value: string;
@@ -35,12 +36,27 @@ export function RichTextEditor({
   const videoFileRef = useRef<HTMLInputElement>(null);
   const [showImageUrlInput, setShowImageUrlInput] = useState(false);
   const [showVideoUrlInput, setShowVideoUrlInput] = useState(false);
+  const [showGallery, setShowGallery] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
 
-  const { editor, focusAfterBlock } = useRichTextEditor({ value, onChange });
+  const { editor, focusAfterBlock } = useRichTextEditor({
+    value,
+    onChange,
+    // When an image is deleted from the editor, immediately remove it from storage.
+    // Only fires for uploaded files (the backend validates the URL belongs to this post).
+    // Note: Cmd+Z undo after deletion will re-insert the broken URL — if undo support
+    // matters, rely on the save-time GC in PostsService instead of this callback.
+    onImagesRemoved: postId
+      ? (removedUrls) => {
+          for (const url of removedUrls) {
+            deleteMediaFile(postId, url).catch(() => {});
+          }
+        }
+      : undefined,
+  });
 
   function insertImageUrl() {
     const url = imageUrl.trim();
@@ -116,21 +132,40 @@ export function RichTextEditor({
     }
   }
 
+  function handleGalleryInsert(url: string) {
+    if (!editor) return;
+    editor
+      .chain()
+      .focus()
+      .setImage({ src: url })
+      .command(focusAfterBlock)
+      .run();
+  }
+
   const toolbarProps = {
     editor,
     isUploadingImage,
     isUploadingVideo,
     showImageUrlInput,
     showVideoUrlInput,
+    showGallery,
+    postId,
     onImageFileClick: () => imageFileRef.current?.click(),
     onVideoFileClick: () => videoFileRef.current?.click(),
     onToggleImageUrl: () => {
       setShowImageUrlInput((v) => !v);
       setShowVideoUrlInput(false);
+      setShowGallery(false);
     },
     onToggleVideoUrl: () => {
       setShowVideoUrlInput((v) => !v);
       setShowImageUrlInput(false);
+      setShowGallery(false);
+    },
+    onToggleGallery: () => {
+      setShowGallery((v) => !v);
+      setShowImageUrlInput(false);
+      setShowVideoUrlInput(false);
     },
   };
 
@@ -142,14 +177,32 @@ export function RichTextEditor({
       {editor &&
         (toolbarInPortal ? (
           createPortal(
-            <EditorToolbar
-              {...toolbarProps}
-              className="px-5 py-2 mb-0 pb-0 border-0"
-            />,
+            <div className="relative">
+              <EditorToolbar
+                {...toolbarProps}
+                className="px-5 py-2 mb-0 pb-0 border-0"
+              />
+              {showGallery && postId !== undefined && (
+                <MediaGallery
+                  postId={postId}
+                  onInsert={handleGalleryInsert}
+                  onClose={() => setShowGallery(false)}
+                />
+              )}
+            </div>,
             toolbarContainerRef!.current!,
           )
         ) : (
-          <EditorToolbar {...toolbarProps} />
+          <div className="relative">
+            <EditorToolbar {...toolbarProps} />
+            {showGallery && postId !== undefined && (
+              <MediaGallery
+                postId={postId}
+                onInsert={handleGalleryInsert}
+                onClose={() => setShowGallery(false)}
+              />
+            )}
+          </div>
         ))}
 
       {showImageUrlInput && (

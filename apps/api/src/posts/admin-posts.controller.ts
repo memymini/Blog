@@ -40,6 +40,7 @@ import {
   apiRes,
 } from '../common/swagger.schemas';
 import { CreateMediaDto, UpdateMediaDto } from './dto/create-media.dto';
+import { DeleteMediaFileDto } from './dto/delete-media-file.dto';
 import { CreatePostDto } from './dto/create-post.dto';
 import { AdminListPostsQueryDto } from './dto/list-posts.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -143,6 +144,28 @@ export class AdminPostsController {
   @ApiOkResponse(apiRes({ type: 'array', items: { $ref: getSchemaPath(PostMediaSchema) } }))
   async listMedia(@Param('id', ParseIntPipe) id: number) {
     return ok(await this.media.list(id));
+  }
+
+  @Delete(':id/media/file')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete one inline media file from storage by URL (called by editor on image removal)' })
+  @ApiParam({ name: 'id', type: 'integer', example: 1 })
+  deleteMediaFile(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: DeleteMediaFileDto,
+  ) {
+    return this.media.deleteFileByUrl(id, dto.url);
+  }
+
+  @Get(':id/media/uploaded')
+  @ApiOperation({ summary: 'List all inline-uploaded files in storage for this post (for editor gallery)' })
+  @ApiParam({ name: 'id', type: 'integer', example: 1 })
+  @ApiOkResponse(apiRes({
+    type: 'array',
+    items: { type: 'object', properties: { url: { type: 'string' } } },
+  }))
+  async listUploadedFiles(@Param('id', ParseIntPipe) id: number) {
+    return ok(await this.media.listUploadedFiles(id));
   }
 
   @Post(':id/media/upload')
